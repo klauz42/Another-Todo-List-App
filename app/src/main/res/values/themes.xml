@@ -1,5 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base application theme. -->
+    <style name="Theme.AnotherTodoListApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_700</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>ss
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSurface">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/back_primary</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="actionBarStyle">@style/TodoListAppAppBarStyle</item>
+        <item name="toolbarStyle">@style/TodoListAppToolbarStyle</item>
+        <!-- Customize your theme here. -->
+    </style>
 
-    <style name="Theme.AnotherTodoListApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="TodoListAppAppBarStyle" parent="Widget.AppCompat.ActionBar">
+        <!-- Задаем фоновый цвет для ActionBar -->
+        <item name="background">@color/back_primary</item>
+    </style>
+
+    <style name="TodoListAppToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@color/label_primary</item>
+    </style>
+
+    <style name="TodoListAppActionBarStyle" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:background">@color/back_primary</item>
+    </style>
+
+    <style name="TodoListAppListCollapsingToolbarStyle" parent="Widget.Design.CollapsingToolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">192dp</item>
+        <item name="contentScrim">@color/back_primary</item>
+        <item name="expandedTitleTextColor">@color/label_primary</item>
+        <item name="collapsedTitleTextColor">@color/label_primary</item>
+        <item name="expandedTitleMarginTop">50dp</item>
+        <item name="expandedTitleMarginStart">60dp</item>
+        <item name="expandedTitleMarginBottom">50dp</item>
+    </style>
+
+    <style name="CollapsingToolbarImageButtonStyle" parent="Widget.AppCompat.ImageButton">
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:layout_marginEnd">-24dp</item>
+        <item name="android:layout_marginTop">-16dp</item>
+        <item name="android:layout_marginBottom">-16dp</item>
+        <item name="tint">@color/blue</item>
+    </style>
+
+    <style name="CollapsedToolbarImageButtonStyle" parent="Widget.AppCompat.ImageButton">
+        <item name="android:padding">16dp</item>
+        <item name="tint">@color/blue</item>
+    </style>
+
+    <style name="LargeTitleText">
+        <item name="android:textSize">@dimen/large_title_text_size</item>
+        <item name="android:textColor">@color/label_primary</item>
+        <item name="fontFamily">Roboto</item>
+        <item name="fontStyle">normal</item>
+        <item name="fontWeight">500</item>
+        <item name="lineHeight">38dp</item>
+        <item name="android:fontFeatureSettings">\"pnum\", \"lnum\"</item>
+    </style>
+
+    <style name="CollapsedHeaderStyle">
+        <item name="android:textAppearance">@style/TextAppearance.Material3.ActionBar.Title</item>
+        <item name="android:textColor">@color/label_primary</item>
+        <item name="android:layout_marginStart">@dimen/item_list_header_collapsed_title_margin_start</item>
+        <item name="android:layout_marginTop">@dimen/item_list_header_collapsed_title_margin_top</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="TitleTextStyle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/label_primary</item>
+        <item name="fontFamily">Roboto</item>
+        <item name="fontStyle">normal</item>
+        <item name="fontWeight">500</item>
+        <item name="lineHeight">32dp</item>
+        <item name="android:letterSpacing">0.5</item>
+        <item name="android:fontFeatureSettings">\"pnum\", \"lnum\"</item>
+    </style>
+
+    <style name="ButtonTextStyle">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/label_primary</item>
+        <item name="fontFamily">Roboto</item>
+        <item name="fontStyle">normal</item>
+        <item name="fontWeight">500</item>
+        <item name="lineHeight">24dp</item>
+        <item name="android:letterSpacing">0.16</item>
+        <item name="android:fontFeatureSettings">\"pnum\", \"lnum\"</item>
+    </style>
+
+    <style name="BodyTextStyle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/label_primary</item>
+        <item name="fontFamily">Roboto</item>
+        <item name="fontStyle">normal</item>
+        <item name="fontWeight">400</item>
+        <item name="lineHeight">20dp</item>
+    </style>
+
+    <style name="ExpandedItemListSubtitleAppearance">
+        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">Roboto</item>
+        <item name="fontStyle">normal</item>
+        <item name="fontWeight">400</item>
+        <item name="lineHeight">20dp</item>
+        <item name="android:textColor">@color/label_tertiary</item>
+    </style>
+
+    <style name="SubheadTextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/label_primary</item>
+        <item name="fontFamily">Roboto</item>
+        <item name="fontStyle">normal</item>
+        <item name="fontWeight">400</item>
+        <item name="lineHeight">20dp</item>
+    </style>
+
+    <style name="TodoItemCheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:gravity">top</item>
+    </style>
 </resources>

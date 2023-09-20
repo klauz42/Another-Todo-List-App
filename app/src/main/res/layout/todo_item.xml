@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="todoItem"
+            type="ru.claus42.anothertodolistapp.domain.models.entities.TodoItemEntity" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <CheckBox
+            android:id="@+id/done_checkbox"
+            style="@style/TodoItemCheckBoxStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/green"
+            app:importanceCheckboxTint="@{todoItem.importance}"
+            tools:checked="true"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/BodyTextStyle"
+                android:id="@+id/item_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginBottom="4dp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                app:importanceDescriptionDrawable="@{todoItem.importance}"
+                tools:text="@tools:sample/lorem/random" />
+            <com.google.android.material.textview.MaterialTextView
+                style="@style/SubheadTextStyle"
+                android:id="@+id/item_deadline"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/item_description"
+                app:layout_constraintStart_toStartOf="parent"
+                android:maxLines="1"
+                tools:text="@tools:sample/date/ddmmyy" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--todo: accessibility-->
+        <ImageView
+            android:id="@+id/info_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="0dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/info_outline"
+            app:tint="@color/gray"
+            android:importantForAccessibility="no" />
+    </LinearLayout>
+</layout>

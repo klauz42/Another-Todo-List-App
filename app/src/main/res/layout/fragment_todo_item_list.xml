@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.views.fragments.TodoItemListFragment">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/TodoListAppActionBarStyle">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                style="@style/TodoListAppListCollapsingToolbarStyle"
+                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+                app:expandedTitleTextAppearance="@style/LargeTitleText"
+                app:statusBarScrim="@android:color/transparent"
+                tools:title="@string/my_to_do_list">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:background="@color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+
+                    app:contentInsetStart="0dp"
+                    app:layout_collapseMode="pin"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+                    <include
+                        android:id="@+id/collapsed_header_view"
+                        layout="@layout/item_list_header_collapsed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                </androidx.appcompat.widget.Toolbar>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <include
+            android:id="@+id/expanded_header_view"
+            layout="@layout/item_list_header_expanded"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/scrollView"
+            app:layout_behavior=".presentation.ui.custom.behaviors.ItemListHeaderBehavior"
+            app:collapsedTitleTextSize="@dimen/item_list_header_collapsed_title_text_size"
+            app:expandedTitleTextSize="@dimen/item_list_header_expanded_title_text_size"
+            app:collapsedTitleMarginStart="@dimen/item_list_header_collapsed_title_margin_start"
+            app:expandedTitleMarginStart="@dimen/item_list_header_expanded_title_margin_start"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            tools:listitem="@layout/todo_item"/>
+
+        <!--todo: accessibility-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_item_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_dodgeInsetEdges="bottom"
+            android:src="@drawable/add"
+            app:tint="@color/white"
+            app:backgroundTint="@color/blue"
+            app:elevation="6dp"
+            android:layout_marginBottom="40dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="bottom|end"
+            android:importantForAccessibility="no" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

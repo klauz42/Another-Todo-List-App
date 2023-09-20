@@ -1,0 +1,46 @@
+object Versions {
+    const val dagger = "2.47"
+    const val navigation = "2.6.0"
+    const val room = "2.5.2"
+    const val material = "1.9.0"
+    const val firebase = "32.2.0"
+    const val constraintLayout = "2.1.4"
+    
+}
+
+object Dependencies {
+    object Navigation {
+        const val fragmentKtx = "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}"
+        const val uiKtx = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
+        const val testitng = "androidx.navigation:navigation-testing:${Versions.navigation}"
+    }
+    
+    object Dagger {
+        val dagger = "com.google.dagger:dagger:${Versions.dagger}"
+        val compiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
+    }
+    
+    object Room {
+        const val room = "androidx.room:room-ktx:${Versions.room}"
+        const val testing = "androidx.room:room-testing:${Versions.room}"
+        const val paging = "androidx.room:room-paging:${Versions.room}"
+        const val compiler = "androidx.room:room-compiler:${Versions.room}"
+        const val coroutines = "androidx.room:room-coroutines:${Versions.room}"
+    }
+
+
+    const val material = "com.google.android.material:material:${Versions.material}"
+
+    object Firebase {
+        const val bom = "com.google.firebase:firebase-bom:${Versions.firebase}"
+        const val auth = "com.google.firebase:firebase-auth-ktx"
+        const val firestore = "com.google.firebase:firebase-firestore-ktx"
+    }
+
+    const val constraintLayout =
+        "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
+}
+
+object ClassPaths {
+
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/back_primary">
+    
+    <TextView
+        android:id="@+id/header_title"
+        android:text="@string/my_to_do_list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/CollapsedHeaderStyle"
+        android:textSize="@dimen/item_list_header_collapsed_title_text_size"/>
+
+    <ImageButton
+        android:id="@+id/show_hide_done_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/item_list_header_collapsed_button_margin_end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/CollapsedToolbarImageButtonStyle"
+        android:background="?android:selectableItemBackground"
+        android:src="@drawable/visibility"
+        android:importantForAccessibility="no" />
+
+</ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout>

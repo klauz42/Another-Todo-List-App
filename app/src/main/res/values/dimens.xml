@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="large_title_text_size">32sp</dimen>
+
+    <dimen name="item_list_header_expanded_header_height">192dp</dimen>
+    <dimen name="item_list_header_expanded_title_margin_start">60dp</dimen>
+    <dimen name="item_list_header_expanded_title_margin_bottom">44dp</dimen>
+    <dimen name="item_list_header_expanded_subtitle_margin_bottom">16dp</dimen>
+    <dimen name="item_list_header_expanded_title_text_size">@dimen/large_title_text_size</dimen>
+    <dimen name="item_list_header_expanded_button_margin_end">8dp</dimen>
+
+    <dimen name="item_list_header_collapsed_title_margin_start">16dp</dimen>
+    <dimen name="item_list_header_collapsed_title_margin_top">16dp</dimen>
+    <dimen name="item_list_header_collapsed_title_margin_bottom">16dp</dimen>
+    <dimen name="item_list_header_collapsed_title_text_size">22sp</dimen>
+    <dimen name="item_list_header_collapsed_button_margin_end">8dp</dimen>
+
+</resources>

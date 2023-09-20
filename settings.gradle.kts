@@ -15,4 +15,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Another Todo List App"
 include(":app")
- 
