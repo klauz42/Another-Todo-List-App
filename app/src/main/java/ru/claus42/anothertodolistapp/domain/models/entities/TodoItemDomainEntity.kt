@@ -9,7 +9,7 @@ enum class Importance {
     LOW, BASIC, IMPORTANT
 }
 
-data class TodoItemEntity(
+data class TodoItemDomainEntity(
     val id: UUID = UUID.randomUUID(),
     var description: String = "",
     var importance: Importance = Importance.BASIC,

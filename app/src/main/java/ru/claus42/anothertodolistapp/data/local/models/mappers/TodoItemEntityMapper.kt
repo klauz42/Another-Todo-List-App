@@ -1,9 +1,9 @@
 package ru.claus42.anothertodolistapp.data.local.models.mappers
 
 import ru.claus42.anothertodolistapp.data.local.models.entities.DataImportance
-import ru.claus42.anothertodolistapp.data.local.models.entities.TodoItemLocalEntity
+import ru.claus42.anothertodolistapp.data.local.models.entities.TodoItemLocalDataEntity
 import ru.claus42.anothertodolistapp.domain.models.entities.Importance
-import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemEntity
+import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 
 fun DataImportance.toImportance() : Importance {
     return when(this) {
@@ -13,8 +13,8 @@ fun DataImportance.toImportance() : Importance {
     }
 }
 
-fun TodoItemLocalEntity.toDomainModel() : TodoItemEntity {
-    return TodoItemEntity(
+fun TodoItemLocalDataEntity.toDomainModel() : TodoItemDomainEntity {
+    return TodoItemDomainEntity(
         id = this.id,
         description = this.description,
         importance = this.importance.toImportance(),
@@ -34,8 +34,8 @@ fun Importance.toDataImportance(): DataImportance {
     }
 }
 
-fun TodoItemEntity.toDataLocalModel() : TodoItemLocalEntity {
-    return TodoItemLocalEntity(
+fun TodoItemDomainEntity.toLocalDataModel() : TodoItemLocalDataEntity {
+    return TodoItemLocalDataEntity(
         id = this.id,
         description = this.description,
         importance = this.importance.toDataImportance(),

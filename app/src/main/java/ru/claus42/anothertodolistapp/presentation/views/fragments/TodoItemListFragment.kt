@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -18,9 +19,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import ru.claus42.anothertodolistapp.R
+import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemListBinding
+import ru.claus42.anothertodolistapp.domain.models.DataResult
+import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.adapters.TodoItemAdapter
-import ru.claus42.anothertodolistapp.stub_stuff.stubTodoItemEntityList
+import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
 import kotlin.math.abs
 
 class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
@@ -29,6 +33,11 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
 
     private var _recyclerView: RecyclerView? = null
     private val recyclerView get() = _recyclerView!!
+
+
+    private val viewModel: TodoItemListViewModel by viewModels {
+        activity.appComponent.viewModelsFactory()
+    }
 
     private var isHideToolbarView: Boolean = false
 
@@ -52,9 +61,18 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
         super.onViewCreated(view, savedInstanceState)
 
         _recyclerView = binding.recyclerView
-
         setupAppBar()
-        setupRecyclerView()
+
+        viewModel.todoItems.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is DataResult.Success -> {
+
+                    setupRecyclerView(result.data)
+                }
+                is DataResult.Error -> displayError(result.error)
+                is DataResult.Loading -> displayLoading()
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -85,6 +103,14 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
 
     }
 
+    fun displayError(exception: Throwable) {
+        //todo: error displaying
+    }
+
+    fun displayLoading() {
+        //todo: display loading animation
+    }
+
     private fun setupAppBar() {
         binding.toolbar.setupWithNavController(findNavController())
 
@@ -97,11 +123,11 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
 
     }
 
-    private fun setupRecyclerView() {
+    private fun setupRecyclerView(todoItems: List<TodoItemDomainEntity>) {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         recyclerView.adapter = TodoItemAdapter()
-        (recyclerView.adapter as TodoItemAdapter).submitList(stubTodoItemEntityList)
+        (recyclerView.adapter as TodoItemAdapter).submitList(todoItems)
     }
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {

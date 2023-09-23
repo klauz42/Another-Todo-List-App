@@ -7,7 +7,7 @@
     <data>
         <variable
             name="todoItem"
-            type="ru.claus42.anothertodolistapp.domain.models.entities.TodoItemEntity" />
+            type="ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity" />
     </data>
 
     <LinearLayout

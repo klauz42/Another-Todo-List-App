@@ -10,11 +10,11 @@ enum class DataImportance {
 }
 
 @Entity(tableName = "todo_items")
-data class TodoItemLocalEntity(
+data class TodoItemLocalDataEntity(
     @PrimaryKey val id: UUID = UUID.randomUUID(),
     var description: String = "",
     var importance: DataImportance = DataImportance.BASIC,
-    var deadline: LocalDateTime?,
+    var deadline: LocalDateTime? = null,
     var done: Boolean = false,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     var changedAt: LocalDateTime = LocalDateTime.now()

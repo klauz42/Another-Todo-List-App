@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
-import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemEntity
+import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -16,7 +16,7 @@ class TodoItemAdapter() :
 
     private val differ = AsyncListDiffer(this, TodoItemDiffCallback)
 
-    fun submitList(newItems: List<TodoItemEntity>) {
+    fun submitList(newItems: List<TodoItemDomainEntity>) {
         differ.submitList(newItems)
     }
 
@@ -35,7 +35,7 @@ class TodoItemAdapter() :
 
     class TodoItemViewHolder(private val binding: TodoItemBinding)
         : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: TodoItemEntity) {
+        fun bind(item: TodoItemDomainEntity) {
             binding.todoItem = item
 
             binding.apply {
@@ -56,11 +56,11 @@ class TodoItemAdapter() :
         }
     }
 
-    object TodoItemDiffCallback : DiffUtil.ItemCallback<TodoItemEntity>() {
-        override fun areItemsTheSame(oldItem: TodoItemEntity, newItem: TodoItemEntity) =
+    object TodoItemDiffCallback : DiffUtil.ItemCallback<TodoItemDomainEntity>() {
+        override fun areItemsTheSame(oldItem: TodoItemDomainEntity, newItem: TodoItemDomainEntity) =
             oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: TodoItemEntity, newItem: TodoItemEntity) =
+        override fun areContentsTheSame(oldItem: TodoItemDomainEntity, newItem: TodoItemDomainEntity) =
             oldItem == newItem
     }
 }

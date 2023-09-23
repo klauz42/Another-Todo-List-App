@@ -1,4 +1,6 @@
 package ru.claus42.anothertodolistapp.domain.usecases
 
-class EditTodoItemUseCase {
+import javax.inject.Inject
+
+class EditTodoItemUseCase @Inject constructor() {
 }

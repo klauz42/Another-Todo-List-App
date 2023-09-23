@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.di
+package ru.claus42.anothertodolistapp.di.modules
 
 import dagger.Module
 
