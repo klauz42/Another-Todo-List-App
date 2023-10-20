@@ -12,12 +12,14 @@ import javax.inject.Singleton
 
 //todo: create separated
 
-@Component(modules = [
-    AppModule::class,
-    ViewModelModule::class,
-    TodoItemRepositoryModule::class,
-    TodoItemRepositoryBindModule::class,
-])
+@Component(
+    modules = [
+        AppModule::class,
+        ViewModelModule::class,
+        TodoItemRepositoryModule::class,
+        TodoItemRepositoryBindModule::class,
+    ]
+)
 @Singleton
 interface AppComponent {
     fun inject(activity: MainActivity)

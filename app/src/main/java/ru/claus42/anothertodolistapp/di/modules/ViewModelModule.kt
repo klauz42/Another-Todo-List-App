@@ -7,6 +7,7 @@ import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
 import ru.claus42.anothertodolistapp.presentation.viewmodels.AppViewModelsFactory
+import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemDetailsViewModel
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
 import kotlin.reflect.KClass
 
@@ -18,12 +19,12 @@ interface ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(TodoItemListViewModel::class)
-    fun bindTodoItemListViewModel(viewModel: TodoItemListViewModel) : ViewModel
+    fun bindTodoItemListViewModel(viewModel: TodoItemListViewModel): ViewModel
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(TodoItemDetailsViewModel::class)
-//    fun bindTodoItemDetailsViewModel(viewModel: TodoItemDetailsViewModel) : ViewModel
+    @Binds
+    @IntoMap
+    @ViewModelKey(TodoItemDetailsViewModel::class)
+    fun bindTodoItemDetailsViewModel(viewModel: TodoItemDetailsViewModel): ViewModel
 }
 
 @MustBeDocumented
