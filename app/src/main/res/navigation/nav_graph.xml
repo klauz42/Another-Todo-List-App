@@ -12,7 +12,13 @@
         tools:layout="@layout/fragment_todo_item_list">
         <action
             android:id="@+id/action_list_to_details"
-            app:destination="@id/todoItemDetailsFragment" />
+            app:destination="@id/todoItemDetailsFragment"
+            app:exitAnim="@anim/anim_wait"
+            app:enterAnim="@anim/anim_slide_in_left"
+            app:popExitAnim="@anim/anim_slide_out_right"
+            app:popEnterAnim="@anim/anim_wait" />
+
+
     </fragment>
 
     <fragment
