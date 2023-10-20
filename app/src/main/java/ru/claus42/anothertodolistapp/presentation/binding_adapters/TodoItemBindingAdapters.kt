@@ -1,7 +1,6 @@
 package ru.claus42.anothertodolistapp.presentation.binding_adapters
 
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -12,9 +11,13 @@ import ru.claus42.anothertodolistapp.domain.models.entities.Importance
 
 @BindingAdapter("importanceCheckboxTint")
 fun setImportanceCheckboxTint(view: CheckBox, importance: Importance) {
+    val context = view.context
+    val basicColor = ContextCompat.getColor(context, R.color.basic_priority_check)
+    val importantColor = ContextCompat.getColor(context, R.color.important_priority_check)
+
     view.buttonTintList = when (importance) {
-        Importance.LOW, Importance.BASIC -> ColorStateList.valueOf(Color.GREEN)
-        Importance.IMPORTANT -> ColorStateList.valueOf(Color.RED)
+        Importance.LOW, Importance.BASIC -> ColorStateList.valueOf(basicColor)
+        Importance.IMPORTANT -> ColorStateList.valueOf(importantColor)
     }
 }
 

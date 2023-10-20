@@ -23,11 +23,11 @@ data class TodoItemDomainEntity(
         importanceValue: Importance = Importance.BASIC,
         deadlineValue: LocalDateTime? = null,
     ) : this(
-            description = descriptionValue,
-            importance = importanceValue,
-            deadline = deadlineValue,
-        )
+        description = descriptionValue,
+        importance = importanceValue,
+        deadline = deadlineValue,
+    )
 
-    private val formatter =  DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+    private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
     val formattedChangedData: String get() = changedAt.format(formatter)
 }

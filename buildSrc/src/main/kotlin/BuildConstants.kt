@@ -5,6 +5,7 @@ object Versions {
     const val material = "1.9.0"
     const val firebase = "32.2.0"
     const val constraintLayout = "2.1.4"
+    const val lifecycle = "2.6.2"
     
 }
 
@@ -39,6 +40,11 @@ object Dependencies {
 
     const val constraintLayout =
         "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
+
+    object Lifecycle {
+        const val runtime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
+        const val livedata = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}"
+    }
 }
 
 object ClassPaths {

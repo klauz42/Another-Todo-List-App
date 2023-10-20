@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetTodoItemListUseCase @Inject constructor(
     private val repository: TodoItemRepository
 ) {
-    fun invoke() : Flow<DataResult<List<TodoItemDomainEntity>>> {
+    operator fun invoke(): Flow<DataResult<List<TodoItemDomainEntity>>> {
         return repository.getTodoItemList()
     }
 }

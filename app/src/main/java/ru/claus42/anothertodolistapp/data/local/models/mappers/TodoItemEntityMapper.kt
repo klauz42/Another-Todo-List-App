@@ -5,15 +5,15 @@ import ru.claus42.anothertodolistapp.data.local.models.entities.TodoItemLocalDat
 import ru.claus42.anothertodolistapp.domain.models.entities.Importance
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 
-fun DataImportance.toImportance() : Importance {
-    return when(this) {
+fun DataImportance.toImportance(): Importance {
+    return when (this) {
         DataImportance.LOW -> Importance.LOW
         DataImportance.BASIC -> Importance.BASIC
         DataImportance.IMPORTANT -> Importance.IMPORTANT
     }
 }
 
-fun TodoItemLocalDataEntity.toDomainModel() : TodoItemDomainEntity {
+fun TodoItemLocalDataEntity.toDomainModel(): TodoItemDomainEntity {
     return TodoItemDomainEntity(
         id = this.id,
         description = this.description,
@@ -27,14 +27,14 @@ fun TodoItemLocalDataEntity.toDomainModel() : TodoItemDomainEntity {
 
 
 fun Importance.toDataImportance(): DataImportance {
-    return when(this) {
+    return when (this) {
         Importance.LOW -> DataImportance.LOW
         Importance.BASIC -> DataImportance.BASIC
         Importance.IMPORTANT -> DataImportance.IMPORTANT
     }
 }
 
-fun TodoItemDomainEntity.toLocalDataModel() : TodoItemLocalDataEntity {
+fun TodoItemDomainEntity.toLocalDataModel(): TodoItemLocalDataEntity {
     return TodoItemLocalDataEntity(
         id = this.id,
         description = this.description,

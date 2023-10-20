@@ -10,13 +10,20 @@
         android:name="ru.claus42.anothertodolistapp.presentation.views.fragments.TodoItemListFragment"
         android:label="@string/my_to_do_list"
         tools:layout="@layout/fragment_todo_item_list">
+        <action
+            android:id="@+id/action_list_to_details"
+            app:destination="@id/todoItemDetailsFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/animationExampleFragment"
-        android:name="ru.claus42.anothertodolistapp.presentation.views.fragments.AnimationExampleFragment"
-        android:label="Detail"
-        tools:layout="@layout/fragment_animation_example">
+        android:id="@+id/todoItemDetailsFragment"
+        android:name="ru.claus42.anothertodolistapp.presentation.views.fragments.TodoItemDetailsFragment"
+        android:label="Todo Item Details"
+        tools:layout="@layout/fragment_todo_item_details">
+        <argument
+            android:name="item_id"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
 </navigation>

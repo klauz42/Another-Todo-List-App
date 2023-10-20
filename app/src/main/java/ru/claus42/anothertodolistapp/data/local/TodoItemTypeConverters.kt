@@ -23,7 +23,7 @@ object TodoItemTypeConverters {
     @TypeConverter
     @JvmStatic
     fun toImportance(importance: Int?): Importance? {
-        return when(importance) {
+        return when (importance) {
             null -> null
             0 -> Importance.LOW
             1 -> Importance.BASIC
@@ -34,7 +34,7 @@ object TodoItemTypeConverters {
     @TypeConverter
     @JvmStatic
     fun fromImportance(importance: Importance?): Int? {
-        return when(importance) {
+        return when (importance) {
             Importance.LOW -> 0
             Importance.BASIC -> 1
             Importance.IMPORTANT -> 2
