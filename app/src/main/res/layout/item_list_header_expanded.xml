@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="@dimen/item_list_header_expanded_header_height"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:background="@color/back_primary">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_list_header_expanded_header_height"
+    android:id="@+id/header"
+    android:background="@color/back_primary"
+    app:expandedTitleSize="@dimen/item_list_header_expanded_title_text_size"
+    app:collapsedTitleSize="@dimen/item_list_header_collapsed_title_text_size">
 
-<TextView
-    android:id="@+id/header_title"
-    android:text="@string/my_to_do_list"
-    android:textAppearance="@style/LargeTitleText"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/item_list_header_expanded_title_margin_start"
+        android:layout_marginBottom="@dimen/item_list_header_expanded_title_margin_bottom"
+        android:text="@string/my_to_do_list"
+        android:textAppearance="@style/LargeTitleText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    android:layout_marginStart="@dimen/item_list_header_expanded_title_margin_start"
-    android:layout_marginBottom="@dimen/item_list_header_expanded_title_margin_bottom"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/header_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/item_list_header_expanded_title_margin_start"
+        android:layout_marginBottom="@dimen/item_list_header_expanded_subtitle_margin_bottom"
+        android:text="Bla-bla-bla"
+        android:textAppearance="@style/ExpandedItemListSubtitleAppearance"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Subtitle" />
 
-<TextView
-    android:id="@+id/header_subtitle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textAppearance="@style/ExpandedItemListSubtitleAppearance"
-    android:layout_marginStart="@dimen/item_list_header_expanded_title_margin_start"
-    android:layout_marginBottom="@dimen/item_list_header_expanded_subtitle_margin_bottom"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    android:visibility="visible"
-    android:text="Bla-bla-bla"
-    tools:text="Subtitle" />
-
-<ImageButton
-    android:id="@+id/show_hide_done_button"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:layout_constraintEnd_toEndOf="parent"
-
-    app:layout_constraintBottom_toBottomOf="parent"
-
-    android:layout_marginEnd="@dimen/item_list_header_expanded_button_margin_end"
-    style="@style/CollapsedToolbarImageButtonStyle"
-    android:background="?android:selectableItemBackground"
-    android:src="@drawable/visibility"
-    android:importantForAccessibility="no" />
+    <ImageButton
+        android:id="@+id/show_hide_done_button"
+        style="@style/CollapsedToolbarImageButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/item_list_header_expanded_button_margin_end"
+        android:background="?android:selectableItemBackground"
+        android:importantForAccessibility="no"
+        android:src="@drawable/visibility"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout>

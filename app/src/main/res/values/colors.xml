@@ -19,6 +19,8 @@
     <color name="red">#FF3B30</color>
     <color name="green">#34C759</color>
     <color name="blue">#007AFF</color>
+    <color name="blue_light">#A7C4E9</color>
+
     <color name="gray">#8E8E93</color>
     <color name="gray_light">#D1D1D6</color>
 
@@ -27,4 +29,10 @@
     <color name="back_elevated">#FFFFFF</color>
 
     <color name="transparent">#00000000</color>
+    <color name="delete_color">@color/red</color>
+
+    <color name="basic_priority_check">@color/green</color>
+    <color name="important_priority_check">@color/red</color>
+
+    <color name="details_header_cross">@color/black</color>
 </resources>

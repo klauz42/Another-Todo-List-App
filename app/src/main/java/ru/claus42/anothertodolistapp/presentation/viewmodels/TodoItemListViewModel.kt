@@ -13,5 +13,5 @@ class TodoItemListViewModel @Inject constructor(
     getTodoItemListUseCase: GetTodoItemListUseCase
 ) : ViewModel() {
     val todoItems: LiveData<DataResult<List<TodoItemDomainEntity>>> =
-        getTodoItemListUseCase.invoke().asLiveData(viewModelScope.coroutineContext)
+        getTodoItemListUseCase().asLiveData(viewModelScope.coroutineContext)
 }

@@ -3,7 +3,6 @@ package ru.claus42.anothertodolistapp.presentation.ui.custom.behaviors
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
@@ -19,26 +18,17 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
     private val collapsedTitleMarginStart: Int
     private val expandedTitleMarginBottom: Int
     private val collapsedTitleMarginBottom: Int
-    private var expandedTitleTextSize: Int
-    private var collapsedTitleTextSize: Int
     private var isSubtitleVisible = true
     private var isHide = false
 
     private var isInitialChildHeightSet = false
     private var isInitialChildHeight = 0
-    
-    init {
-        val styledAttrs = context!!.obtainStyledAttributes(attrs, R.styleable.ItemListHeaderBehaviorAttrs)
-        try {
-            expandedTitleTextSize = styledAttrs.getDimensionPixelSize(
-                R.styleable.ItemListHeaderBehaviorAttrs_expandedTitleTextSize,
-                context.resources.getDimensionPixelSize(R.dimen.item_list_header_expanded_title_text_size)
-            )
-            collapsedTitleTextSize = styledAttrs.getDimensionPixelSize(
-                R.styleable.ItemListHeaderBehaviorAttrs_collapsedTitleTextSize,
-                context.resources.getDimensionPixelSize(R.dimen.item_list_header_collapsed_title_text_size)
-            )
+    private var childMaxY: Float = 0f
 
+    init {
+        val styledAttrs =
+            context!!.obtainStyledAttributes(attrs, R.styleable.ItemListHeaderBehaviorAttrs)
+        try {
             expandedTitleMarginStart = styledAttrs.getDimensionPixelOffset(
                 R.styleable.ItemListHeaderBehaviorAttrs_expandedTitleMarginStart,
                 context.resources.getDimensionPixelSize(R.dimen.item_list_header_expanded_title_margin_start)
@@ -60,19 +50,8 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
         }
     }
 
-    companion object {
-        fun getToolbarHeight(context: Context): Int {
-            var result = 0
-            val tv = TypedValue()
-            if (context.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-                result = TypedValue.complexToDimensionPixelSize(
-                    tv.data,
-                    context.resources.displayMetrics
-                )
-            }
-            return result
-        }
 
+    companion object {
         private fun getTranslationOffset(
             expandedOffset: Int,
             collapsedOffset: Int,
@@ -100,18 +79,11 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
                 ).toInt()
             )
 
-
-            setTitleTextSize(
-                getTranslationOffset(
-                    expandedTitleTextSize,
-                    collapsedTitleTextSize,
-                    layoutPercentage
-                )
-            )
+            setTitleTextSizeAnimatorPlaytime(layoutPercentage)
 
             val subtitleDisappearancePercent = 0.4f
 
-            setSubtitleAlpha(1f - 1/subtitleDisappearancePercent * layoutPercentage)
+            setSubtitleAlpha(1f - 1 / subtitleDisappearancePercent * layoutPercentage)
 
             if (isSubtitleVisible && layoutPercentage >= subtitleDisappearancePercent) {
                 hideSubtitle()
@@ -137,10 +109,12 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
         val maxScroll = (dependency as AppBarLayout).totalScrollRange
         val percentage = abs(dependency.getY()) / maxScroll
         val childPosition = (dependency.getHeight() + dependency.getY()) - child.height
-        
+
         if (!isInitialChildHeightSet) {
             isInitialChildHeight = child.height
             isInitialChildHeightSet = true
+
+            childMaxY = (dependency.height - isInitialChildHeight).toFloat()
         }
 
         val lp = child.layoutParams as CoordinatorLayout.LayoutParams
@@ -149,7 +123,6 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
 
         child.layoutParams = lp
 
-        val childMaxY = (dependency.height - isInitialChildHeight).toFloat()
         child.y = if (childPosition > childMaxY) childMaxY else childPosition
 
         if (isHide && percentage < 1) {

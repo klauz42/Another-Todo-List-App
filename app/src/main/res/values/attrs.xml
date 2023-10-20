@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ItemListHeaderBehaviorAttrs">
-        <attr name="collapsedTitleTextSize" format="dimension" />
-        <attr name="expandedTitleTextSize" format="dimension" />
         <attr name="collapsedTitleMarginStart" format="dimension" />
         <attr name="expandedTitleMarginStart" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="ItemListHeaderLayout">
+        <attr name="collapsedTitleSize" format="dimension" />
+        <attr name="expandedTitleSize" format="dimension" />
     </declare-styleable>
 </resources>

@@ -6,12 +6,14 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.UUID
 
-class TodoItemAdapter() :
+class TodoItemAdapter(private val itemClickListener: (UUID) -> Unit) :
     RecyclerView.Adapter<TodoItemAdapter.TodoItemViewHolder>() {
 
     private val differ = AsyncListDiffer(this, TodoItemDiffCallback)
@@ -30,12 +32,22 @@ class TodoItemAdapter() :
 
     override fun onBindViewHolder(holder: TodoItemViewHolder, position: Int) {
         val item = differ.currentList[position]
-        holder.bind(item)
+        holder.bind(item, itemClickListener)
+
+        val backgroundResId = when {
+            itemCount == 1 -> R.drawable.item_shape_only
+            position == 0 -> R.drawable.item_shape_top
+            position == itemCount - 1 -> R.drawable.item_shape_bottom
+            else -> R.drawable.item_shape_default
+        }
+        holder.itemContainer.setBackgroundResource(backgroundResId)
     }
 
-    class TodoItemViewHolder(private val binding: TodoItemBinding)
-        : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: TodoItemDomainEntity) {
+    class TodoItemViewHolder(private val binding: TodoItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        val itemContainer = binding.itemContainer
+
+        fun bind(item: TodoItemDomainEntity, itemClickListener: (UUID) -> Unit) {
             binding.todoItem = item
 
             binding.apply {
@@ -53,6 +65,8 @@ class TodoItemAdapter() :
 
                 executePendingBindings()
             }
+
+            itemView.setOnClickListener { itemClickListener(item.id) }
         }
     }
 
@@ -60,7 +74,10 @@ class TodoItemAdapter() :
         override fun areItemsTheSame(oldItem: TodoItemDomainEntity, newItem: TodoItemDomainEntity) =
             oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: TodoItemDomainEntity, newItem: TodoItemDomainEntity) =
+        override fun areContentsTheSame(
+            oldItem: TodoItemDomainEntity,
+            newItem: TodoItemDomainEntity
+        ) =
             oldItem == newItem
     }
 }

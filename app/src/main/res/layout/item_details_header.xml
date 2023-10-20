@@ -3,28 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/header">
+    android:background="@color/back_primary">
 
-    <TextView
-        android:id="@+id/header_title"
-        android:text="@string/my_to_do_list"
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/CollapsedHeaderStyle"
-        android:textSize="@dimen/item_list_header_collapsed_title_text_size" />
+        android:padding="16dp"
+        app:tint="@color/details_header_cross"
+        android:background="?android:selectableItemBackground"
+        android:src="@drawable/close"
+        android:importantForAccessibility="no" />
 
-    <ImageButton
-        android:id="@+id/show_hide_done_button"
+    <Button
+        android:id="@+id/save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/item_list_header_collapsed_button_margin_end"
+        android:background="@color/transparent"
+        android:text="@string/save"
+        android:textColor="@color/blue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/CollapsedToolbarImageButtonStyle"
-        android:background="?android:selectableItemBackground"
-        android:src="@drawable/visibility"
-        android:importantForAccessibility="no" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout>

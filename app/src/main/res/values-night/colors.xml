@@ -25,4 +25,6 @@
     <color name="back_primary">#161618</color>
     <color name="back_secondary">#252528</color>
     <color name="back_elevated">#3C3C3F</color>
+
+    <color name="details_header_cross">@color/white</color>
 </resources>

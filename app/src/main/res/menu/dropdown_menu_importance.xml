@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/option_basic"
+        android:title="@string/none_importance" />
+    <item
+        android:id="@+id/option_low"
+        android:title="@string/low_importance" />
+    <item
+        android:id="@+id/option_important"
+        android:title="@string/important_importance" />
+</menu>

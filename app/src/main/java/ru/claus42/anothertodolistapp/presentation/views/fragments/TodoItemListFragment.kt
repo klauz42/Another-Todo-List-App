@@ -2,19 +2,16 @@ package ru.claus42.anothertodolistapp.presentation.views.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
@@ -27,7 +24,7 @@ import ru.claus42.anothertodolistapp.presentation.adapters.TodoItemAdapter
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
 import kotlin.math.abs
 
-class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
+class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     private var _binding: FragmentTodoItemListBinding? = null
     private val binding get() = _binding!!
 
@@ -44,7 +41,7 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
     private val activity: AppCompatActivity by lazy { requireActivity() as AppCompatActivity }
 
     private fun AppCompatActivity.setAppBarTitleVisibility(isVisible: Boolean) =
-                    this.supportActionBar?.setDisplayShowTitleEnabled(isVisible)
+        this.supportActionBar?.setDisplayShowTitleEnabled(isVisible)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,9 +63,9 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
         viewModel.todoItems.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is DataResult.Success -> {
-
                     setupRecyclerView(result.data)
                 }
+
                 is DataResult.Error -> displayError(result.error)
                 is DataResult.Loading -> displayLoading()
             }
@@ -82,32 +79,11 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
         super.onDestroyView()
     }
 
-    //There is no need for menu at the moment
-    private fun setupMenu() {
-        val menuHost: MenuHost = requireActivity()
-
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_todo_item_list, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when (menuItem.itemId) {
-                    R.id.show_hide_done_action -> {
-                        //TODO: implementation of show hide done button
-                    }
-                }
-                return false
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
-    }
-
-    fun displayError(exception: Throwable) {
+    private fun displayError(exception: Throwable) {
         //todo: error displaying
     }
 
-    fun displayLoading() {
+    private fun displayLoading() {
         //todo: display loading animation
     }
 
@@ -120,13 +96,16 @@ class TodoItemListFragment : Fragment(),  AppBarLayout.OnOffsetChangedListener {
         }
 
         binding.appBarLayout.addOnOffsetChangedListener(this)
-
     }
 
     private fun setupRecyclerView(todoItems: List<TodoItemDomainEntity>) {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        recyclerView.adapter = TodoItemAdapter()
+        recyclerView.adapter = TodoItemAdapter { id ->
+            val idString = id.toString()
+            val action = TodoItemListFragmentDirections.actionListToDetails(idString)
+            findNavController().navigate(action)
+        }
         (recyclerView.adapter as TodoItemAdapter).submitList(todoItems)
     }
 
