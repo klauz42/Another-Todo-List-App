@@ -7,7 +7,7 @@ import ru.claus42.anothertodolistapp.di.components.DaggerAppComponent
 import ru.claus42.anothertodolistapp.di.modules.AppModule
 
 val Context.appComponent: AppComponent
-    get() = when(this) {
+    get() = when (this) {
         is MainApp -> appComponent
         else -> this.applicationContext.appComponent
     }

@@ -2,6 +2,7 @@ package ru.claus42.anothertodolistapp.presentation.ui.custom.views
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.TextView
@@ -44,6 +45,16 @@ class ItemListHeaderLayout(context: Context, attrs: AttributeSet) :
         }
 
     }
+
+
+    override fun onSaveInstanceState(): Parcelable? {
+        return super.onSaveInstanceState()
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        super.onRestoreInstanceState(state)
+    }
+
 
     private val titleLayoutParams: MarginLayoutParams
         get() = title.layoutParams as MarginLayoutParams

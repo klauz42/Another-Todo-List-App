@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_list_header_expanded_header_height"
-    android:id="@+id/header"
+    android:id="@+id/list_header_expanded"
     android:background="@color/back_primary"
     app:expandedTitleSize="@dimen/item_list_header_expanded_title_text_size"
     app:collapsedTitleSize="@dimen/item_list_header_collapsed_title_text_size">

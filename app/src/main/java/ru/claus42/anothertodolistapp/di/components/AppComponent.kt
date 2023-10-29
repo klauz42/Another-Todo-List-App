@@ -5,12 +5,11 @@ import ru.claus42.anothertodolistapp.di.modules.AppModule
 import ru.claus42.anothertodolistapp.di.modules.TodoItemRepositoryBindModule
 import ru.claus42.anothertodolistapp.di.modules.TodoItemRepositoryModule
 import ru.claus42.anothertodolistapp.di.modules.ViewModelModule
+import ru.claus42.anothertodolistapp.di.scopes.AppScope
 import ru.claus42.anothertodolistapp.presentation.viewmodels.AppViewModelsFactory
 import ru.claus42.anothertodolistapp.presentation.views.activities.MainActivity
-import ru.claus42.anothertodolistapp.presentation.views.fragments.TodoItemListFragment
-import javax.inject.Singleton
 
-//todo: create separated
+//todo: make separated scopes
 
 @Component(
     modules = [
@@ -20,10 +19,9 @@ import javax.inject.Singleton
         TodoItemRepositoryBindModule::class,
     ]
 )
-@Singleton
+@AppScope
 interface AppComponent {
     fun inject(activity: MainActivity)
-    fun inject(fragment: TodoItemListFragment)
 
     @Component.Factory
     interface Factory {

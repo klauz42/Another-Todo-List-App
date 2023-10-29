@@ -2,7 +2,10 @@ package ru.claus42.anothertodolistapp.presentation.ui.custom.behaviors
 
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.view.AbsSavedState
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
@@ -24,6 +27,7 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
     private var isInitialChildHeightSet = false
     private var isInitialChildHeight = 0
     private var childMaxY: Float = 0f
+    private var lastDependencyY: Float = 0f
 
     init {
         val styledAttrs =
@@ -44,12 +48,58 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
             collapsedTitleMarginBottom = context.resources.getDimensionPixelSize(
                 R.dimen.item_list_header_collapsed_title_margin_bottom
             )
-
         } finally {
             styledAttrs.recycle()
         }
     }
 
+    override fun onSaveInstanceState(
+        parent: CoordinatorLayout,
+        child: ItemListHeaderLayout
+    ): Parcelable? {
+        val superState = super.onSaveInstanceState(parent, child)
+        val savedState = SavedState(superState)
+        savedState.lastDependencyY = lastDependencyY
+        return savedState
+    }
+
+    override fun onRestoreInstanceState(
+        parent: CoordinatorLayout,
+        child: ItemListHeaderLayout,
+        state: Parcelable
+    ) {
+        if (state is SavedState) {
+            lastDependencyY = state.lastDependencyY
+            super.onRestoreInstanceState(parent, child, state.superState)
+        } else {
+            super.onRestoreInstanceState(parent, child, state)
+        }
+    }
+
+    internal class SavedState : AbsSavedState {
+        var lastDependencyY: Float = 0f
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        constructor(source: Parcel, loader: ClassLoader?) : super(source, loader) {
+            lastDependencyY = source.readFloat()
+        }
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeFloat(lastDependencyY)
+        }
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(source: Parcel): SavedState {
+                return SavedState(source, null)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
 
     companion object {
         private fun getTranslationOffset(
@@ -106,9 +156,12 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
         child: ItemListHeaderLayout,
         dependency: View
     ): Boolean {
+        val currentY = if (lastDependencyY != 0f) lastDependencyY else dependency.getY()
+        lastDependencyY = 0f
+
         val maxScroll = (dependency as AppBarLayout).totalScrollRange
-        val percentage = abs(dependency.getY()) / maxScroll
-        val childPosition = (dependency.getHeight() + dependency.getY()) - child.height
+        val percentage = abs(currentY) / maxScroll
+        val childPosition = (dependency.getHeight() + currentY) - child.height
 
         if (!isInitialChildHeightSet) {
             isInitialChildHeight = child.height
@@ -120,9 +173,7 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
         val lp = child.layoutParams as CoordinatorLayout.LayoutParams
 
         child.updateViews(percentage)
-
         child.layoutParams = lp
-
         child.y = if (childPosition > childMaxY) childMaxY else childPosition
 
         if (isHide && percentage < 1) {
@@ -134,5 +185,6 @@ class ItemListHeaderBehavior(context: Context?, attrs: AttributeSet) :
         }
         return true
     }
+
 
 }

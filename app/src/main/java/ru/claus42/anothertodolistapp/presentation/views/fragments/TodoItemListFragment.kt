@@ -4,18 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
-import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemListBinding
 import ru.claus42.anothertodolistapp.domain.models.DataResult
@@ -27,9 +22,6 @@ import kotlin.math.abs
 class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     private var _binding: FragmentTodoItemListBinding? = null
     private val binding get() = _binding!!
-
-    private var _recyclerView: RecyclerView? = null
-    private val recyclerView get() = _recyclerView!!
 
 
     private val viewModel: TodoItemListViewModel by viewModels {
@@ -57,24 +49,24 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _recyclerView = binding.recyclerView
         setupAppBar()
+        setupRecyclerView()
 
         viewModel.todoItems.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is DataResult.Success -> {
-                    setupRecyclerView(result.data)
+                    submitRecyclerViewAdapterList(result.data)
                 }
 
                 is DataResult.Error -> displayError(result.error)
                 is DataResult.Loading -> displayLoading()
+                else -> {}
             }
         }
     }
 
     override fun onDestroyView() {
         _binding = null
-        _recyclerView = null
 
         super.onDestroyView()
     }
@@ -98,16 +90,19 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
         binding.appBarLayout.addOnOffsetChangedListener(this)
     }
 
-    private fun setupRecyclerView(todoItems: List<TodoItemDomainEntity>) {
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        recyclerView.adapter = TodoItemAdapter { id ->
+    private fun setupRecyclerView() {
+        val adapter = TodoItemAdapter { id ->
             val idString = id.toString()
             val action = TodoItemListFragmentDirections.actionListToDetails(idString)
             findNavController().navigate(action)
         }
-        (recyclerView.adapter as TodoItemAdapter).submitList(todoItems)
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.adapter = adapter
     }
+
+    private fun submitRecyclerViewAdapterList(itemList: List<TodoItemDomainEntity>) =
+        (binding.recyclerView.adapter as TodoItemAdapter).submitList(itemList)
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
         val maxScroll = appBarLayout!!.totalScrollRange

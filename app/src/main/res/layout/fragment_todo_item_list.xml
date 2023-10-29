@@ -19,7 +19,6 @@
                 android:id="@+id/collapsing_toolbar"
                 style="@style/TodoListAppListCollapsingToolbarStyle"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:expandedTitleTextAppearance="@style/LargeTitleText"
                 app:statusBarScrim="@android:color/transparent"
                 android:background="@color/back_primary"
                 tools:title="@string/my_to_do_list">
@@ -50,7 +49,6 @@
             layout="@layout/item_list_header_expanded"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/scrollView"
             app:layout_behavior=".presentation.ui.custom.behaviors.ItemListHeaderBehavior" />
 
 
