@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    todo: consider moving all styles here-->
+    <style name="TodoItemDescription" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:elevation">4dp</item>
+        <item name="android:textColorHint">@color/item_input_text_hint_color_unfocused</item>
+        <item name="hintTextColor">@color/item_input_text_edit_box_stroke_focused</item>
+        <item name="boxStrokeColor">@color/item_input_text_edit_box_stroke_focused</item>
+        <item name="boxBackgroundColor">@color/back_secondary</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxCornerRadiusBottomEnd">5dp</item>
+        <item name="boxCornerRadiusBottomStart">5dp</item>
+        <item name="boxCornerRadiusTopEnd">5dp</item>
+        <item name="boxCornerRadiusTopStart">5dp</item>
+        <item name="boxStrokeWidth">0dp</item>
+    </style>
+</resources>

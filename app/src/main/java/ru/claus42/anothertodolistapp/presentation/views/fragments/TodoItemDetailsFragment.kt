@@ -98,7 +98,7 @@ class TodoItemDetailsFragment :
 
         descriptionWatcher = DescriptionWatcher()
 
-        binding.content.taskDesciptionEditText.apply {
+        binding.content.taskDescriptionEditText.apply {
             addTextChangedListener(descriptionWatcher)
             setOnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus)
@@ -143,7 +143,7 @@ class TodoItemDetailsFragment :
 
     private fun updateUI(newItem: TodoItemDomainEntity) {
         binding.content.apply {
-            taskDesciptionEditText.setText(newItem.description)
+            taskDescriptionEditText.setText(newItem.description)
             //todo: complete filling out UI
         }
     }

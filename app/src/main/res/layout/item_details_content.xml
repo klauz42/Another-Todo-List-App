@@ -10,25 +10,17 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/text_input_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/TodoItemDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="12dp"
-            android:elevation="4dp"
-            android:hint="@string/enter_your_to_do"
-            app:boxBackgroundColor="@color/back_secondary"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusBottomEnd="5dp"
-            app:boxCornerRadiusBottomStart="5dp"
-            app:boxCornerRadiusTopEnd="5dp"
-            app:boxCornerRadiusTopStart="5dp"
-            app:boxStrokeWidth="0dp">
+            android:hint="@string/enter_your_to_do">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/task_desciption_edit_text"
+                android:id="@+id/task_description_edit_text"
                 style="@style/BodyTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
