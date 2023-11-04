@@ -8,7 +8,9 @@ import android.util.TypedValue
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import ru.claus42.anothertodolistapp.R
+import ru.claus42.anothertodolistapp.presentation.ui.custom.SavedState
 
+const val VISIBILITY_KEY = "visibility"
 
 class ItemListHeaderLayout(context: Context, attrs: AttributeSet) :
     ConstraintLayout(context, attrs) {
@@ -46,13 +48,18 @@ class ItemListHeaderLayout(context: Context, attrs: AttributeSet) :
 
     }
 
-
-    override fun onSaveInstanceState(): Parcelable? {
-        return super.onSaveInstanceState()
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()
+        val savedState = SavedState(superState)
+        savedState.data.putInt(VISIBILITY_KEY, this.visibility)
+        return savedState
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         super.onRestoreInstanceState(state)
+        if (state is SavedState) {
+            this.visibility = state.data.getInt(VISIBILITY_KEY)
+        }
     }
 
 

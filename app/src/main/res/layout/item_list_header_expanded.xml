@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+<ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_list_header_expanded_header_height"
     android:id="@+id/list_header_expanded"
@@ -40,9 +42,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/item_list_header_expanded_button_margin_end"
         android:background="?android:selectableItemBackground"
-        android:importantForAccessibility="no"
         android:src="@drawable/visibility"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:importantForAccessibility="no" />
 
 </ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout>
+</layout>

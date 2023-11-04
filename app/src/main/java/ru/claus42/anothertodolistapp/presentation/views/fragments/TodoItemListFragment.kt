@@ -63,6 +63,13 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
                 else -> {}
             }
         }
+
+        binding.expandedHeaderView.showHideDoneButton.setOnClickListener {
+
+        }
+        binding.collapsedHeaderView.showHideDoneButton.setOnClickListener {
+
+        }
     }
 
     override fun onDestroyView() {
@@ -108,11 +115,11 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
         val maxScroll = appBarLayout!!.totalScrollRange
         val percentage = abs(verticalOffset).toFloat() / maxScroll.toFloat()
 
-        if (percentage == 1f && isHideToolbarView) {
-            binding.collapsedHeaderView.visibility = View.VISIBLE
+        if (isHideToolbarView && percentage == 1f) {
+            binding.collapsedHeaderView.listHeaderCollapsed.visibility = View.VISIBLE
             isHideToolbarView = !isHideToolbarView
-        } else if (percentage < 1f && !isHideToolbarView) {
-            binding.collapsedHeaderView.visibility = View.GONE
+        } else if (!isHideToolbarView && percentage < 1f) {
+            binding.collapsedHeaderView.listHeaderCollapsed.visibility = View.GONE
             isHideToolbarView = !isHideToolbarView
         }
     }

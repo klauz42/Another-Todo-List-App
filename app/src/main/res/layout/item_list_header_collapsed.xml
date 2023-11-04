@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_header_collapsed">
 
     <TextView
@@ -14,17 +16,18 @@
         style="@style/CollapsedHeaderStyle"
         android:textSize="@dimen/item_list_header_collapsed_title_text_size" />
 
+<!--    todo: accessibility-->
     <ImageButton
         android:id="@+id/show_hide_done_button"
+        style="@style/CollapsedToolbarImageButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/item_list_header_collapsed_button_margin_end"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        style="@style/CollapsedToolbarImageButtonStyle"
         android:background="?android:selectableItemBackground"
         android:src="@drawable/visibility"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:importantForAccessibility="no" />
 
 </ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout>
+</layout>
