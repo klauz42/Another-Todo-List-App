@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemDetailsBinding
 import ru.claus42.anothertodolistapp.domain.models.DataResult
@@ -42,6 +43,8 @@ class TodoItemDetailsFragment :
     private var itemId: UUID? = null
 
     private var descriptionWatcher: DescriptionWatcher? = null
+
+    private var isTextEditScrolledDown = false
 
     private val viewModel: TodoItemDetailsViewModel by viewModels {
         activity.appComponent.viewModelsFactory()
@@ -103,6 +106,17 @@ class TodoItemDetailsFragment :
             setOnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus)
                     hideKeyboard(v)
+            }
+        }
+
+        binding.detailsNestedScrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (!isTextEditScrolledDown && scrollY > 0) {
+                binding.appBarLayout.elevation =
+                    requireContext().resources.getDimension(R.dimen.header_elevation)
+                isTextEditScrolledDown = true
+            } else if (isTextEditScrolledDown && scrollY == 0) {
+                binding.appBarLayout.elevation = 0f
+                isTextEditScrolledDown = false
             }
         }
     }
