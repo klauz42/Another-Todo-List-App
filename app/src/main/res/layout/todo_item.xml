@@ -45,6 +45,7 @@
                 android:maxLines="3"
                 android:ellipsize="end"
                 app:importanceDescriptionDrawable="@{todoItem.importance}"
+                app:doneItem="@{todoItem.done}"
                 tools:text="@tools:sample/lorem/random" />
 
             <com.google.android.material.textview.MaterialTextView

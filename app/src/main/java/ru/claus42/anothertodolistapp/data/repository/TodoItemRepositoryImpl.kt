@@ -52,5 +52,14 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
         return flowOf(DataResult.OK)
     }
+
+    override fun updateDoneStatus(id: UUID, isDone: Boolean): Flow<DataResult<Nothing>> {
+        localDataList.forEachIndexed { i, item ->
+            if (id == item.id) localDataList[i].apply { done = isDone }
+        }
+        todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+
+        return flowOf(DataResult.OK)
+    }
 }
 

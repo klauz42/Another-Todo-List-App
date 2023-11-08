@@ -13,7 +13,10 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
 
-class TodoItemAdapter(private val itemClickListener: (UUID) -> Unit) :
+class TodoItemAdapter(
+    private val itemClickListener: (UUID) -> Unit,
+    private val doneCheckBoxListener: (UUID, Boolean) -> Unit
+) :
     RecyclerView.Adapter<TodoItemAdapter.TodoItemViewHolder>() {
 
     private val differ = AsyncListDiffer(this, TodoItemDiffCallback)
@@ -32,7 +35,7 @@ class TodoItemAdapter(private val itemClickListener: (UUID) -> Unit) :
 
     override fun onBindViewHolder(holder: TodoItemViewHolder, position: Int) {
         val item = differ.currentList[position]
-        holder.bind(item, itemClickListener)
+        holder.bind(item, itemClickListener, doneCheckBoxListener)
 
         val backgroundResId = when {
             itemCount == 1 -> R.drawable.item_shape_only
@@ -47,7 +50,12 @@ class TodoItemAdapter(private val itemClickListener: (UUID) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         val itemContainer = binding.itemContainer
 
-        fun bind(item: TodoItemDomainEntity, itemClickListener: (UUID) -> Unit) {
+        fun bind(
+            item: TodoItemDomainEntity,
+            itemClickListener: (UUID) -> Unit,
+            doneCheckBoxListener: (UUID, Boolean) -> Unit
+        )
+        {
             binding.todoItem = item
 
             binding.apply {
@@ -63,7 +71,12 @@ class TodoItemAdapter(private val itemClickListener: (UUID) -> Unit) :
                     itemDeadline.isVisible = false
                 }
 
-                executePendingBindings()
+                doneCheckbox.setOnCheckedChangeListener { checkBoxView, isDone ->
+                    if (checkBoxView.isPressed)
+                        doneCheckBoxListener(item.id, isDone)
+                }
+
+                //executePendingBindings()
             }
 
             itemView.setOnClickListener { itemClickListener(item.id) }

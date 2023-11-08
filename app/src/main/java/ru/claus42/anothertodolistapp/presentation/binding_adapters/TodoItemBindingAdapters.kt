@@ -1,6 +1,7 @@
 package ru.claus42.anothertodolistapp.presentation.binding_adapters
 
 import android.content.res.ColorStateList
+import android.graphics.Paint
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -33,6 +34,18 @@ fun setImportanceDescriptionDrawable(textView: TextView, importance: Importance)
         textView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
     } else {
         textView.setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null)
+    }
+}
+
+@BindingAdapter("doneItem")
+fun setItemTextViewDone(textView: TextView, done: Boolean) {
+    val context = textView.context
+    if (done) {
+        textView.paintFlags = textView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+        textView.setTextColor(ContextCompat.getColor(context, R.color.label_tertiary))
+    } else {
+        textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+        textView.setTextColor(ContextCompat.getColor(context, R.color.label_primary))
     }
 }
 

@@ -17,6 +17,7 @@ import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.adapters.TodoItemAdapter
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
+import java.util.UUID
 import kotlin.math.abs
 
 class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
@@ -64,6 +65,7 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
             }
         }
 
+        //todo: add set show/hide done button listener
         binding.expandedHeaderView.showHideDoneButton.setOnClickListener {
 
         }
@@ -98,11 +100,19 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     }
 
     private fun setupRecyclerView() {
-        val adapter = TodoItemAdapter { id ->
+        val itemClickListener: (UUID) -> Unit = { id ->
             val idString = id.toString()
             val action = TodoItemListFragmentDirections.actionListToDetails(idString)
             findNavController().navigate(action)
         }
+        val doneCheckBoxListener: (UUID, Boolean) -> Unit = { id, isDone ->
+            viewModel.updateTodoItemDoneStatus(id, isDone)
+        }
+
+        val adapter = TodoItemAdapter(
+            itemClickListener,
+            doneCheckBoxListener
+        )
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
