@@ -1,15 +1,23 @@
 object Versions {
-    const val dagger = "2.47"
-    const val navigation = "2.6.0"
-    const val room = "2.5.2"
-    const val material = "1.9.0"
-    const val firebase = "32.2.0"
-    const val constraintLayout = "2.1.4"
-    const val lifecycle = "2.6.2"
-    
+    const val androidCore       = "1.12.0"
+    const val dagger            = "2.47"
+    const val navigation        = "2.6.0"
+    const val room              = "2.5.2"
+    const val material          = "1.9.0"
+    const val firebase          = "32.2.0"
+    const val constraintLayout  = "2.1.4"
+    const val lifecycle         = "2.6.2"
+    const val junit             = "4.13.2"
+    const val junitAndroid      = "1.1.5"
+    const val espresso          = "3.5.1"
+    const val fragmentTesting   = "1.6.2"
 }
 
 object Dependencies {
+    object Android {
+        const val core = "androidx.core:core-ktx:${Versions.androidCore}"
+    }
+
     object Navigation {
         const val fragmentKtx = "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}"
         const val uiKtx = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
@@ -44,6 +52,15 @@ object Dependencies {
     object Lifecycle {
         const val runtime = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
         const val livedata = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}"
+    }
+
+    object Testing {
+        const val junit = "junit:junit:${Versions.junit}"
+        const val junitAndroid = "androidx.test.ext:junit:${Versions.junitAndroid}"
+        const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espresso}"
+        const val espressoContrib =
+            "com.android.support.test.espresso:espresso-contrib:${Versions.espresso}"
+        const val fragment = "androidx.fragment:fragment-testing:${Versions.fragmentTesting}"
     }
 }
 
