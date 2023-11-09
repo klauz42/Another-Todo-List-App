@@ -26,9 +26,12 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 private const val DIALOG_SAVE_CONFIRM = "SaveConfirmation"
+private const val DIALOG_DELETE_CONFIRM = "DeleteConfirmation"
 
 class TodoItemDetailsFragment :
-    Fragment(), SaveConfirmationDialogFragment.SaveConfirmationListener {
+    Fragment(),
+    SaveConfirmationDialogFragment.SaveConfirmationListener,
+    DeleteConfirmationDialogFragment.DeleteConfirmationListener {
 
     private var _binding: FragmentTodoItemDetailsBinding? = null
     private val binding get() = _binding!!
@@ -75,50 +78,15 @@ class TodoItemDetailsFragment :
     @SuppressLint("NullSafeMutableLiveData")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupMenu()
+        setupItemObservers()
+        setupScrollViewListener()
 
-        viewModel.todoItem.observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is DataResult.Success -> {
-                    item.value = result.data.also {
-                        if (!isItemLoad) {
-                            initialItem = it.copy()
-                            isItemLoad = true
-                        }
-                    }
-                }
-
-                is DataResult.Error -> displayError(result.error)
-                is DataResult.Loading -> displayLoading()
-                else -> {}
-            }
-
-        }
-
-        item.observe(viewLifecycleOwner) { item ->
-            updateUI(item)
-        }
+        setupDeleteButton()
 
         descriptionWatcher = DescriptionWatcher()
-
-        binding.content.taskDescriptionEditText.apply {
-            addTextChangedListener(descriptionWatcher)
-            setOnFocusChangeListener { v, hasFocus ->
-                if (!hasFocus)
-                    hideKeyboard(v)
-            }
-        }
-
-        binding.detailsNestedScrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if (!isTextEditScrolledDown && scrollY > 0) {
-                binding.appBarLayout.elevation =
-                    requireContext().resources.getDimension(R.dimen.header_elevation)
-                isTextEditScrolledDown = true
-            } else if (isTextEditScrolledDown && scrollY == 0) {
-                binding.appBarLayout.elevation = 0f
-                isTextEditScrolledDown = false
-            }
-        }
+        descriptionWatcher?.let { setupDescriptionTextEdit(it) }
     }
 
     override fun onDestroyView() {
@@ -142,6 +110,14 @@ class TodoItemDetailsFragment :
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    private fun back() {
+        if (isItemChanged) {
+            SaveConfirmationDialogFragment().show(parentFragmentManager, DIALOG_SAVE_CONFIRM)
+        } else {
+            findNavController().navigateUp()
+        }
+    }
+
     private fun setupMenu() {
         binding.detailsHeader.backButton.setOnClickListener {
             back()
@@ -155,18 +131,62 @@ class TodoItemDetailsFragment :
         }
     }
 
+    private fun setupItemObservers() {
+        viewModel.todoItem.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is DataResult.Success -> {
+                    item.value = result.data.also {
+                        if (!isItemLoad) {
+                            initialItem = it.copy()
+                            isItemLoad = true
+                        }
+                    }
+                }
+
+                is DataResult.Error -> displayError(result.error)
+                is DataResult.Loading -> displayLoading()
+                else -> {}
+            }
+        }
+
+        item.observe(viewLifecycleOwner) { item ->
+            updateUI(item)
+        }
+    }
+
+    private fun setupDescriptionTextEdit(watcher: TextWatcher) {
+        binding.content.taskDescriptionEditText.apply {
+            addTextChangedListener(watcher)
+            setOnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus)
+                    hideKeyboard(v)
+            }
+        }
+    }
+
+    private fun setupScrollViewListener() {
+        binding.detailsNestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (!isTextEditScrolledDown && scrollY > 0) {
+                binding.appBarLayout.elevation =
+                    requireContext().resources.getDimension(R.dimen.header_elevation)
+                isTextEditScrolledDown = true
+            } else if (isTextEditScrolledDown && scrollY == 0) {
+                binding.appBarLayout.elevation = 0f
+                isTextEditScrolledDown = false
+            }
+        }
+    }
+
+    private fun setupDeleteButton() {
+        binding.content.deleteItem.setOnClickListener {
+            DeleteConfirmationDialogFragment().show(parentFragmentManager, DIALOG_DELETE_CONFIRM)
+        }
+    }
+
     private fun updateUI(newItem: TodoItemDomainEntity) {
         binding.content.apply {
             taskDescriptionEditText.setText(newItem.description)
             //todo: complete filling out UI
-        }
-    }
-
-    private fun back() {
-        if (isItemChanged) {
-            SaveConfirmationDialogFragment().show(parentFragmentManager, DIALOG_SAVE_CONFIRM)
-        } else {
-            findNavController().navigateUp()
         }
     }
 
@@ -212,7 +232,15 @@ class TodoItemDetailsFragment :
         findNavController().navigateUp()
     }
 
-    override fun onCancel() {
+    override fun onSaveCancel() {}
 
+    override fun onDeleteConfirmed() {
+        item.value?.let {
+            viewModel.deleteTodoItem(it.id)
+        }
+
+        findNavController().navigateUp()
     }
+
+    override fun onDeleteCancel() {}
 }

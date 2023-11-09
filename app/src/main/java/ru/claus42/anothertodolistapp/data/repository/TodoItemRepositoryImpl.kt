@@ -61,5 +61,12 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
 
         return flowOf(DataResult.OK)
     }
+
+    override fun deleteItem(id: UUID): Flow<DataResult<Nothing>> {
+        localDataList.remove(localDataList.find { it.id == id })
+        todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+
+        return flowOf(DataResult.OK)
+    }
 }
 
