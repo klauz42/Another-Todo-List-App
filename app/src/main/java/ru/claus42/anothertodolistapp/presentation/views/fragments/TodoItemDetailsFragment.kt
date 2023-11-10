@@ -38,9 +38,9 @@ class TodoItemDetailsFragment :
 
     private val args: TodoItemDetailsFragmentArgs by navArgs()
 
-    private var isItemLoad: Boolean = false
+    private var isItemLoaded: Boolean = false
     private var initialItem: TodoItemDomainEntity? = null
-    private val isItemChanged get() = isItemLoad && (item.value != initialItem)
+    private val isItemChanged get() = isItemLoaded && (item.value != initialItem)
 
     private var item: MutableLiveData<TodoItemDomainEntity> = MutableLiveData()
     private var itemId: UUID? = null
@@ -136,9 +136,9 @@ class TodoItemDetailsFragment :
             when (result) {
                 is DataResult.Success -> {
                     item.value = result.data.also {
-                        if (!isItemLoad) {
+                        if (!isItemLoaded) {
                             initialItem = it.copy()
-                            isItemLoad = true
+                            isItemLoaded = true
                         }
                     }
                 }
