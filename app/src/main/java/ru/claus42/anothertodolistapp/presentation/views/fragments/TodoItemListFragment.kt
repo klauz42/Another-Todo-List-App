@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.AppBarLayout.Behavior.DragCallback
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemListBinding
 import ru.claus42.anothertodolistapp.domain.models.DataResult
@@ -30,6 +32,8 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     }
 
     private var isHideToolbarView: Boolean = false
+
+    private var appBarLayoutBehavior: AppBarLayout.Behavior? = null
 
     private val activity: AppCompatActivity by lazy { requireActivity() as AppCompatActivity }
 
@@ -52,30 +56,14 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
 
         setupAppBar()
         setupRecyclerView()
-
-        viewModel.todoItems.observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is DataResult.Success -> {
-                    submitRecyclerViewAdapterList(result.data)
-                }
-
-                is DataResult.Error -> displayError(result.error)
-                is DataResult.Loading -> displayLoading()
-                else -> {}
-            }
-        }
-
-        //todo: add set show/hide done button listener
-        binding.expandedHeaderView.showHideDoneButton.setOnClickListener {
-
-        }
-        binding.collapsedHeaderView.showHideDoneButton.setOnClickListener {
-
-        }
+        setupAppbarLayoutParams()
+        setupItemsObserver()
+        setupShowHideDoneButton()
     }
 
     override fun onDestroyView() {
         _binding = null
+        appBarLayoutBehavior = null
 
         super.onDestroyView()
     }
@@ -99,6 +87,39 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
         binding.appBarLayout.addOnOffsetChangedListener(this)
     }
 
+    private fun setupAppbarLayoutParams() {
+        val layoutParams =
+            binding.appBarLayout.layoutParams
+                    as CoordinatorLayout.LayoutParams
+        if (layoutParams.behavior == null)
+            layoutParams.behavior = AppBarLayout.Behavior()
+        appBarLayoutBehavior = layoutParams.behavior as AppBarLayout.Behavior
+    }
+
+    private fun setupItemsObserver() {
+        viewModel.todoItems.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is DataResult.Success -> {
+                    submitRecyclerViewAdapterList(result.data)
+                }
+
+                is DataResult.Error -> displayError(result.error)
+                is DataResult.Loading -> displayLoading()
+                else -> {}
+            }
+        }
+    }
+
+    //todo: add set show/hide done button listener
+    private fun setupShowHideDoneButton() {
+        binding.expandedHeaderView.showHideDoneButton.setOnClickListener {
+
+        }
+        binding.collapsedHeaderView.showHideDoneButton.setOnClickListener {
+
+        }
+    }
+
     private fun setupRecyclerView() {
         val itemClickListener: (UUID) -> Unit = { id ->
             val idString = id.toString()
@@ -118,8 +139,29 @@ class TodoItemListFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
         binding.recyclerView.adapter = adapter
     }
 
-    private fun submitRecyclerViewAdapterList(itemList: List<TodoItemDomainEntity>) =
+    private fun submitRecyclerViewAdapterList(itemList: List<TodoItemDomainEntity>) {
         (binding.recyclerView.adapter as TodoItemAdapter).submitList(itemList)
+
+        if (itemList.isEmpty()) {
+            binding.noItemsMessage.visibility = View.VISIBLE
+            binding.appBarLayout.setExpanded(false)
+            binding.recyclerView.isNestedScrollingEnabled = false
+            appBarLayoutBehavior?.setDragCallback(object : DragCallback() {
+                override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+                    return false
+                }
+            })
+        } else {
+            binding.noItemsMessage.visibility = View.GONE
+            binding.recyclerView.isNestedScrollingEnabled = true
+            appBarLayoutBehavior?.setDragCallback(object : DragCallback() {
+                override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+                    return true
+                }
+            })
+        }
+
+    }
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
         val maxScroll = appBarLayout!!.totalScrollRange

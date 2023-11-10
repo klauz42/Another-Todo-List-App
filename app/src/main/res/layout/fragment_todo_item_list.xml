@@ -65,6 +65,14 @@
             android:overScrollMode="ifContentScrolls"
             tools:listitem="@layout/todo_item" />
 
+        <TextView
+            android:id="@+id/no_items_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/no_todos_message"
+            android:visibility="gone" />
+
         <!--todo: accessibility-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_item_fab"
