@@ -4,10 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="todoItem"
             type="ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity" />
+        <variable
+            name="doneCheckBoxListener"
+            type="ru.claus42.anothertodolistapp.presentation.adapters.DoneCheckBoxListener" />
     </data>
 
     <LinearLayout
@@ -26,6 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@color/green"
+            android:onCheckedChanged="@{(checkBoxView, isDone) -> doneCheckBoxListener.onChecked(checkBoxView, todoItem.id, isDone)}"
             app:importanceCheckboxTint="@{todoItem.importance}"
             tools:checked="true" />
 
@@ -45,7 +48,7 @@
                 android:maxLines="3"
                 android:ellipsize="end"
                 app:importanceDescriptionDrawable="@{todoItem.importance}"
-                app:doneItem="@{todoItem.done}"
+                app:doneItem="@{doneCheckbox.checked}"
                 tools:text="@tools:sample/lorem/random" />
 
             <com.google.android.material.textview.MaterialTextView

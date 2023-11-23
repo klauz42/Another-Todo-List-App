@@ -43,30 +43,30 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
         )
     }
 
-    override fun updateTodoItem(updatedItem: TodoItemDomainEntity): Flow<DataResult<Nothing>> {
+    override fun updateTodoItem(updatedItem: TodoItemDomainEntity) {
         localDataList.forEachIndexed { i, item ->
             if (updatedItem.id == item.id) {
                 localDataList[i] = updatedItem.toLocalDataModel()
             }
         }
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
-        return flowOf(DataResult.OK)
     }
 
-    override fun updateDoneStatus(id: UUID, isDone: Boolean): Flow<DataResult<Nothing>> {
+    override fun updateDoneStatus(id: UUID, isDone: Boolean) {
         localDataList.forEachIndexed { i, item ->
             if (id == item.id) localDataList[i].apply { done = isDone }
         }
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
-
-        return flowOf(DataResult.OK)
     }
 
-    override fun deleteItem(id: UUID): Flow<DataResult<Nothing>> {
+    override fun deleteItem(id: UUID) {
         localDataList.remove(localDataList.find { it.id == id })
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+    }
 
-        return flowOf(DataResult.OK)
+    override fun swapItems(from: Int, to: Int) {
+        localDataList[to] = localDataList[from].also { localDataList[from] = localDataList[to] }
+        todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
 }
 
