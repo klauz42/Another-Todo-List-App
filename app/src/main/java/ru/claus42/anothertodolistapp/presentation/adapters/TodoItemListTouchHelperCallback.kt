@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.claus42.anothertodolistapp.R
 import kotlin.math.abs
+import kotlin.math.max
 
 
 class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) :
@@ -39,6 +40,26 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
     private var viewHolderToSwipeBack: ViewHolder? = null
     private val needToSwipeBack get() = viewHolderToSwipeBack != null
     private var isDoneThresholdCrossed = false
+    private var isDeleteThresholdCrossed = false
+
+
+    //todo: add haptic feedback
+    private fun getVibrator(context: Context): Vibrator {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+    }
+
+    private fun Vibrator.simpleVibrate(ms: Long) =
+        vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE))
+
+    private fun Vibrator.vibrateConfirm() = simpleVibrate(30)
+    private fun Vibrator.vibrateReject() = simpleVibrate(15)
 
     private fun getDeleteDirection(viewHolder: ViewHolder): Int {
         return if (isLTR(viewHolder.itemView))
@@ -108,22 +129,10 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
         return if (needToSwipeBack) 100.0f else super.getSwipeThreshold(viewHolder)
     }
 
-    //todo: add haptic feedback
-    private fun getVibrator(context: Context): Vibrator {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
+    override fun clearView(recyclerView: RecyclerView, viewHolder: ViewHolder) {
+        super.clearView(recyclerView, viewHolder)
+        isDeleteThresholdCrossed = false
     }
-
-    private fun Vibrator.simpleVibrate(ms: Long) =
-        vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE))
-    private fun Vibrator.vibrateConfirm() = simpleVibrate(30)
-    private fun Vibrator.vibrateReject() = simpleVibrate(15)
 
     private fun drawSwipingItemTrack(
         context: Context,
@@ -203,8 +212,8 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
                 if (dX < 0) ItemTouchHelper.LEFT else if (dX > 0) ItemTouchHelper.RIGHT else -1
 
             if (direction == getDeleteDirection(viewHolder)) {
-                viewHolderToSwipeBack = null
                 isDoneThresholdCrossed = false
+                viewHolderToSwipeBack = null
 
                 actualDx = dX
 
@@ -213,6 +222,18 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
                     R.color.delete_item_swipe_background,
                     R.drawable.delete_swipe
                 )
+
+                val deleteThreshold =
+                    getSwipeThreshold(viewHolder) * max(itemView.left, itemView.right)
+
+                isDeleteThresholdCrossed = if (abs(actualDx) >= deleteThreshold) {
+                    if (!isDeleteThresholdCrossed) vibrator.vibrateConfirm()
+                    true
+                } else {
+                    if (isDeleteThresholdCrossed) vibrator.vibrateReject()
+                    false
+                }
+
             } else if (direction == getChangeDoneStatusDirection(viewHolder)) {
                 viewHolderToSwipeBack = viewHolder
 
