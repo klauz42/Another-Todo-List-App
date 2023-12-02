@@ -4,33 +4,39 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
-import ru.claus42.anothertodolistapp.presentation.views.callbacks.ItemListTouchHelperCallback
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
+
 
 interface DoneCheckBoxListener {
     fun onChecked(checkBoxView: CompoundButton, id: UUID, isDone: Boolean)
 }
 
-class TodoItemAdapter(
+class TodoItemListAdapter(
     private val itemClickListener: (UUID) -> Unit,
     private val doneCheckBoxListener: (UUID, Boolean) -> Unit,
-    private val moveItemListener: (from: Int, to: Int) -> Unit
-) : RecyclerView.Adapter<TodoItemAdapter.TodoItemViewHolder>(),
-    ItemListTouchHelperCallback.ItemListAdapter {
+    private val moveItemListener: (from: Int, to: Int) -> Unit,
+    private val deleteItemListener: (UUID) -> Unit
+) : RecyclerView.Adapter<TodoItemListAdapter.TodoItemViewHolder>(),
+    TodoItemListTouchHelperCallback.TodoItemListAdapter {
 
-    private val differ = AsyncListDiffer(this, TodoItemDiffCallback)
+    val itemTouchHelper = ItemTouchHelper(TodoItemListTouchHelperCallback(this))
+
+    private val items = mutableListOf<TodoItemDomainEntity>()
 
     fun submitList(newItems: List<TodoItemDomainEntity>) {
-        differ.submitList(newItems)
+        val result = calculateDiff(newItems)
+        items.clear()
+        items.addAll(newItems)
+        result.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoItemViewHolder {
@@ -39,10 +45,10 @@ class TodoItemAdapter(
         return TodoItemViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = differ.currentList.size
+    override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: TodoItemViewHolder, position: Int) {
-        val item = differ.currentList[position]
+        val item = items[position]
         holder.bind(item, itemClickListener, doneCheckBoxListener)
 
         updateItemBackground(holder, position)
@@ -58,16 +64,49 @@ class TodoItemAdapter(
         (holder as TodoItemViewHolder).itemContainer.setBackgroundResource(backgroundResId)
     }
 
-    override fun onItemMove(fromViewHolder: ViewHolder, toViewHolder: ViewHolder) {
+    override fun onDeleteItem(viewHolder: ViewHolder) {
+        val position = viewHolder.adapterPosition
+        notifyItemRemoved(position)
+
+        if (itemCount != 0) {
+            if (position == 0) {
+                notifyItemChanged(0)
+            } else if (position == itemCount - 1) {
+                notifyItemChanged(itemCount - 2)
+            }
+        }
+
+        val deletingId = items[position].id
+        items.removeAt(position)
+        deleteItemListener(deletingId)
+    }
+
+    override fun onMoveItem(oldPosition: Int, newPosition: Int) {
+        items.add(newPosition, items.removeAt(oldPosition))
+        moveItemListener(oldPosition, newPosition)
+    }
+
+    override fun onMoveItemUIUpdate(fromViewHolder: ViewHolder, toViewHolder: ViewHolder) {
         val fromPosition = fromViewHolder.adapterPosition
         val toPosition = toViewHolder.adapterPosition
 
-        moveItemListener(fromPosition, toPosition)
+        notifyItemMoved(fromPosition, toPosition)
 
         updateItemBackground(fromViewHolder, toPosition)
         updateItemBackground(toViewHolder, fromPosition)
+    }
 
-        notifyItemMoved(fromPosition, toPosition)
+    override fun onChangeItemDoneStatus(viewHolder: ViewHolder) {
+        val position = viewHolder.adapterPosition
+        val id = items[position].id
+        val newDoneStatus = !items[position].done
+        items[position].done = newDoneStatus
+        doneCheckBoxListener(id, newDoneStatus)
+    }
+
+    override fun onChangeItemDoneStatusUIUpdate(viewHolder: ViewHolder) {
+        val position = viewHolder.adapterPosition
+        notifyItemChanged(position)
     }
 
     class TodoItemViewHolder(private val binding: TodoItemBinding) : ViewHolder(binding.root) {
@@ -76,7 +115,7 @@ class TodoItemAdapter(
         fun bind(
             item: TodoItemDomainEntity,
             itemClickListener: (UUID) -> Unit,
-            doneCheckBoxListener: (UUID, Boolean) -> Unit
+            doneCheckBoxListener: (UUID, Boolean) -> Unit,
         ) {
             binding.todoItem = item
             binding.doneCheckBoxListener = object : DoneCheckBoxListener {
@@ -104,14 +143,20 @@ class TodoItemAdapter(
         }
     }
 
-    object TodoItemDiffCallback : DiffUtil.ItemCallback<TodoItemDomainEntity>() {
-        override fun areItemsTheSame(oldItem: TodoItemDomainEntity, newItem: TodoItemDomainEntity) =
-            oldItem.id == newItem.id
+    private fun calculateDiff(newItems: List<TodoItemDomainEntity>) =
+        DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = items.size
+            override fun getNewListSize() = newItems.size
 
-        override fun areContentsTheSame(
-            oldItem: TodoItemDomainEntity,
-            newItem: TodoItemDomainEntity
-        ) =
-            oldItem == newItem
-    }
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return items[oldItemPosition].id == newItems[newItemPosition].id
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                val newItem = newItems[newItemPosition]
+                val oldItem = items[oldItemPosition]
+                return newItem == oldItem
+            }
+        }
+        )
 }

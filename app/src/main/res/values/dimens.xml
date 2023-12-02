@@ -17,4 +17,6 @@
 
     <dimen name="header_elevation">4dp</dimen>
     <dimen name="item_corner_radius">8dp</dimen>
+    <dimen name="swipe_icon_size">24dp</dimen>
+    <dimen name="swipe_threshold">72dp</dimen>
 </resources>

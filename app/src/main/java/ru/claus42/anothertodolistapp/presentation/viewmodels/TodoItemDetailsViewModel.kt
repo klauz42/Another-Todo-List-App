@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
@@ -20,9 +21,6 @@ class TodoItemDetailsViewModel @Inject constructor(
     private val updateTodoItemUseCase: UpdateTodoItemUseCase,
     private val deleteTodoItemUseCase: DeleteTodoItemUseCase
 ) : ViewModel() {
-    private val _events = MutableLiveData<UIEvent>()
-    val events: LiveData<UIEvent> get() = _events
-
     private val todoItemId = MutableLiveData<UUID>()
 
     val todoItem: LiveData<DataResult<TodoItemDomainEntity>> =
@@ -35,16 +33,14 @@ class TodoItemDetailsViewModel @Inject constructor(
     }
 
     fun updateTodoItem(item: TodoItemDomainEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             updateTodoItemUseCase(item)
-            _events.postValue(UIEvent.DataUpdated)
         }
     }
 
     fun deleteTodoItem(id: UUID) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             deleteTodoItemUseCase(id)
-            _events.postValue(UIEvent.DataUpdated)
         }
     }
 }

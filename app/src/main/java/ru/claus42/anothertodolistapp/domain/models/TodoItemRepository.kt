@@ -10,5 +10,5 @@ interface TodoItemRepository {
     fun updateTodoItem(item: TodoItemDomainEntity)
     fun updateDoneStatus(id: UUID, isDone: Boolean)
     fun deleteItem(id: UUID)
-    fun swapItems(from: Int, to: Int)
+    fun moveItem(from: Int, to: Int)
 }

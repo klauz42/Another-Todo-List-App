@@ -10,18 +10,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.Behavior.DragCallback
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemListBinding
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
-import ru.claus42.anothertodolistapp.presentation.adapters.TodoItemAdapter
+import ru.claus42.anothertodolistapp.presentation.adapters.TodoItemListAdapter
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
-import ru.claus42.anothertodolistapp.presentation.viewmodels.UIEvent
-import ru.claus42.anothertodolistapp.presentation.views.callbacks.ItemListTouchHelperCallback
 import java.util.UUID
 import kotlin.math.abs
 
@@ -41,9 +40,6 @@ class TodoItemListFragment : Fragment(),
     private fun AppCompatActivity.setAppBarTitleVisibility(isVisible: Boolean) =
         this.supportActionBar?.setDisplayShowTitleEnabled(isVisible)
 
-    private var needUpdateUI = false
-    private var isDataEditedOnScreen = false
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,13 +55,10 @@ class TodoItemListFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerViewAdapter = initTodoItemAdapter()
-        val touchHelper = ItemTouchHelper(
-            ItemListTouchHelperCallback(recyclerViewAdapter)
-        )
 
         setupAppBar()
 
-        setupRecyclerView(recyclerViewAdapter, touchHelper)
+        setupRecyclerView(recyclerViewAdapter)
         setupAppbarLayoutParams()
         setupItemsObserver()
         setupShowHideDoneButton()
@@ -77,12 +70,6 @@ class TodoItemListFragment : Fragment(),
 
         super.onDestroyView()
     }
-
-    override fun onStart() {
-        super.onStart()
-        needUpdateUI = true
-    }
-
 
     private fun displayError(exception: Throwable) {
         //todo: error displaying
@@ -113,26 +100,16 @@ class TodoItemListFragment : Fragment(),
     }
 
     private fun setupItemsObserver() {
+
         viewModel.todoItems.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is DataResult.Success -> {
-                    if (needUpdateUI) {
-                        submitRecyclerViewAdapterList(result.data)
-                        needUpdateUI = false
-                    }
+                    submitRecyclerViewAdapterList(result.data)
                 }
 
                 is DataResult.Error -> displayError(result.error)
                 is DataResult.Loading -> displayLoading()
                 else -> {}
-            }
-        }
-
-        viewModel.events.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is UIEvent.DataUpdated -> {
-                    needUpdateUI = true
-                }
             }
         }
     }
@@ -147,7 +124,7 @@ class TodoItemListFragment : Fragment(),
         }
     }
 
-    private fun initTodoItemAdapter(): TodoItemAdapter {
+    private fun initTodoItemAdapter(): TodoItemListAdapter {
         val itemClickListener: (UUID) -> Unit = { id ->
             val idString = id.toString()
             val action = TodoItemListFragmentDirections.actionListToDetails(idString)
@@ -155,41 +132,41 @@ class TodoItemListFragment : Fragment(),
         }
         val doneCheckBoxListener: (UUID, Boolean) -> Unit = { id, isDone ->
             viewModel.updateTodoItemDoneStatus(id, isDone)
-            isDataEditedOnScreen = true
         }
         val moveItemListener: (from: Int, to: Int) -> Unit = { from, to ->
             viewModel.swapTodoItemsInsideList(from, to)
-            isDataEditedOnScreen = true
+        }
+        val deleteItemListener: (UUID) -> Unit = { id ->
+            viewModel.deleteTodoItem(id)
         }
 
-        return TodoItemAdapter(
+        return TodoItemListAdapter(
             itemClickListener,
             doneCheckBoxListener,
-            moveItemListener
+            moveItemListener,
+            deleteItemListener
         )
     }
 
     private fun setupRecyclerView(
-        recyclerViewAdapter: TodoItemAdapter,
-        touchHelper: ItemTouchHelper
+        recyclerViewAdapter: TodoItemListAdapter
     ) {
+        val itemAnimator = object : DefaultItemAnimator() {
+            //override to prevent shimmering animation when outermost items deleted
+            override fun canReuseUpdatedViewHolder(viewHolder: RecyclerView.ViewHolder) = true
+        }
+
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             this.adapter = recyclerViewAdapter
-
-            setRecyclerListener {
-                if (isDataEditedOnScreen) {
-                    viewModel.lastSuccessfulData?.let { submitRecyclerViewAdapterList(it) }
-                    isDataEditedOnScreen = false
-                }
-            }
+            this.itemAnimator = itemAnimator
         }
+        recyclerViewAdapter.itemTouchHelper.attachToRecyclerView(binding.recyclerView)
 
-        touchHelper.attachToRecyclerView(binding.recyclerView)
     }
 
     private fun submitRecyclerViewAdapterList(itemList: List<TodoItemDomainEntity>) {
-        (binding.recyclerView.adapter as TodoItemAdapter).submitList(itemList)
+        (binding.recyclerView.adapter as TodoItemListAdapter).submitList(itemList)
 
         if (itemList.isEmpty()) {
             binding.apply {

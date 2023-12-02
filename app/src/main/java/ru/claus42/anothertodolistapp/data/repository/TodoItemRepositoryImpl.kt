@@ -64,8 +64,11 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
 
-    override fun swapItems(from: Int, to: Int) {
-        localDataList[to] = localDataList[from].also { localDataList[from] = localDataList[to] }
+    override fun moveItem(from: Int, to: Int) {
+        val movingItem = localDataList[from]
+        localDataList.removeAt(from)
+        localDataList.add(to, movingItem)
+
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
 }

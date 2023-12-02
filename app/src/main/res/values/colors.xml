@@ -38,4 +38,8 @@
     <color name="item_input_text_hint_color_unfocused">@color/label_tertiary</color>
     <color name="item_input_text_edit_box_stroke_focused">@color/label_primary</color>
     <color name="item_edit_text_cursor">@color/label_tertiary</color>
+    
+    <color name="delete_item_swipe_background">@color/red</color>
+    <color name="done_item_swipe_background">@color/green</color>
+    <color name="icon_swipe_tint">@color/white</color>
 </resources>
