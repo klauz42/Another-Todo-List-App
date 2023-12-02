@@ -20,4 +20,6 @@
     <string name="no_save">No</string>
     <string name="cancel_save">Cancel</string>
     <string name="no_todos_message">There are no entries.\nClick \"+\" button to create new one.</string>
+    <string name="undo_deletion_snackbar">Do you want to cancel deletion?</string>
+    <string name="restore_todo">Restore To-Do</string>
 </resources>

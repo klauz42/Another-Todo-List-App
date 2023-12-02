@@ -20,6 +20,9 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
     private val todoItemsFlow =
         MutableStateFlow<DataResult<List<TodoItemDomainEntity>>>(DataResult.Loading)
 
+    private var lastDeleted: TodoItemLocalDataEntity? = null
+    private var lastDeletedPosition: Int? = null
+
     init {
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
@@ -60,7 +63,15 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
     }
 
     override fun deleteItem(id: UUID) {
+        localDataList.forEachIndexed { i, item ->
+            if (item.id == id) {
+                lastDeleted = item
+                lastDeletedPosition = i
+            }
+        }
+
         localDataList.remove(localDataList.find { it.id == id })
+
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
 
@@ -70,6 +81,19 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
         localDataList.add(to, movingItem)
 
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+    }
+
+    private fun addItem(position: Int, item: TodoItemDomainEntity) {
+        localDataList.add(position, item.toLocalDataModel())
+        todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+    }
+
+    override fun undoDeletion() {
+        lastDeleted?.let { item ->
+            lastDeletedPosition?.let { pos ->
+                addItem(pos, item.toDomainModel())
+            }
+        }
     }
 }
 

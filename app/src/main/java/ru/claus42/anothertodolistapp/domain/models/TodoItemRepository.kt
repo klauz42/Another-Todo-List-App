@@ -11,4 +11,5 @@ interface TodoItemRepository {
     fun updateDoneStatus(id: UUID, isDone: Boolean)
     fun deleteItem(id: UUID)
     fun moveItem(from: Int, to: Int)
+    fun undoDeletion()
 }

@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.Behavior.DragCallback
+import com.google.android.material.snackbar.Snackbar
+import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemListBinding
 import ru.claus42.anothertodolistapp.domain.models.DataResult
@@ -139,12 +141,25 @@ class TodoItemListFragment : Fragment(),
         val deleteItemListener: (UUID) -> Unit = { id ->
             viewModel.deleteTodoItem(id)
         }
+        val showUndoDeletionSnackbar: (() -> Unit) -> Unit = { updateUI ->
+            val snackbar = Snackbar.make(
+                binding.itemListCoordinatorLayout,
+                R.string.undo_deletion_snackbar,
+                Snackbar.LENGTH_SHORT
+            )
+            snackbar.setAction(R.string.restore_todo) {
+                viewModel.undoTodoItemDeletion()
+                updateUI()
+            }
+            snackbar.show()
+        }
 
         return TodoItemListAdapter(
             itemClickListener,
             doneCheckBoxListener,
             moveItemListener,
-            deleteItemListener
+            deleteItemListener,
+            showUndoDeletionSnackbar
         )
     }
 

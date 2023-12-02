@@ -11,6 +11,7 @@ import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.domain.usecases.DeleteTodoItemUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.GetTodoItemListUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.MoveItemInsideListUseCase
+import ru.claus42.anothertodolistapp.domain.usecases.UndoTodoItemDeletingUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.UpdateTodoItemDoneStatusUseCase
 import java.util.UUID
 import javax.inject.Inject
@@ -20,7 +21,8 @@ class TodoItemListViewModel @Inject constructor(
     getTodoItemListUseCase: GetTodoItemListUseCase,
     private val updateTodoItemDoneStatusUseCase: UpdateTodoItemDoneStatusUseCase,
     private val moveItemInsideListUseCase: MoveItemInsideListUseCase,
-    private val deleteTodoItemUseCase: DeleteTodoItemUseCase
+    private val deleteTodoItemUseCase: DeleteTodoItemUseCase,
+    private val undoTodoItemDeletingUseCase: UndoTodoItemDeletingUseCase
 ) : ViewModel() {
     val todoItems: LiveData<DataResult<List<TodoItemDomainEntity>>> =
         getTodoItemListUseCase().asLiveData(viewModelScope.coroutineContext)
@@ -40,6 +42,12 @@ class TodoItemListViewModel @Inject constructor(
     fun deleteTodoItem(id: UUID) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteTodoItemUseCase(id)
+        }
+    }
+
+    fun undoTodoItemDeletion() {
+        viewModelScope.launch(Dispatchers.IO) {
+            undoTodoItemDeletingUseCase()
         }
     }
 }

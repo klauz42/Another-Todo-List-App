@@ -24,7 +24,8 @@ class TodoItemListAdapter(
     private val itemClickListener: (UUID) -> Unit,
     private val doneCheckBoxListener: (UUID, Boolean) -> Unit,
     private val moveItemListener: (from: Int, to: Int) -> Unit,
-    private val deleteItemListener: (UUID) -> Unit
+    private val deleteItemListener: (UUID) -> Unit,
+    private val undoItemDeletionListener: (() -> Unit) -> Unit
 ) : RecyclerView.Adapter<TodoItemListAdapter.TodoItemViewHolder>(),
     TodoItemListTouchHelperCallback.TodoItemListAdapter {
 
@@ -64,10 +65,7 @@ class TodoItemListAdapter(
         (holder as TodoItemViewHolder).itemContainer.setBackgroundResource(backgroundResId)
     }
 
-    override fun onDeleteItem(viewHolder: ViewHolder) {
-        val position = viewHolder.adapterPosition
-        notifyItemRemoved(position)
-
+    private fun updateEdgeElementsBackgroundAfterDeletion(position: Int) {
         if (itemCount != 0) {
             if (position == 0) {
                 notifyItemChanged(0)
@@ -75,10 +73,34 @@ class TodoItemListAdapter(
                 notifyItemChanged(itemCount - 2)
             }
         }
+    }
+
+    private fun updateEdgeElementsBackgroundAfterRestoration(position: Int) {
+        if (position == 0 && itemCount > 0) {
+            notifyItemChanged(1)
+        } else if (position == itemCount - 1) {
+            notifyItemChanged(itemCount - 2)
+        }
+    }
+
+    private fun showUndoDeletionSnackBar(position: Int, item: TodoItemDomainEntity) {
+        undoItemDeletionListener {
+            items.add(position, item)
+            notifyItemInserted(position)
+            updateEdgeElementsBackgroundAfterRestoration(position)
+        }
+    }
+
+    override fun onDeleteItem(viewHolder: ViewHolder) {
+        val position = viewHolder.adapterPosition
+        notifyItemRemoved(position)
+        updateEdgeElementsBackgroundAfterDeletion(position)
 
         val deletingId = items[position].id
-        items.removeAt(position)
+        val deletingItem = items.removeAt(position)
         deleteItemListener(deletingId)
+
+        showUndoDeletionSnackBar(position, deletingItem)
     }
 
     override fun onMoveItem(oldPosition: Int, newPosition: Int) {
