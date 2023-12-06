@@ -6,15 +6,15 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
-import ru.claus42.anothertodolistapp.presentation.viewmodels.AppViewModelsFactory
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemDetailsViewModel
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
+import ru.claus42.anothertodolistapp.presentation.viewmodels.ViewModelFactory
 import kotlin.reflect.KClass
 
 @Module
 interface ViewModelModule {
     @Binds
-    fun bindViewModelFactory(factory: AppViewModelsFactory): ViewModelProvider.Factory
+    fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @Binds
     @IntoMap

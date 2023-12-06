@@ -7,12 +7,19 @@ import androidx.navigation.fragment.NavHostFragment
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.ActivityMainBinding
+import ru.claus42.anothertodolistapp.di.components.ActivityComponent
+import ru.claus42.anothertodolistapp.di.components.DaggerActivityComponent
+
 
 class MainActivity : AppCompatActivity() {
+    lateinit var activityComponent: ActivityComponent
+
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        appComponent.inject(this)
+        activityComponent = DaggerActivityComponent.builder()
+            .appComponent(appComponent)
+            .activity(this).build()
         super.onCreate(savedInstanceState)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)

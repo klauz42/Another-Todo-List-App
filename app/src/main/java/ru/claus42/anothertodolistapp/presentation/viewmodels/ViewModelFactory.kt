@@ -2,12 +2,13 @@ package ru.claus42.anothertodolistapp.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ru.claus42.anothertodolistapp.di.scopes.AppScope
+import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import javax.inject.Inject
 import javax.inject.Provider
 
-@AppScope
-class AppViewModelsFactory @Inject constructor(
+
+@FragmentScope
+class ViewModelFactory @Inject constructor(
     private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
 

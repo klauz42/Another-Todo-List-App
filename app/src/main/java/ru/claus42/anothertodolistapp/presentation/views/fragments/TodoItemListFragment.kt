@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -17,30 +18,44 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.Behavior.DragCallback
 import com.google.android.material.snackbar.Snackbar
 import ru.claus42.anothertodolistapp.R
-import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemListBinding
+import ru.claus42.anothertodolistapp.di.components.DaggerFragmentComponent
+import ru.claus42.anothertodolistapp.di.components.FragmentComponent
+import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.adapters.TodoItemListAdapter
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
+import ru.claus42.anothertodolistapp.presentation.views.activities.MainActivity
 import java.util.UUID
+import javax.inject.Inject
 import kotlin.math.abs
 
+@FragmentScope
 class TodoItemListFragment : Fragment(),
     AppBarLayout.OnOffsetChangedListener {
+    private lateinit var listFragmentComponent: FragmentComponent
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: TodoItemListViewModel by viewModels { viewModelFactory }
+
     private var _binding: FragmentTodoItemListBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: TodoItemListViewModel by viewModels {
-        activity.appComponent.viewModelsFactory()
-    }
 
     private var appBarLayoutBehavior: AppBarLayout.Behavior? = null
     private var isHideToolbarView: Boolean = false
 
-    private val activity: AppCompatActivity by lazy { requireActivity() as AppCompatActivity }
+    private val activity: MainActivity by lazy { requireActivity() as MainActivity }
     private fun AppCompatActivity.setAppBarTitleVisibility(isVisible: Boolean) =
         this.supportActionBar?.setDisplayShowTitleEnabled(isVisible)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        listFragmentComponent =
+            DaggerFragmentComponent.builder().activityComponent(activity.activityComponent).build()
+        listFragmentComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -10,20 +10,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import ru.claus42.anothertodolistapp.R
-import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemDetailsBinding
+import ru.claus42.anothertodolistapp.di.components.DaggerFragmentComponent
+import ru.claus42.anothertodolistapp.di.components.FragmentComponent
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemDetailsViewModel
+import ru.claus42.anothertodolistapp.presentation.views.activities.MainActivity
 import java.time.LocalDateTime
 import java.util.UUID
+import javax.inject.Inject
+
 
 private const val DIALOG_SAVE_CONFIRM = "SaveConfirmation"
 private const val DIALOG_DELETE_CONFIRM = "DeleteConfirmation"
@@ -32,28 +36,37 @@ class TodoItemDetailsFragment :
     Fragment(),
     SaveConfirmationDialogFragment.SaveConfirmationListener,
     DeleteConfirmationDialogFragment.DeleteConfirmationListener {
+    private lateinit var detailsFragmentComponent: FragmentComponent
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: TodoItemDetailsViewModel by viewModels { viewModelFactory }
 
     private var _binding: FragmentTodoItemDetailsBinding? = null
+
     private val binding get() = _binding!!
 
     private val args: TodoItemDetailsFragmentArgs by navArgs()
-
     private var isItemLoaded: Boolean = false
     private var initialItem: TodoItemDomainEntity? = null
-    private val isItemChanged get() = isItemLoaded && (item.value != initialItem)
 
+    private val isItemChanged get() = isItemLoaded && (item.value != initialItem)
     private var item: MutableLiveData<TodoItemDomainEntity> = MutableLiveData()
+
     private var itemId: UUID? = null
 
     private var descriptionWatcher: DescriptionWatcher? = null
 
     private var isTextEditScrolledDown = false
 
-    private val viewModel: TodoItemDetailsViewModel by viewModels {
-        activity.appComponent.viewModelsFactory()
-    }
+    private val activity: MainActivity by lazy { requireActivity() as MainActivity }
 
-    private val activity: AppCompatActivity by lazy { requireActivity() as AppCompatActivity }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        detailsFragmentComponent =
+            DaggerFragmentComponent.builder().activityComponent(activity.activityComponent).build()
+        detailsFragmentComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

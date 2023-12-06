@@ -8,6 +8,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.domain.usecases.DeleteTodoItemUseCase
@@ -16,6 +17,8 @@ import ru.claus42.anothertodolistapp.domain.usecases.UpdateTodoItemUseCase
 import java.util.UUID
 import javax.inject.Inject
 
+
+@FragmentScope
 class TodoItemDetailsViewModel @Inject constructor(
     private val getItemUseCase: GetTodoItemByIdUseCase,
     private val updateTodoItemUseCase: UpdateTodoItemUseCase,
