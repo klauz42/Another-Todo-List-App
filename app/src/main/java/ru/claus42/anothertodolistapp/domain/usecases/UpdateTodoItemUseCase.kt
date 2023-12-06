@@ -4,10 +4,11 @@ import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import javax.inject.Inject
 
+
 class UpdateTodoItemUseCase @Inject constructor(
     private val repository: TodoItemRepository
 ) {
-    operator fun invoke(item: TodoItemDomainEntity) {
-        repository.updateTodoItem(item)
+    operator fun invoke(newItem: TodoItemDomainEntity) {
+        repository.updateTodoItem(newItem)
     }
 }

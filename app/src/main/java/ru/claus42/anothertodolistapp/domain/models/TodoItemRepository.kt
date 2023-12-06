@@ -7,7 +7,7 @@ import java.util.UUID
 interface TodoItemRepository {
     fun getTodoItemList(): Flow<DataResult<List<TodoItemDomainEntity>>>
     fun getTodoItem(id: UUID): Flow<DataResult<TodoItemDomainEntity>>
-    fun updateTodoItem(item: TodoItemDomainEntity)
+    fun updateTodoItem(newItem: TodoItemDomainEntity)
     fun updateDoneStatus(id: UUID, isDone: Boolean)
     fun deleteItem(id: UUID)
     fun moveItem(from: Int, to: Int)

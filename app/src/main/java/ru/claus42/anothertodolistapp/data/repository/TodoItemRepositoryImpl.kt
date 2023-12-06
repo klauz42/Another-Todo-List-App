@@ -46,10 +46,10 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
         )
     }
 
-    override fun updateTodoItem(updatedItem: TodoItemDomainEntity) {
+    override fun updateTodoItem(newItem: TodoItemDomainEntity) {
         localDataList.forEachIndexed { i, item ->
-            if (updatedItem.id == item.id) {
-                localDataList[i] = updatedItem.toLocalDataModel()
+            if (newItem.id == item.id) {
+                localDataList[i] = newItem.toLocalDataModel()
             }
         }
         todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
