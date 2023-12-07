@@ -28,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/item_list_header_expanded_title_margin_start"
         android:layout_marginBottom="@dimen/item_list_header_expanded_subtitle_margin_bottom"
-        android:text="Bla-bla-bla"
         android:textAppearance="@style/ExpandedItemListSubtitleAppearance"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"

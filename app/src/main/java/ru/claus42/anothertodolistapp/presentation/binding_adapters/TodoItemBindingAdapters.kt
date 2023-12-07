@@ -10,6 +10,7 @@ import androidx.databinding.BindingAdapter
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.domain.models.entities.Importance
 
+
 @BindingAdapter("importanceCheckboxTint")
 fun setImportanceCheckboxTint(view: CheckBox, importance: Importance) {
     val context = view.context
@@ -47,10 +48,4 @@ fun setItemTextViewDone(textView: TextView, done: Boolean) {
         textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         textView.setTextColor(ContextCompat.getColor(context, R.color.label_primary))
     }
-}
-
-//TODO: add this adapter to fragment_todo_item_details using ViewModel
-@BindingAdapter("doneCount")
-fun setDoneCount(textView: TextView, count: Int) {
-    textView.text = textView.context.getString(R.string.done_format, count)
 }

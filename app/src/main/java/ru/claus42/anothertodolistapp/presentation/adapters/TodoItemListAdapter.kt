@@ -122,7 +122,17 @@ class TodoItemListAdapter(
         val position = viewHolder.adapterPosition
         val id = items[position].id
         val newDoneStatus = !items[position].done
-        items[position].done = newDoneStatus
+
+        val newItems = items.map {
+            if (it.id == id) {
+                it.copy(done = newDoneStatus)
+            } else {
+                it.copy()
+            }
+        }
+        items.clear()
+        items.addAll(newItems)
+
         doneCheckBoxListener(id, newDoneStatus)
     }
 

@@ -78,6 +78,7 @@ class TodoItemListFragment : Fragment(),
         setupRecyclerView(recyclerViewAdapter)
         setupAppbarLayoutParams()
         setupItemsObserver()
+        setupUndoneCountObserver()
         setupShowHideDoneButton()
     }
 
@@ -117,7 +118,6 @@ class TodoItemListFragment : Fragment(),
     }
 
     private fun setupItemsObserver() {
-
         viewModel.todoItems.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is DataResult.Success -> {
@@ -128,6 +128,22 @@ class TodoItemListFragment : Fragment(),
                 is DataResult.Loading -> displayLoading()
                 else -> {}
             }
+        }
+    }
+
+    private fun setUndoneCount(count: Int) {
+        binding.expandedHeaderView.headerSubtitle.text =
+            requireContext().getString(R.string.undone_count_format, count)
+    }
+
+    private fun cleanUndoneCount() {
+        binding.expandedHeaderView.headerSubtitle.text = ""
+    }
+
+    private fun setupUndoneCountObserver() {
+        viewModel.countDoneLiveData.observe(viewLifecycleOwner) { count ->
+            if (count != null) setUndoneCount(count)
+            else cleanUndoneCount()
         }
     }
 
@@ -151,7 +167,7 @@ class TodoItemListFragment : Fragment(),
             viewModel.updateTodoItemDoneStatus(id, isDone)
         }
         val moveItemListener: (from: Int, to: Int) -> Unit = { from, to ->
-            viewModel.swapTodoItemsInsideList(from, to)
+            viewModel.moveTodoItemsInsideList(from, to)
         }
         val deleteItemListener: (UUID) -> Unit = { id ->
             viewModel.deleteTodoItem(id)
