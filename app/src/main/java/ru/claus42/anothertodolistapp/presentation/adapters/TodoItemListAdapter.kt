@@ -1,6 +1,5 @@
 package ru.claus42.anothertodolistapp.presentation.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
@@ -143,15 +142,8 @@ class TodoItemListAdapter(
     }
 
     override fun onMoveItem(oldPosition: Int, newPosition: Int) {
-        Log.i("pipec", "$oldPosition $newPosition")
-
         val moveFromId = items[oldPosition].id
         val moveToId = items[newPosition].id
-
-        Log.i(
-            "pipec",
-            "${items[oldPosition].description.slice(0..1)} ${items[newPosition].description.slice(0..1)}"
-        )
 
         items.add(newPosition, items.removeAt(oldPosition))
 
