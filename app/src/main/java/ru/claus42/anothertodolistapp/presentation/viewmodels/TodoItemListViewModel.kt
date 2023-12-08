@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
+import ru.claus42.anothertodolistapp.domain.usecases.AddTodoItemUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.DeleteTodoItemUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.GetTodoItemListUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.MoveItemInListUseCase
@@ -27,7 +28,8 @@ class TodoItemListViewModel @Inject constructor(
     private val updateTodoItemDoneStatusUseCase: UpdateTodoItemDoneStatusUseCase,
     private val moveItemInListUseCase: MoveItemInListUseCase,
     private val deleteTodoItemUseCase: DeleteTodoItemUseCase,
-    private val undoTodoItemDeletingUseCase: UndoTodoItemDeletingUseCase
+    private val undoTodoItemDeletingUseCase: UndoTodoItemDeletingUseCase,
+    private val addTodoItemUseCase: AddTodoItemUseCase,
 ) : ViewModel() {
     private val _showDone = MutableLiveData<Boolean>(true)
     val showDone: MutableLiveData<Boolean> = _showDone
@@ -88,6 +90,12 @@ class TodoItemListViewModel @Inject constructor(
     fun undoTodoItemDeletion() {
         viewModelScope.launch(Dispatchers.IO) {
             undoTodoItemDeletingUseCase()
+        }
+    }
+
+    fun addTodoItem(item: TodoItemDomainEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addTodoItemUseCase(item)
         }
     }
 }

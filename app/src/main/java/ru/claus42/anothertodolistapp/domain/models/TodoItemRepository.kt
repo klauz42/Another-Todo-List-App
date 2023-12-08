@@ -9,6 +9,7 @@ interface TodoItemRepository {
     fun getTodoItem(id: UUID): Flow<DataResult<TodoItemDomainEntity>>
     fun updateTodoItem(newItem: TodoItemDomainEntity)
     fun updateDoneStatus(id: UUID, isDone: Boolean)
+    fun addItem(item: TodoItemDomainEntity)
     fun deleteItem(id: UUID)
     fun moveItem(fromId: UUID, toId: UUID)
     fun undoDeletion()

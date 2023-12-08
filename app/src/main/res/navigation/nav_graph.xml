@@ -29,7 +29,11 @@
         <argument
             android:name="item_id"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="false" />
+        <argument
+            android:name="is_new_item"
+            app:argType="boolean"
+            app:nullable="false" />
     </fragment>
 
 </navigation>

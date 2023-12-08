@@ -96,6 +96,10 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
         _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
 
+    override fun addItem(item: TodoItemDomainEntity) {
+        addItem(0, item)
+    }
+
     override fun undoDeletion() {
         lastDeleted?.let { item ->
             lastDeletedPosition?.let { pos ->

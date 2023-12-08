@@ -82,6 +82,7 @@ class TodoItemListFragment : Fragment(),
         setupItemsObserver()
         setupUndoneCountObserver()
         setupShowHideDoneButton()
+        setupAddItemButton()
     }
 
     override fun onDestroyView() {
@@ -97,6 +98,13 @@ class TodoItemListFragment : Fragment(),
 
     private fun displayLoading() {
         //todo: display loading animation
+    }
+
+    private fun openDetailsFragment(id: UUID, isNewItem: Boolean) {
+        val idString = id.toString()
+        val action =
+            TodoItemListFragmentDirections.actionListToDetails(idString, isNewItem)
+        findNavController().navigate(action)
     }
 
     private fun setupAppBar() {
@@ -130,6 +138,14 @@ class TodoItemListFragment : Fragment(),
                 is DataResult.Loading -> displayLoading()
                 else -> {}
             }
+        }
+    }
+
+    private fun setupAddItemButton() {
+        binding.addItemFab.setOnClickListener {
+            val newEntity = TodoItemDomainEntity()
+            viewModel.addTodoItem(newEntity)
+            openDetailsFragment(newEntity.id, true)
         }
     }
 
@@ -169,9 +185,7 @@ class TodoItemListFragment : Fragment(),
 
     private fun initTodoItemAdapter(): TodoItemListAdapter {
         val itemClickListener: (UUID) -> Unit = { id ->
-            val idString = id.toString()
-            val action = TodoItemListFragmentDirections.actionListToDetails(idString)
-            findNavController().navigate(action)
+            openDetailsFragment(id, false)
         }
         val doneCheckBoxListener: (UUID, Boolean) -> Unit = { id, isDone ->
             viewModel.updateTodoItemDoneStatus(id, isDone)

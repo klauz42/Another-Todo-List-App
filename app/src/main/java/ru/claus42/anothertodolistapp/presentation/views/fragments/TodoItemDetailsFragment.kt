@@ -54,6 +54,7 @@ class TodoItemDetailsFragment :
     private var item: MutableLiveData<TodoItemDomainEntity> = MutableLiveData()
 
     private var itemId: UUID? = null
+    private var isNewItem = false
 
     private var descriptionWatcher: DescriptionWatcher? = null
 
@@ -80,9 +81,11 @@ class TodoItemDetailsFragment :
             back()
         }
 
-        args.itemId?.let {
-            itemId = UUID.fromString(it)
+        args.let {
+            itemId = UUID.fromString(it.itemId)
             viewModel.loadTodoItem(itemId!!)
+
+            isNewItem = it.isNewItem
         }
 
         return view
@@ -127,8 +130,20 @@ class TodoItemDetailsFragment :
         if (isItemChanged) {
             SaveConfirmationDialogFragment().show(parentFragmentManager, DIALOG_SAVE_CONFIRM)
         } else {
+            if (isNewItem) {
+                itemId?.let { viewModel.deleteTodoItem(it) }
+            }
             findNavController().navigateUp()
         }
+    }
+
+    private fun save() {
+        item.value?.let {
+            initialItem = it.copy()
+            viewModel.updateTodoItem(it)
+        }
+
+        isNewItem = false
     }
 
     private fun setupMenu() {
@@ -137,10 +152,7 @@ class TodoItemDetailsFragment :
         }
 
         binding.detailsHeader.saveButton.setOnClickListener {
-            item.value?.let {
-                initialItem = it.copy()
-                viewModel.updateTodoItem(it)
-            }
+            save()
         }
     }
 
@@ -234,9 +246,7 @@ class TodoItemDetailsFragment :
     }
 
     override fun onSaveConfirmed() {
-        item.value?.let {
-            viewModel.updateTodoItem(it)
-        }
+        save()
 
         findNavController().navigateUp()
     }
