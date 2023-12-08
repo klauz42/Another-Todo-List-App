@@ -1,11 +1,13 @@
 package ru.claus42.anothertodolistapp.presentation.views.fragments
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -147,13 +149,21 @@ class TodoItemListFragment : Fragment(),
         }
     }
 
-    //todo: add set show/hide done button listener
     private fun setupShowHideDoneButton() {
-        binding.expandedHeaderView.showHideDoneButton.setOnClickListener {
+        val listener = View.OnClickListener { viewModel.toggleShowDone() }
+        binding.expandedHeaderView.showHideDoneButton.setOnClickListener(listener)
+        binding.collapsedHeaderView.showHideDoneButton.setOnClickListener(listener)
 
-        }
-        binding.collapsedHeaderView.showHideDoneButton.setOnClickListener {
-
+        viewModel.showDone.observe(viewLifecycleOwner) { showDone ->
+            val icon: Drawable? = if (showDone) {
+                ContextCompat.getDrawable(requireContext(), R.drawable.visibility_off)
+            } else {
+                ContextCompat.getDrawable(requireContext(), R.drawable.visibility)
+            }
+            icon?.let {
+                binding.expandedHeaderView.showHideDoneButton.setImageDrawable(it)
+                binding.collapsedHeaderView.showHideDoneButton.setImageDrawable(it)
+            }
         }
     }
 
@@ -166,8 +176,8 @@ class TodoItemListFragment : Fragment(),
         val doneCheckBoxListener: (UUID, Boolean) -> Unit = { id, isDone ->
             viewModel.updateTodoItemDoneStatus(id, isDone)
         }
-        val moveItemListener: (from: Int, to: Int) -> Unit = { from, to ->
-            viewModel.moveTodoItemsInsideList(from, to)
+        val moveItemListener: (fromId: UUID, toId: UUID) -> Unit = { fromId, toId ->
+            viewModel.moveTodoItemsInList(fromId, toId)
         }
         val deleteItemListener: (UUID) -> Unit = { id ->
             viewModel.deleteTodoItem(id)

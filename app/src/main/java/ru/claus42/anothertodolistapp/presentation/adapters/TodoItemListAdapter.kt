@@ -1,11 +1,13 @@
 package ru.claus42.anothertodolistapp.presentation.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.claus42.anothertodolistapp.R
@@ -23,7 +25,7 @@ interface DoneCheckBoxListener {
 class TodoItemListAdapter(
     private val itemClickListener: (UUID) -> Unit,
     private val doneCheckBoxListener: (UUID, Boolean) -> Unit,
-    private val moveItemListener: (from: Int, to: Int) -> Unit,
+    private val moveItemListener: (fromId: UUID, toId: UUID) -> Unit,
     private val deleteItemListener: (UUID) -> Unit,
     private val undoItemDeletionListener: (() -> Unit) -> Unit
 ) : RecyclerView.Adapter<TodoItemListAdapter.TodoItemViewHolder>(),
@@ -33,11 +35,48 @@ class TodoItemListAdapter(
 
     private val items = mutableListOf<TodoItemDomainEntity>()
 
+    private var shouldUpdateOldLastBackground = false
+    private var oldLastInNewListPosition = 0
+
+    private val edgeItemsUpdateCallback: ListUpdateCallback = object : ListUpdateCallback {
+        override fun onInserted(position: Int, count: Int) {
+            if (position == 0) {
+                notifyItemChanged(count)
+            } else if (shouldUpdateOldLastBackground) {
+                notifyItemChanged(oldLastInNewListPosition)
+            }
+        }
+
+        override fun onRemoved(position: Int, count: Int) {
+            if (position == 0 && itemCount > 0) notifyItemChanged(0)
+            if (position >= itemCount) {
+                notifyItemChanged(itemCount - 1)
+            }
+        }
+
+        override fun onMoved(fromPosition: Int, toPosition: Int) {}
+        override fun onChanged(position: Int, count: Int, payload: Any?) {}
+    }
+
     fun submitList(newItems: List<TodoItemDomainEntity>) {
         val result = calculateDiff(newItems)
+
+        if (itemCount > 0 && newItems.isNotEmpty()) {
+            val oldLast = itemCount - 1
+            val newLastInOldLostPosition = result.convertNewPositionToOld(newItems.size - 1)
+
+            if (newLastInOldLostPosition == oldLast) {
+                shouldUpdateOldLastBackground = false
+            } else {
+                shouldUpdateOldLastBackground = true
+                oldLastInNewListPosition = result.convertOldPositionToNew(oldLast)
+            }
+        }
+
         items.clear()
         items.addAll(newItems)
         result.dispatchUpdatesTo(this)
+        result.dispatchUpdatesTo(edgeItemsUpdateCallback)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoItemViewHolder {
@@ -104,8 +143,19 @@ class TodoItemListAdapter(
     }
 
     override fun onMoveItem(oldPosition: Int, newPosition: Int) {
+        Log.i("pipec", "$oldPosition $newPosition")
+
+        val moveFromId = items[oldPosition].id
+        val moveToId = items[newPosition].id
+
+        Log.i(
+            "pipec",
+            "${items[oldPosition].description.slice(0..1)} ${items[newPosition].description.slice(0..1)}"
+        )
+
         items.add(newPosition, items.removeAt(oldPosition))
-        moveItemListener(oldPosition, newPosition)
+
+        moveItemListener(moveFromId, moveToId)
     }
 
     override fun onMoveItemUIUpdate(fromViewHolder: ViewHolder, toViewHolder: ViewHolder) {

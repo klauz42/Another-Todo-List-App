@@ -20,7 +20,7 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
     private val localDataList = stubTodoItemEntityList.toMutableList()
     private val _todoItemsFlow =
         MutableStateFlow<DataResult<List<TodoItemDomainEntity>>>(DataResult.Loading)
-    val todoItemsFlow: StateFlow<DataResult<List<TodoItemDomainEntity>>> = _todoItemsFlow
+    private val todoItemsFlow: StateFlow<DataResult<List<TodoItemDomainEntity>>> = _todoItemsFlow
 
     private var lastDeleted: TodoItemLocalDataEntity? = null
     private var lastDeletedPosition: Int? = null
@@ -77,10 +77,16 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
         _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
 
-    override fun moveItem(from: Int, to: Int) {
-        val movingItem = localDataList[from]
-        localDataList.removeAt(from)
-        localDataList.add(to, movingItem)
+    override fun moveItem(fromId: UUID, toId: UUID) {
+        if (fromId == toId) return
+
+        val fromIndex = localDataList.indexOfFirst { it.id == fromId }
+        val movingItem = localDataList.removeAt(fromIndex)
+
+        val toIndex = localDataList.indexOfFirst { it.id == toId }
+        val targetIndex = if (fromIndex <= toIndex) toIndex + 1 else toIndex
+
+        localDataList.add(targetIndex, movingItem)
 
         _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
     }
