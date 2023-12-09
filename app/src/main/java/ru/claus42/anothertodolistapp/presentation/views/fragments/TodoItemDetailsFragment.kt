@@ -12,7 +12,6 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -36,31 +35,19 @@ class TodoItemDetailsFragment :
     Fragment(),
     SaveConfirmationDialogFragment.SaveConfirmationListener,
     DeleteConfirmationDialogFragment.DeleteConfirmationListener {
+
     private lateinit var detailsFragmentComponent: FragmentComponent
+    private val activity: MainActivity by lazy { requireActivity() as MainActivity }
+
+    private var _binding: FragmentTodoItemDetailsBinding? = null
+    private val binding get() = _binding!!
+    private val args: TodoItemDetailsFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel: TodoItemDetailsViewModel by viewModels { viewModelFactory }
 
-    private var _binding: FragmentTodoItemDetailsBinding? = null
-
-    private val binding get() = _binding!!
-
-    private val args: TodoItemDetailsFragmentArgs by navArgs()
-    private var isItemLoaded: Boolean = false
-    private var initialItem: TodoItemDomainEntity? = null
-
-    private val isItemChanged get() = isItemLoaded && (item.value != initialItem)
-    private var item: MutableLiveData<TodoItemDomainEntity> = MutableLiveData()
-
-    private var itemId: UUID? = null
-    private var isNewItem = false
-
     private var descriptionWatcher: DescriptionWatcher? = null
-
-    private var isTextEditScrolledDown = false
-
-    private val activity: MainActivity by lazy { requireActivity() as MainActivity }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,11 +68,11 @@ class TodoItemDetailsFragment :
             back()
         }
 
-        args.let {
-            itemId = UUID.fromString(it.itemId)
-            viewModel.loadTodoItem(itemId!!)
-
-            isNewItem = it.isNewItem
+        with(args) {
+            viewModel.initialize(
+                UUID.fromString(itemId),
+                isNewItem,
+            )
         }
 
         return view
@@ -112,6 +99,21 @@ class TodoItemDetailsFragment :
         super.onDestroyView()
     }
 
+    override fun onPause() {
+        super.onPause()
+        binding.content.textInputLayout.editText?.selectionStart?.let {
+            viewModel.descriptionCursorPosition = it
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.descriptionCursorPosition?.let {
+            binding.content.textInputLayout.editText?.setSelection(it)
+        }
+
+    }
+
     private fun displayError(exception: Throwable) {
         //todo: error displaying
     }
@@ -127,23 +129,18 @@ class TodoItemDetailsFragment :
     }
 
     private fun back() {
-        if (isItemChanged) {
+        if (viewModel.isItemChanged) {
             SaveConfirmationDialogFragment().show(parentFragmentManager, DIALOG_SAVE_CONFIRM)
         } else {
-            if (isNewItem) {
-                itemId?.let { viewModel.deleteTodoItem(it) }
+            if (viewModel.isNewItem) {
+                viewModel.deleteTodoItem()
             }
             findNavController().navigateUp()
         }
     }
 
     private fun save() {
-        item.value?.let {
-            initialItem = it.copy()
-            viewModel.updateTodoItem(it)
-        }
-
-        isNewItem = false
+        viewModel.saveChanges()
     }
 
     private fun setupMenu() {
@@ -157,25 +154,16 @@ class TodoItemDetailsFragment :
     }
 
     private fun setupItemObservers() {
-        viewModel.todoItem.observe(viewLifecycleOwner) { result ->
+        viewModel.todoItemResult.observe(viewLifecycleOwner) { result ->
             when (result) {
-                is DataResult.Success -> {
-                    item.value = result.data.also {
-                        if (!isItemLoaded) {
-                            initialItem = it.copy()
-                            isItemLoaded = true
-                        }
-                    }
-                }
-
                 is DataResult.Error -> displayError(result.error)
                 is DataResult.Loading -> displayLoading()
                 else -> {}
             }
         }
 
-        item.observe(viewLifecycleOwner) { item ->
-            updateUI(item)
+        viewModel.todoItem.observe(viewLifecycleOwner) { item ->
+            item?.let { updateUI(it) }
         }
     }
 
@@ -191,13 +179,13 @@ class TodoItemDetailsFragment :
 
     private fun setupScrollViewListener() {
         binding.detailsNestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            if (!isTextEditScrolledDown && scrollY > 0) {
+            if (!viewModel.isTextEditScrolledDown && scrollY > 0) {
                 binding.appBarLayout.elevation =
                     requireContext().resources.getDimension(R.dimen.header_elevation)
-                isTextEditScrolledDown = true
-            } else if (isTextEditScrolledDown && scrollY == 0) {
+                viewModel.isTextEditScrolledDown = true
+            } else if (viewModel.isTextEditScrolledDown && scrollY == 0) {
                 binding.appBarLayout.elevation = 0f
-                isTextEditScrolledDown = false
+                viewModel.isTextEditScrolledDown = false
             }
         }
     }
@@ -230,17 +218,18 @@ class TodoItemDetailsFragment :
             before: Int,
             count: Int
         ) {
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-            item.value?.let {
+            viewModel.todoItem.value?.let {
                 with(it) {
-                    if (description != s.toString()) {
-                        description = s.toString()
+                    if (description != text.toString()) {
+                        description = text.toString()
                         changedAt = LocalDateTime.now()
                     }
                 }
             }
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+
         }
 
     }
@@ -252,14 +241,17 @@ class TodoItemDetailsFragment :
     }
 
     override fun onExitWithoutSaving() {
+        if (viewModel.isNewItem) {
+            viewModel.deleteTodoItem()
+        }
         findNavController().navigateUp()
     }
 
     override fun onSaveCancel() {}
 
     override fun onDeleteConfirmed() {
-        item.value?.let {
-            viewModel.deleteTodoItem(it.id)
+        viewModel.todoId?.let {
+            viewModel.deleteTodoItem()
         }
 
         findNavController().navigateUp()
