@@ -32,7 +32,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
-            android:id="@+id/importance_choose_layout"
+            android:id="@+id/priority_choose_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -52,10 +52,10 @@
                 android:text="@string/priority" />
 
             <TextView
-                android:id="@+id/importance_choose"
+                android:id="@+id/priority_choose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="@string/none_importance" />
+                tools:text="@string/none_priority" />
         </LinearLayout>
 
         <com.google.android.material.divider.MaterialDivider
@@ -90,19 +90,17 @@
                     android:id="@+id/deadline_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@drawable/deadline_date_color_selector"
-                    android:textColorLink="@color/blue"
+                    android:clickable="true"
+                    android:textColor="@color/deadline_date_selector"
                     tools:text="@tools:sample/date/ddmmyy" />
             </LinearLayout>
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/deadline_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:thumbTint="@drawable/deadline_switch_thumb_selector"
-                app:trackTint="@drawable/deadline_switch_track_selector"
-                app:useMaterialThemeColors="false"
-                tools:checked="true" />
+                app:trackTint="@drawable/deadline_switch_track_selector" />
         </LinearLayout>
 
         <com.google.android.material.divider.MaterialDivider
@@ -126,6 +124,5 @@
             android:text="@string/delete"
             android:textColor="@color/red"
             app:drawableStartCompat="@drawable/delete" />
-
     </LinearLayout>
 </layout>

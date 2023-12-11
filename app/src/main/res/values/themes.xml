@@ -131,6 +131,10 @@
         <item name="lineHeight">20dp</item>
     </style>
 
+    <style name="SubheadTextStyle.ListItemDate" parent="SubheadTextStyle">
+        <item name="android:textColor">@color/label_secondary</item>
+    </style>
+
     <style name="TodoItemCheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>

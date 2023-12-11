@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:buttonTint="@color/green"
             android:onCheckedChanged="@{(checkBoxView, isDone) -> doneCheckBoxListener.onChecked(checkBoxView, todoItem.id, isDone)}"
-            app:importanceCheckboxTint="@{todoItem.importance}"
+            app:importanceCheckboxTint="@{todoItem.itemPriority}"
             tools:checked="true" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,12 +47,13 @@
                 android:layout_marginBottom="4dp"
                 android:maxLines="3"
                 android:ellipsize="end"
-                app:importanceDescriptionDrawable="@{todoItem.importance}"
+                app:importanceDescriptionDrawable="@{todoItem.itemPriority}"
                 app:doneItem="@{doneCheckbox.checked}"
                 tools:text="@tools:sample/lorem/random" />
 
             <com.google.android.material.textview.MaterialTextView
-                style="@style/SubheadTextStyle"
+                style="@style/SubheadTextStyle.ListItemDate"
+                android:textColor="@color/label_secondary"
                 android:id="@+id/item_deadline"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

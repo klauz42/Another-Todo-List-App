@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 @AppScope
 class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
+    //todo: change it to real data sources
     private val localDataList = stubTodoItemEntityList.toMutableList()
     private val _todoItemsFlow =
         MutableStateFlow<DataResult<List<TodoItemDomainEntity>>>(DataResult.Loading)
@@ -25,8 +26,12 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
     private var lastDeleted: TodoItemLocalDataEntity? = null
     private var lastDeletedPosition: Int? = null
 
-    init {
+    private fun updateTodoItemsFlowFromLocalDataList() {
         _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+    }
+
+    init {
+        updateTodoItemsFlowFromLocalDataList()
     }
 
     override fun getTodoItemList(): Flow<DataResult<List<TodoItemDomainEntity>>> = todoItemsFlow
@@ -54,14 +59,14 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
                 localDataList[i] = newItem.toLocalDataModel()
             }
         }
-        _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+        updateTodoItemsFlowFromLocalDataList()
     }
 
     override fun updateDoneStatus(id: UUID, isDone: Boolean) {
         localDataList.forEachIndexed { i, item ->
-            if (id == item.id) localDataList[i].apply { done = isDone }
+            if (id == item.id) localDataList[i] = localDataList[i].copy(done = isDone)
         }
-        _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+        updateTodoItemsFlowFromLocalDataList()
     }
 
     override fun deleteItem(id: UUID) {
@@ -74,7 +79,7 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
 
         localDataList.remove(localDataList.find { it.id == id })
 
-        _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+        updateTodoItemsFlowFromLocalDataList()
     }
 
     override fun moveItem(fromId: UUID, toId: UUID) {
@@ -88,12 +93,12 @@ class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
 
         localDataList.add(targetIndex, movingItem)
 
-        _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+        updateTodoItemsFlowFromLocalDataList()
     }
 
     private fun addItem(position: Int, item: TodoItemDomainEntity) {
         localDataList.add(position, item.toLocalDataModel())
-        _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
+        updateTodoItemsFlowFromLocalDataList()
     }
 
     override fun addItem(item: TodoItemDomainEntity) {

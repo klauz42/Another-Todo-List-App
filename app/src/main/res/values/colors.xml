@@ -42,4 +42,7 @@
     <color name="delete_item_swipe_background">@color/red</color>
     <color name="done_item_swipe_background">@color/green</color>
     <color name="icon_swipe_tint">@color/white</color>
+
+    <color name="deadline_on_color">@color/blue</color>
+    <color name="deadline_off_color">@color/label_tertiary</color>
 </resources>

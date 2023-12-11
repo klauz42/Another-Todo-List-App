@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/option_basic"
-        android:title="@string/none_importance" />
+        android:title="@string/none_priority" />
     <item
         android:id="@+id/option_low"
-        android:title="@string/low_importance" />
+        android:title="@string/low_priority" />
     <item
         android:id="@+id/option_important"
-        android:title="@string/important_importance" />
+        android:title="@string/important_priority" />
 </menu>

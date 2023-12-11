@@ -8,28 +8,28 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.databinding.BindingAdapter
 import ru.claus42.anothertodolistapp.R
-import ru.claus42.anothertodolistapp.domain.models.entities.Importance
+import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 
 
 @BindingAdapter("importanceCheckboxTint")
-fun setImportanceCheckboxTint(view: CheckBox, importance: Importance) {
+fun setPriorityCheckboxTint(view: CheckBox, itemPriority: ItemPriority) {
     val context = view.context
     val basicColor = ContextCompat.getColor(context, R.color.basic_priority_check)
     val importantColor = ContextCompat.getColor(context, R.color.important_priority_check)
 
-    view.buttonTintList = when (importance) {
-        Importance.LOW, Importance.BASIC -> ColorStateList.valueOf(basicColor)
-        Importance.IMPORTANT -> ColorStateList.valueOf(importantColor)
+    view.buttonTintList = when (itemPriority) {
+        ItemPriority.LOW, ItemPriority.BASIC -> ColorStateList.valueOf(basicColor)
+        ItemPriority.IMPORTANT -> ColorStateList.valueOf(importantColor)
     }
 }
 
 @BindingAdapter("importanceDescriptionDrawable")
-fun setImportanceDescriptionDrawable(textView: TextView, importance: Importance) {
+fun setPriorityDescriptionDrawable(textView: TextView, itemPriority: ItemPriority) {
     val context = textView.context
-    val drawable = when (importance) {
-        Importance.LOW -> ContextCompat.getDrawable(context, R.drawable.arrow_downward)
-        Importance.BASIC -> null
-        Importance.IMPORTANT -> ContextCompat.getDrawable(context, R.drawable.priority_high)
+    val drawable = when (itemPriority) {
+        ItemPriority.LOW -> ContextCompat.getDrawable(context, R.drawable.arrow_downward)
+        ItemPriority.BASIC -> null
+        ItemPriority.IMPORTANT -> ContextCompat.getDrawable(context, R.drawable.priority_high)
     }
     if (ViewCompat.getLayoutDirection(textView) == ViewCompat.LAYOUT_DIRECTION_LTR) {
         textView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)

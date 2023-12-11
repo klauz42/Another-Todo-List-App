@@ -9,7 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.PopupMenu
 import androidx.activity.addCallback
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -20,10 +22,13 @@ import ru.claus42.anothertodolistapp.databinding.FragmentTodoItemDetailsBinding
 import ru.claus42.anothertodolistapp.di.components.DaggerFragmentComponent
 import ru.claus42.anothertodolistapp.di.components.FragmentComponent
 import ru.claus42.anothertodolistapp.domain.models.DataResult
+import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemDetailsViewModel
 import ru.claus42.anothertodolistapp.presentation.views.activities.MainActivity
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.UUID
 import javax.inject.Inject
 
@@ -48,6 +53,11 @@ class TodoItemDetailsFragment :
     private val viewModel: TodoItemDetailsViewModel by viewModels { viewModelFactory }
 
     private var descriptionWatcher: DescriptionWatcher? = null
+
+    private fun LocalDateTime.getFormatted(): String {
+        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+        return this.format(formatter)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,11 +95,11 @@ class TodoItemDetailsFragment :
         setupMenu()
         setupItemObservers()
         setupScrollViewListener()
-
         setupDeleteButton()
+        setupDescriptionTextWatcher()
+        setupPriorityPopupMenu()
+        setupDeadlineViews()
 
-        descriptionWatcher = DescriptionWatcher()
-        descriptionWatcher?.let { setupDescriptionTextEdit(it) }
     }
 
     override fun onDestroyView() {
@@ -99,19 +109,19 @@ class TodoItemDetailsFragment :
         super.onDestroyView()
     }
 
+    private fun getCursorPosition() = binding.content.textInputLayout.editText?.selectionStart
+    private fun setCursorPosition(position: Int) {
+        binding.content.textInputLayout.editText?.setSelection(position)
+    }
+
     override fun onPause() {
         super.onPause()
-        binding.content.textInputLayout.editText?.selectionStart?.let {
-            viewModel.descriptionCursorPosition = it
-        }
+        viewModel.descriptionCursorPosition = getCursorPosition()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.descriptionCursorPosition?.let {
-            binding.content.textInputLayout.editText?.setSelection(it)
-        }
-
+        viewModel.descriptionCursorPosition?.let { setCursorPosition(it) }
     }
 
     private fun displayError(exception: Throwable) {
@@ -153,6 +163,14 @@ class TodoItemDetailsFragment :
         }
     }
 
+    //todo: add deadline date comparison
+    private fun shouldUpdateUI(item: TodoItemDomainEntity): Boolean {
+        return with(binding.content) {
+            priorityChoose.text != getString(item.itemPriority.toStringResId())
+                    || taskDescriptionEditText.text.toString() != viewModel.todoItem.value?.description
+        }
+    }
+
     private fun setupItemObservers() {
         viewModel.todoItemResult.observe(viewLifecycleOwner) { result ->
             when (result) {
@@ -163,7 +181,11 @@ class TodoItemDetailsFragment :
         }
 
         viewModel.todoItem.observe(viewLifecycleOwner) { item ->
-            item?.let { updateUI(it) }
+            item?.let {
+                if (shouldUpdateUI(it)) {
+                    updateUI(it)
+                }
+            }
         }
     }
 
@@ -196,43 +218,91 @@ class TodoItemDetailsFragment :
         }
     }
 
-    private fun updateUI(newItem: TodoItemDomainEntity) {
-        binding.content.apply {
-            taskDescriptionEditText.setText(newItem.description)
-            //todo: complete filling out UI
+    private fun setupDescriptionTextWatcher() {
+        descriptionWatcher = DescriptionWatcher()
+        descriptionWatcher?.let {
+            setupDescriptionTextEdit(it)
         }
     }
 
-    private inner class DescriptionWatcher() : TextWatcher {
-        override fun beforeTextChanged(
-            text: CharSequence?,
-            start: Int,
-            count: Int,
-            after: Int
-        ) {
-        }
-
-        override fun onTextChanged(
-            text: CharSequence?,
-            start: Int,
-            before: Int,
-            count: Int
-        ) {
-            viewModel.todoItem.value?.let {
-                with(it) {
-                    if (description != text.toString()) {
-                        description = text.toString()
-                        changedAt = LocalDateTime.now()
-                    }
+    private fun setupPriorityPopupMenu() {
+        binding.content.priorityChooseLayout.setOnClickListener { v ->
+            //todo: try to use ListPopupWindow class
+            val menu = PopupMenu(requireContext(), v)
+            menu.inflate(R.menu.dropdown_menu_item_priority)
+            menu.setOnMenuItemClickListener {
+                it.itemId
+                it.itemId.toPriority()?.let { newPriority ->
+                    viewModel.setPriority(newPriority)
                 }
+                true
+            }
+            menu.show()
+        }
+    }
+
+    private fun updateDeadlineTextView(isEnabled: Boolean) {
+        binding.content.apply {
+            val color =
+                if (isEnabled) R.color.deadline_date_selector else R.color.deadline_off_color
+            deadlineDate.setTextColor(ContextCompat.getColorStateList(requireContext(), color))
+            deadlineDate.isClickable = isEnabled
+        }
+    }
+
+    private fun setupDeadlineViews() {
+        binding.content.apply {
+            deadlineSwitch.setOnCheckedChangeListener { switch, isChecked ->
+                updateDeadlineTextView(isChecked)
+                viewModel.updateDeadlineIsEnabled(isChecked)
             }
         }
+    }
 
-        override fun afterTextChanged(s: Editable?) {
+    private fun updateUI(newItem: TodoItemDomainEntity) {
+        binding.content.apply {
+            val cursorPosition = getCursorPosition()
+            taskDescriptionEditText.setText(newItem.description)
+            cursorPosition?.let { setCursorPosition(cursorPosition) }
 
+            priorityChoose.setText(newItem.itemPriority.toStringResId())
+
+            newItem.isDeadlineEnabled.let {
+                deadlineSwitch.isChecked = it
+                updateDeadlineTextView(it)
+            }
+
+            deadlineDate.text = newItem.deadline.getFormatted()
+        }
+    }
+
+    private fun ItemPriority.toStringResId(): Int {
+        return when (this) {
+            ItemPriority.LOW -> R.string.low_priority
+            ItemPriority.BASIC -> R.string.none_priority
+            ItemPriority.IMPORTANT -> R.string.important_priority
+        }
+    }
+
+    private fun Int.toPriority(): ItemPriority? {
+        return when (this) {
+            R.id.option_basic -> ItemPriority.BASIC
+            R.id.option_low -> ItemPriority.LOW
+            R.id.option_important -> ItemPriority.IMPORTANT
+            else -> null
+        }
+    }
+
+
+    private inner class DescriptionWatcher() : TextWatcher {
+        override fun beforeTextChanged(text: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+            viewModel.updateDescription(text.toString())
         }
 
+        override fun afterTextChanged(s: Editable?) {}
     }
+
 
     override fun onSaveConfirmed() {
         save()
@@ -248,6 +318,7 @@ class TodoItemDetailsFragment :
     }
 
     override fun onSaveCancel() {}
+
 
     override fun onDeleteConfirmed() {
         viewModel.todoId?.let {

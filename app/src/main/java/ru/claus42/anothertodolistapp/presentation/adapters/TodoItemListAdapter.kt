@@ -203,12 +203,11 @@ class TodoItemListAdapter(
                 doneCheckbox.isChecked = item.done
                 itemDescription.text = item.description
                 val deadline = item.deadline
-                if (deadline != null) {
-                    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                if (item.isDeadlineEnabled) {
+                    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
                     itemDeadline.text = deadline.format(formatter)
                     itemDeadline.isVisible = true
                 } else {
-                    itemDeadline.text = null
                     itemDeadline.isVisible = false
                 }
             }

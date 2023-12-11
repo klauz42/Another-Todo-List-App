@@ -1,7 +1,7 @@
 package ru.claus42.anothertodolistapp.data.local
 
 import androidx.room.TypeConverter
-import ru.claus42.anothertodolistapp.domain.models.entities.Importance
+import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -22,22 +22,22 @@ object TodoItemTypeConverters {
 
     @TypeConverter
     @JvmStatic
-    fun toImportance(importance: Int?): Importance? {
+    fun toPriority(importance: Int?): ItemPriority? {
         return when (importance) {
             null -> null
-            0 -> Importance.LOW
-            1 -> Importance.BASIC
-            else -> Importance.IMPORTANT
+            0 -> ItemPriority.LOW
+            1 -> ItemPriority.BASIC
+            else -> ItemPriority.IMPORTANT
         }
     }
 
     @TypeConverter
     @JvmStatic
-    fun fromImportance(importance: Importance?): Int? {
-        return when (importance) {
-            Importance.LOW -> 0
-            Importance.BASIC -> 1
-            Importance.IMPORTANT -> 2
+    fun fromPriority(itemPriority: ItemPriority?): Int? {
+        return when (itemPriority) {
+            ItemPriority.LOW -> 0
+            ItemPriority.BASIC -> 1
+            ItemPriority.IMPORTANT -> 2
             else -> null
         }
     }
