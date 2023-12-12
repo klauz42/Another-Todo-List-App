@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/todoItemListFragment"
-        android:name="ru.claus42.anothertodolistapp.presentation.views.fragments.TodoItemListFragment"
+        android:name="ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemlist.TodoItemListFragment"
         android:label="@string/my_to_do_list"
         tools:layout="@layout/fragment_todo_item_list">
         <action
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/todoItemDetailsFragment"
-        android:name="ru.claus42.anothertodolistapp.presentation.views.fragments.TodoItemDetailsFragment"
+        android:name="ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails.TodoItemDetailsFragment"
         android:label="Todo Item Details"
         tools:layout="@layout/fragment_todo_item_details">
         <argument

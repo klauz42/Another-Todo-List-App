@@ -1,6 +1,8 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments
+package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -9,7 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.DatePicker
 import android.widget.PopupMenu
+import android.widget.TimePicker
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -35,11 +39,15 @@ import javax.inject.Inject
 
 private const val DIALOG_SAVE_CONFIRM = "SaveConfirmation"
 private const val DIALOG_DELETE_CONFIRM = "DeleteConfirmation"
+private const val TIME_PICKER = "TimePicker"
+private const val DATE_PICKER = "DatePicker"
 
 class TodoItemDetailsFragment :
     Fragment(),
     SaveConfirmationDialogFragment.SaveConfirmationListener,
-    DeleteConfirmationDialogFragment.DeleteConfirmationListener {
+    DeleteConfirmationDialogFragment.DeleteConfirmationListener,
+    DatePickerDialog.OnDateSetListener,
+    TimePickerDialog.OnTimeSetListener {
 
     private lateinit var detailsFragmentComponent: FragmentComponent
     private val activity: MainActivity by lazy { requireActivity() as MainActivity }
@@ -54,13 +62,14 @@ class TodoItemDetailsFragment :
 
     private var descriptionWatcher: DescriptionWatcher? = null
 
+    private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
     private fun LocalDateTime.getFormatted(): String {
-        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
         return this.format(formatter)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         detailsFragmentComponent =
             DaggerFragmentComponent.builder().activityComponent(activity.activityComponent).build()
         detailsFragmentComponent.inject(this)
@@ -167,7 +176,8 @@ class TodoItemDetailsFragment :
     private fun shouldUpdateUI(item: TodoItemDomainEntity): Boolean {
         return with(binding.content) {
             priorityChoose.text != getString(item.itemPriority.toStringResId())
-                    || taskDescriptionEditText.text.toString() != viewModel.todoItem.value?.description
+                    || taskDescriptionEditText.text.toString() != viewModel.getDescription()
+                    || deadlineDate.text != viewModel.getDeadline()?.format(formatter)
         }
     }
 
@@ -241,12 +251,38 @@ class TodoItemDetailsFragment :
         }
     }
 
+    private fun showDatePickerDialog() {
+        val dateTime = viewModel.getDeadline()
+        dateTime?.let {
+            val datePicker = DatePickerDialogFragment
+                .newInstance(it.year, it.monthValue, it.dayOfMonth)
+            datePicker.show(parentFragmentManager, DATE_PICKER)
+        }
+    }
+
+    private fun showTimePickerDialog() {
+        val dateTime = viewModel.getDeadline()
+        dateTime?.let {
+            val timePicker = TimePickerDialogFragment.newInstance(it.hour, it.minute)
+            timePicker.show(parentFragmentManager, TIME_PICKER)
+        }
+    }
+
     private fun updateDeadlineTextView(isEnabled: Boolean) {
         binding.content.apply {
             val color =
                 if (isEnabled) R.color.deadline_date_selector else R.color.deadline_off_color
+
             deadlineDate.setTextColor(ContextCompat.getColorStateList(requireContext(), color))
             deadlineDate.isClickable = isEnabled
+
+            if (isEnabled) {
+                deadlineDate.setOnClickListener {
+                    showDatePickerDialog()
+                }
+            } else {
+                deadlineDate.setOnClickListener(null)
+            }
         }
     }
 
@@ -329,4 +365,14 @@ class TodoItemDetailsFragment :
     }
 
     override fun onDeleteCancel() {}
+
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        //month + 1 because DatePicker numbers month from 0 and LocalDate from 1
+        viewModel.updateDeadlineDate(year, month + 1, dayOfMonth)
+        showTimePickerDialog()
+    }
+
+    override fun onTimeSet(view: TimePicker?, hour: Int, minute: Int) {
+        viewModel.updateDeadlineTime(hour, minute)
+    }
 }

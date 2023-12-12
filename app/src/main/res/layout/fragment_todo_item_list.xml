@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.views.fragments.TodoItemListFragment">
+    tools:context=".presentation.views.fragments.todoitemlist.TodoItemListFragment">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/item_list_coordinator_layout"

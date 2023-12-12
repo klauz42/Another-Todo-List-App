@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments
+package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails
 
 import android.app.Dialog
 import android.content.Context
@@ -7,26 +7,26 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import ru.claus42.anothertodolistapp.R
 
-class SaveConfirmationDialogFragment() : DialogFragment() {
-    interface SaveConfirmationListener {
-        fun onSaveConfirmed()
-        fun onExitWithoutSaving()
-        fun onSaveCancel()
+
+class DeleteConfirmationDialogFragment() : DialogFragment() {
+    interface DeleteConfirmationListener {
+        fun onDeleteConfirmed()
+        fun onDeleteCancel()
     }
 
-    private var listener: SaveConfirmationListener? = null
+    private var listener: DeleteConfirmationListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = context as? SaveConfirmationListener
+        listener = context as? DeleteConfirmationListener
         if (listener == null) {
             for (fragment in parentFragmentManager.fragments) {
-                if (fragment is SaveConfirmationListener)
+                if (fragment is DeleteConfirmationListener)
                     listener = fragment
             }
         }
         if (listener == null) {
-            throw ClassCastException("$context must implement SaveConfirmationListener")
+            throw ClassCastException("$context must implement DeleteConfirmationListener")
         }
     }
 
@@ -39,16 +39,13 @@ class SaveConfirmationDialogFragment() : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             builder
-                .setTitle(getString(R.string.save_changes_confirmation_title))
-                .setMessage(getString(R.string.do_you_want_to_save_changes))
+                .setTitle(getString(R.string.deleting_confirmation_title))
+                .setMessage(getString(R.string.do_you_want_to_delete_todo))
                 .setPositiveButton(getString(R.string.yes_save)) { _, _ ->
-                    listener?.onSaveConfirmed()
-                }
-                .setNegativeButton(getString(R.string.no_save)) { _, _ ->
-                    listener?.onExitWithoutSaving()
+                    listener?.onDeleteConfirmed()
                 }
                 .setNeutralButton(getString(R.string.cancel_save)) { _, _ ->
-                    listener?.onSaveCancel()
+                    listener?.onDeleteCancel()
                 }
                 .setCancelable(true)
 

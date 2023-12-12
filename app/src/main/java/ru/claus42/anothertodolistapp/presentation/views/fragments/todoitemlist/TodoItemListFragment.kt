@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments
+package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemlist
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle

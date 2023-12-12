@@ -104,11 +104,56 @@ class TodoItemDetailsViewModel @Inject constructor(
         }
     }
 
+    fun getDescription(): String? {
+        return _todoItem.value?.description
+    }
+
     fun updateDeadlineIsEnabled(isEnabled: Boolean) {
         _todoItem.value = _todoItem.value?.copy(
             isDeadlineEnabled = isEnabled,
             changedAt = LocalDateTime.now()
         )
+    }
+
+    fun getDeadline(): LocalDateTime? {
+        return _todoItem.value?.deadline
+    }
+
+    fun updateDeadline(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {
+        _todoItem.value?.let {
+            val newDeadline = LocalDateTime.of(year, month, dayOfMonth, hourOfDay, minute)
+            _todoItem.value = _todoItem.value?.copy(
+                deadline = newDeadline,
+                changedAt = LocalDateTime.now()
+            )
+        }
+    }
+
+    fun updateDeadlineDate(year: Int, month: Int, dayOfMonth: Int) {
+        _todoItem.value?.let {
+            val hourOfDay = it.deadline.hour
+            val minute = it.deadline.minute
+
+            val newDeadline = LocalDateTime.of(year, month, dayOfMonth, hourOfDay, minute)
+            _todoItem.value = _todoItem.value?.copy(
+                deadline = newDeadline,
+                changedAt = LocalDateTime.now()
+            )
+        }
+    }
+
+    fun updateDeadlineTime(hourOfDay: Int, minute: Int) {
+        _todoItem.value?.let {
+            val year = it.deadline.year
+            val month = it.deadline.month
+            val dayOfMonth = it.deadline.dayOfMonth
+
+            val newDeadline = LocalDateTime.of(year, month, dayOfMonth, hourOfDay, minute)
+            _todoItem.value = _todoItem.value?.copy(
+                deadline = newDeadline,
+                changedAt = LocalDateTime.now()
+            )
+        }
     }
 
     var isTextEditScrolledDown = false
