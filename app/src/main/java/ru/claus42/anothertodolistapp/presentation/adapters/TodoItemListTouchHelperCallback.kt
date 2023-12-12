@@ -79,7 +79,7 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
         newMovingPosition = target.adapterPosition
         adapter.onMoveItemUIUpdate(viewHolder, target)
 
-        return false
+        return true
     }
 
     private fun isLTR(view: View) =

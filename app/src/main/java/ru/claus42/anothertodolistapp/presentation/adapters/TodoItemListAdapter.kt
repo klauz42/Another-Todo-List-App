@@ -14,6 +14,7 @@ import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.Collections
 import java.util.UUID
 
 
@@ -142,18 +143,20 @@ class TodoItemListAdapter(
     }
 
     override fun onMoveItem(oldPosition: Int, newPosition: Int) {
-        val moveFromId = items[oldPosition].id
-        val moveToId = items[newPosition].id
+        val shift = if (oldPosition < newPosition) -1 else if (oldPosition > newPosition) +1 else 0
 
-        items.add(newPosition, items.removeAt(oldPosition))
+        val moveFromId = items[newPosition].id
+        val moveToId = items[newPosition + shift].id
 
-        moveItemListener(moveFromId, moveToId)
+        if (moveFromId != moveToId)
+            moveItemListener(moveFromId, moveToId)
     }
 
     override fun onMoveItemUIUpdate(fromViewHolder: ViewHolder, toViewHolder: ViewHolder) {
         val fromPosition = fromViewHolder.adapterPosition
         val toPosition = toViewHolder.adapterPosition
 
+        Collections.swap(items, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
 
         updateItemBackground(fromViewHolder, toPosition)
