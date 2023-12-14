@@ -64,15 +64,18 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--todo: accessibility-->
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/info_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="0dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:clickable="true"
             android:src="@drawable/info_outline"
             app:tint="@color/gray"
+            android:background="?android:selectableItemBackground"
             android:importantForAccessibility="no" />
     </LinearLayout>
 </layout>

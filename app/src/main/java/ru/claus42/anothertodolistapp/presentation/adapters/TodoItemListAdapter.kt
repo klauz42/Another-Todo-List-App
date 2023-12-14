@@ -213,9 +213,10 @@ class TodoItemListAdapter(
                 } else {
                     itemDeadline.isVisible = false
                 }
+                infoIcon.setOnClickListener {
+                    itemClickListener(item.id)
+                }
             }
-
-            itemView.setOnClickListener { itemClickListener(item.id) }
         }
     }
 
