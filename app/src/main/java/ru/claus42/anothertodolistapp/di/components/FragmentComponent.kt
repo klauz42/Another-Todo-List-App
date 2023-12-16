@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Component
 import ru.claus42.anothertodolistapp.di.modules.ViewModelModule
 import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
-import ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails.TodoItemDetailsFragment
-import ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemlist.TodoItemListFragment
+import ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments.TodoItemDetailsFragment
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.fragments.TodoItemListFragment
 
 
 @FragmentScope

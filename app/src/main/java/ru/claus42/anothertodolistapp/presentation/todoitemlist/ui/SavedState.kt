@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.ui.custom
+package ru.claus42.anothertodolistapp.presentation.todoitemlist.ui
 
 import android.os.Bundle
 import android.os.Parcel

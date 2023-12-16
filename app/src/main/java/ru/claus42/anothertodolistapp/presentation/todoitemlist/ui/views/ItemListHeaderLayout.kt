@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.ui.custom.views
+package ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.views
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -8,7 +8,7 @@ import android.util.TypedValue
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import ru.claus42.anothertodolistapp.R
-import ru.claus42.anothertodolistapp.presentation.ui.custom.SavedState
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.SavedState
 
 const val VISIBILITY_KEY = "visibility"
 

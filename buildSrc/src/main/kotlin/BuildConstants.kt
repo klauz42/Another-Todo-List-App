@@ -5,6 +5,7 @@ object Versions {
     const val room              = "2.6.0"
     const val material          = "1.9.0"
     const val firebase          = "32.5.0"
+    const val firebase_ui       = "8.0.2"
     const val constraintLayout  = "2.1.4"
     const val lifecycle         = "2.6.2"
     const val junit             = "4.13.2"
@@ -44,6 +45,12 @@ object Dependencies {
         const val bom = "com.google.firebase:firebase-bom:${Versions.firebase}"
         const val auth = "com.google.firebase:firebase-auth-ktx"
         const val firestore = "com.google.firebase:firebase-firestore-ktx"
+        const val storage = "com.google.firebase:firebase-storage-ktx"
+        object UI {
+            const val firestore = "com.firebaseui:firebase-ui-firestore:${Versions.firebase_ui}"
+            const val auth = "com.firebaseui:firebase-ui-auth:${Versions.firebase_ui}"
+        }
+
     }
 
     const val constraintLayout =

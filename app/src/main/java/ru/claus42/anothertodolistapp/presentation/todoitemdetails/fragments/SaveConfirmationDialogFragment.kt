@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails
+package ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments
 
 import android.app.Dialog
 import android.content.Context
@@ -7,26 +7,26 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import ru.claus42.anothertodolistapp.R
 
-
-class DeleteConfirmationDialogFragment() : DialogFragment() {
-    interface DeleteConfirmationListener {
-        fun onDeleteConfirmed()
-        fun onDeleteCancel()
+class SaveConfirmationDialogFragment() : DialogFragment() {
+    interface SaveConfirmationListener {
+        fun onSaveConfirmed()
+        fun onExitWithoutSaving()
+        fun onSaveCancel()
     }
 
-    private var listener: DeleteConfirmationListener? = null
+    private var listener: SaveConfirmationListener? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = context as? DeleteConfirmationListener
+        listener = context as? SaveConfirmationListener
         if (listener == null) {
             for (fragment in parentFragmentManager.fragments) {
-                if (fragment is DeleteConfirmationListener)
+                if (fragment is SaveConfirmationListener)
                     listener = fragment
             }
         }
         if (listener == null) {
-            throw ClassCastException("$context must implement DeleteConfirmationListener")
+            throw ClassCastException("$context must implement SaveConfirmationListener")
         }
     }
 
@@ -39,13 +39,16 @@ class DeleteConfirmationDialogFragment() : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             builder
-                .setTitle(getString(R.string.deleting_confirmation_title))
-                .setMessage(getString(R.string.do_you_want_to_delete_todo))
+                .setTitle(getString(R.string.save_changes_confirmation_title))
+                .setMessage(getString(R.string.do_you_want_to_save_changes))
                 .setPositiveButton(getString(R.string.yes_save)) { _, _ ->
-                    listener?.onDeleteConfirmed()
+                    listener?.onSaveConfirmed()
+                }
+                .setNegativeButton(getString(R.string.no_save)) { _, _ ->
+                    listener?.onExitWithoutSaving()
                 }
                 .setNeutralButton(getString(R.string.cancel_save)) { _, _ ->
-                    listener?.onDeleteCancel()
+                    listener?.onSaveCancel()
                 }
                 .setCancelable(true)
 

@@ -5,7 +5,7 @@ import dagger.BindsInstance
 import dagger.Component
 import ru.claus42.anothertodolistapp.di.scopes.ActivityScope
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
-import ru.claus42.anothertodolistapp.presentation.views.activities.MainActivity
+import ru.claus42.anothertodolistapp.presentation.MainActivity
 
 
 @ActivityScope

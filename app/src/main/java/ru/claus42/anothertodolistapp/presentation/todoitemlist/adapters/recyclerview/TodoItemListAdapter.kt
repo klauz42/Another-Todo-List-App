@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.adapters
+package ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.itemtouchhelper.TodoItemListTouchHelperCallback
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Collections

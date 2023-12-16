@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemlist
+package ru.claus42.anothertodolistapp.presentation.todoitemlist.fragments
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -26,9 +26,9 @@ import ru.claus42.anothertodolistapp.di.components.FragmentComponent
 import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
-import ru.claus42.anothertodolistapp.presentation.adapters.TodoItemListAdapter
-import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
-import ru.claus42.anothertodolistapp.presentation.views.activities.MainActivity
+import ru.claus42.anothertodolistapp.presentation.MainActivity
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.recyclerview.TodoItemListAdapter
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.stateholders.TodoItemListViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.abs

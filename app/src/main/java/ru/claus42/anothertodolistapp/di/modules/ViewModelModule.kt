@@ -6,9 +6,9 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
-import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemDetailsViewModel
-import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemListViewModel
-import ru.claus42.anothertodolistapp.presentation.viewmodels.ViewModelFactory
+import ru.claus42.anothertodolistapp.presentation.ViewModelFactory
+import ru.claus42.anothertodolistapp.presentation.todoitemdetails.stateholders.TodoItemDetailsViewModel
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.stateholders.TodoItemListViewModel
 import kotlin.reflect.KClass
 
 @Module

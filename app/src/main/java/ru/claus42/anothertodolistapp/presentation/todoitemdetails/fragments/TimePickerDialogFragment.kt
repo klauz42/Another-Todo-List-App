@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails
+package ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments
 
 import android.app.Dialog
 import android.app.TimePickerDialog
@@ -7,9 +7,6 @@ import android.os.Bundle
 import android.text.format.DateFormat
 import androidx.fragment.app.DialogFragment
 
-
-private const val HOUR = "hour"
-private const val MINUTE = "minute"
 
 class TimePickerDialogFragment : DialogFragment() {
 
@@ -39,6 +36,9 @@ class TimePickerDialogFragment : DialogFragment() {
     }
 
     companion object {
+        private const val HOUR = "hour"
+        private const val MINUTE = "minute"
+
         fun newInstance(hourOfDay: Int, minute: Int): TimePickerDialogFragment {
             val args = Bundle()
             args.putInt(HOUR, hourOfDay)

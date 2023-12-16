@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.adapters
+package ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.itemtouchhelper
 
 import android.content.Context
 import android.graphics.Canvas

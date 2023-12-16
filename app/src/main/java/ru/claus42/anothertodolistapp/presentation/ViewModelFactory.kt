@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.viewmodels
+package ru.claus42.anothertodolistapp.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

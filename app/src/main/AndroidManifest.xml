@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:name=".MainApp"
         android:allowBackup="true"
@@ -14,15 +15,18 @@
         android:theme="@style/Theme.AnotherTodoListApp"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.views.activities.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.AnotherTodoListApp">
+            android:name=".presentation.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".presentation.auth.activities.SignInActivity"
+            android:exported="false"
+            android:parentActivityName=".presentation.MainActivity" />
     </application>
 
 </manifest>

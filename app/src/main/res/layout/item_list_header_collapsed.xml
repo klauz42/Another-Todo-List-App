@@ -2,7 +2,7 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout
+<ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.views.ItemListHeaderLayout
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:id="@+id/list_header_collapsed">
@@ -29,5 +29,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:importantForAccessibility="no" />
 
-</ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout>
+</ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.views.ItemListHeaderLayout>
 </layout>

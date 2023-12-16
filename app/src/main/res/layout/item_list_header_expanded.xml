@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-<ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout
+<ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.views.ItemListHeaderLayout
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_list_header_expanded_header_height"
     android:id="@+id/list_header_expanded"
@@ -46,5 +46,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:importantForAccessibility="no" />
 
-</ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout>
+</ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.views.ItemListHeaderLayout>
 </layout>

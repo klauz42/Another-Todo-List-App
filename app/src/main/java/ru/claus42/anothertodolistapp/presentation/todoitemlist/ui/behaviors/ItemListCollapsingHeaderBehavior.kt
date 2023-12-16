@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.ui.custom.behaviors
+package ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.behaviors
 
 
 import android.content.Context
@@ -8,8 +8,8 @@ import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.appbar.AppBarLayout
 import ru.claus42.anothertodolistapp.R
-import ru.claus42.anothertodolistapp.presentation.ui.custom.SavedState
-import ru.claus42.anothertodolistapp.presentation.ui.custom.views.ItemListHeaderLayout
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.SavedState
+import ru.claus42.anothertodolistapp.presentation.todoitemlist.ui.views.ItemListHeaderLayout
 import kotlin.math.abs
 
 const val LAST_CHILD_HEIGHT_KEY = "lastChildHeight"

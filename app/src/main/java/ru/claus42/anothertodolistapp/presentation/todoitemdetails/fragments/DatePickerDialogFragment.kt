@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails
+package ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
@@ -7,10 +7,6 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 
-
-private const val YEAR = "year"
-private const val MONTH = "month"
-private const val DAY = "day"
 
 class DatePickerDialogFragment : DialogFragment() {
 
@@ -42,6 +38,10 @@ class DatePickerDialogFragment : DialogFragment() {
     }
 
     companion object {
+        private const val YEAR = "year"
+        private const val MONTH = "month"
+        private const val DAY = "day"
+
         fun newInstance(year: Int, month: Int, dayOfMonth: Int): DatePickerDialogFragment {
             val args = Bundle()
             args.putInt(YEAR, year)

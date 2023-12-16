@@ -74,6 +74,8 @@ dependencies {
     implementation(platform(Dependencies.Firebase.bom))
     implementation(Dependencies.Firebase.auth)
     implementation(Dependencies.Firebase.firestore)
+    implementation(Dependencies.Firebase.UI.auth)
+    implementation(Dependencies.Firebase.UI.firestore)
 
     implementation(Dependencies.Dagger.dagger)
     kapt(Dependencies.Dagger.compiler)

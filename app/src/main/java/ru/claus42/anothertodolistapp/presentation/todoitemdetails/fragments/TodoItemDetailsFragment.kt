@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.views.fragments.todoitemdetails
+package ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -28,19 +28,14 @@ import ru.claus42.anothertodolistapp.di.components.FragmentComponent
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
-import ru.claus42.anothertodolistapp.presentation.viewmodels.TodoItemDetailsViewModel
-import ru.claus42.anothertodolistapp.presentation.views.activities.MainActivity
+import ru.claus42.anothertodolistapp.presentation.MainActivity
+import ru.claus42.anothertodolistapp.presentation.todoitemdetails.stateholders.TodoItemDetailsViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.UUID
 import javax.inject.Inject
 
-
-private const val DIALOG_SAVE_CONFIRM = "SaveConfirmation"
-private const val DIALOG_DELETE_CONFIRM = "DeleteConfirmation"
-private const val TIME_PICKER = "TimePicker"
-private const val DATE_PICKER = "DatePicker"
 
 class TodoItemDetailsFragment :
     Fragment(),
@@ -254,8 +249,8 @@ class TodoItemDetailsFragment :
     private fun showDatePickerDialog() {
         val dateTime = viewModel.getDeadline()
         dateTime?.let {
-            val datePicker = DatePickerDialogFragment
-                .newInstance(it.year, it.monthValue, it.dayOfMonth)
+            val datePicker =
+                DatePickerDialogFragment.newInstance(it.year, it.monthValue, it.dayOfMonth)
             datePicker.show(parentFragmentManager, DATE_PICKER)
         }
     }
@@ -374,5 +369,12 @@ class TodoItemDetailsFragment :
 
     override fun onTimeSet(view: TimePicker?, hour: Int, minute: Int) {
         viewModel.updateDeadlineTime(hour, minute)
+    }
+
+    companion object {
+        private const val DIALOG_SAVE_CONFIRM = "SaveConfirmation"
+        private const val DIALOG_DELETE_CONFIRM = "DeleteConfirmation"
+        private const val TIME_PICKER = "TimePicker"
+        private const val DATE_PICKER = "DatePicker"
     }
 }

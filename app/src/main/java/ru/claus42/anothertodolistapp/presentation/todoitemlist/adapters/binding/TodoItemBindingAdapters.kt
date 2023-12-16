@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.binding_adapters
+package ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.binding
 
 import android.content.res.ColorStateList
 import android.graphics.Paint

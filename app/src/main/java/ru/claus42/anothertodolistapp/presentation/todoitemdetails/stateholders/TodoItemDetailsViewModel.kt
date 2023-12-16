@@ -1,4 +1,4 @@
-package ru.claus42.anothertodolistapp.presentation.viewmodels
+package ru.claus42.anothertodolistapp.presentation.todoitemdetails.stateholders
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
