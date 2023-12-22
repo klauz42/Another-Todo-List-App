@@ -53,6 +53,10 @@ android {
 
 dependencies {
 
+    // explicit determine version to prevent FirebaseUI Auth PendingIntent exception
+    // throwing when Target SDK is 34+
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
     implementation(Dependencies.Android.core)
 
     testImplementation(Dependencies.Testing.junit)
