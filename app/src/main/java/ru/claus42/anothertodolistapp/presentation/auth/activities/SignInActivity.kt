@@ -2,74 +2,67 @@ package ru.claus42.anothertodolistapp.presentation.auth.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import ru.claus42.anothertodolistapp.R
+import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.ActivitySignInBinding
+import ru.claus42.anothertodolistapp.di.components.ActivityComponent
+import ru.claus42.anothertodolistapp.di.components.DaggerActivityComponent
+import ru.claus42.anothertodolistapp.domain.authentication.Authenticator
+import ru.claus42.anothertodolistapp.domain.authentication.SessionManager
+import ru.claus42.anothertodolistapp.domain.models.entities.AuthResult
 import ru.claus42.anothertodolistapp.presentation.MainActivity
+import javax.inject.Inject
 
 
 class SignInActivity : AppCompatActivity() {
     private var _binding: ActivitySignInBinding? = null
     private val binding get() = _binding!!
 
-    private val signIn: ActivityResultLauncher<Intent> =
-        registerForActivityResult(FirebaseAuthUIActivityResultContract(), this::onSignInResult)
+    private lateinit var activityComponent: ActivityComponent
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    @Inject
+    lateinit var sessionManager: SessionManager
+
+    @Inject
+    lateinit var authenticator: Authenticator
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        activityComponent = DaggerActivityComponent.builder()
+            .appComponent(appComponent)
+            .activity(this).build()
+        activityComponent.inject(this)
+
+        super.onCreate(savedInstanceState)
 
         _binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
-    }
 
-    override fun onStart() {
-        super.onStart()
+        authenticator.setOnSignInCallback {
+            onSignInResult(it)
+        }
 
-        if (Firebase.auth.currentUser == null) {
-            val signInIntent = AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setLogo(R.mipmap.ic_launcher)
-                .setTheme(R.style.Theme_AnotherTodoListApp)
-                .setAvailableProviders(
-                    listOf(
-                        AuthUI.IdpConfig.EmailBuilder().build(),
-                    )
-                )
-                .build()
-            signIn.launch(signInIntent)
+        if (!sessionManager.isLoggedIn()) {
+            authenticator.startSignInActivity()
         } else {
             goToMainActivity()
         }
     }
 
-    private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-        when (result.resultCode) {
-            RESULT_OK -> {
+    private fun onSignInResult(result: AuthResult) {
+        when (result) {
+            AuthResult.Success -> {
                 Log.d(TAG, "Sign in successful!")
                 goToMainActivity()
             }
 
-            RESULT_CANCELED -> {
+            AuthResult.Cancelled -> {
                 Log.w(TAG, "Sign in canceled")
                 finishAffinity()
             }
 
-            else -> {
-                val response = result.idpResponse
-                if (response == null) {
-                    Log.w(TAG, "Sign in error, response == null")
-                } else {
-                    Log.w(TAG, "Sign in error", response.error)
-                }
-                //todo: add error handling
+            is AuthResult.Error -> {
+                Log.w(TAG, "Sign in error", result.error)
                 finishAffinity()
             }
         }

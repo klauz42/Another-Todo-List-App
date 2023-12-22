@@ -25,6 +25,7 @@
 
         <activity
             android:name=".presentation.auth.activities.SignInActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:parentActivityName=".presentation.MainActivity" />
     </application>
