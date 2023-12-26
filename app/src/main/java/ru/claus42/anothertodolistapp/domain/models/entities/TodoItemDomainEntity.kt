@@ -17,5 +17,19 @@ data class TodoItemDomainEntity(
     val isDeadlineEnabled: Boolean = false,
     val done: Boolean = false,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val changedAt: LocalDateTime = LocalDateTime.now()
-)
+    val changedAt: LocalDateTime = LocalDateTime.now(),
+) {
+    fun equalsByContent(other: TodoItemDomainEntity?): Boolean {
+        return if (other == null) {
+            return false
+        } else (
+                id == other.id
+                        && description == other.description
+                        && itemPriority == other.itemPriority
+                        && deadline == other.deadline
+                        && isDeadlineEnabled == other.isDeadlineEnabled
+                        && done == other.done
+                        && createdAt == other.createdAt
+                )
+    }
+}

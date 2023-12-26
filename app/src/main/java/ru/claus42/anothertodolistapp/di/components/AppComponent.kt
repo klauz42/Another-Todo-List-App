@@ -3,6 +3,7 @@ package ru.claus42.anothertodolistapp.di.components
 import dagger.Component
 import ru.claus42.anothertodolistapp.MainApp
 import ru.claus42.anothertodolistapp.di.modules.AppModule
+import ru.claus42.anothertodolistapp.di.modules.DatabaseModule
 import ru.claus42.anothertodolistapp.di.modules.TodoItemRepositoryBindModule
 import ru.claus42.anothertodolistapp.di.scopes.AppScope
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
@@ -13,6 +14,7 @@ import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
     modules = [
         AppModule::class,
         TodoItemRepositoryBindModule::class,
+        DatabaseModule::class,
     ]
 )
 interface AppComponent {

@@ -5,6 +5,7 @@ import ru.claus42.anothertodolistapp.data.local.models.entities.TodoItemLocalDat
 import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 
+
 fun DataItemPriority.toPriority(): ItemPriority {
     return when (this) {
         DataItemPriority.LOW -> ItemPriority.LOW
@@ -22,7 +23,7 @@ fun TodoItemLocalDataEntity.toDomainModel(): TodoItemDomainEntity {
         isDeadlineEnabled = this.isDeadlineEnabled,
         done = this.done,
         createdAt = this.createdAt,
-        changedAt = this.changedAt
+        changedAt = this.changedAt,
     )
 }
 
@@ -44,6 +45,7 @@ fun TodoItemDomainEntity.toLocalDataModel(): TodoItemLocalDataEntity {
         isDeadlineEnabled = this.isDeadlineEnabled,
         done = this.done,
         createdAt = this.createdAt,
-        changedAt = this.changedAt
+        changedAt = this.changedAt,
+        orderIndex = null,
     )
 }

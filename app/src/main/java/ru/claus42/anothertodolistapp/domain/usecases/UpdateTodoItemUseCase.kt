@@ -8,7 +8,7 @@ import javax.inject.Inject
 class UpdateTodoItemUseCase @Inject constructor(
     private val repository: TodoItemRepository
 ) {
-    operator fun invoke(newItem: TodoItemDomainEntity) {
+    suspend operator fun invoke(newItem: TodoItemDomainEntity) {
         repository.updateTodoItem(newItem)
     }
 }

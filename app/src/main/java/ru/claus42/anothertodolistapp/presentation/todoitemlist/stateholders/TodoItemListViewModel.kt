@@ -81,9 +81,9 @@ class TodoItemListViewModel @Inject constructor(
         }
     }
 
-    fun deleteTodoItem(id: UUID) {
+    fun deleteTodoItem(item: TodoItemDomainEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            deleteTodoItemUseCase(id)
+            deleteTodoItemUseCase(item)
         }
     }
 

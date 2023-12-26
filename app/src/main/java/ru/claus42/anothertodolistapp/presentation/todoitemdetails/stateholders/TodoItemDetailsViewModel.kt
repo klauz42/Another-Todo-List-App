@@ -33,8 +33,8 @@ class TodoItemDetailsViewModel @Inject constructor(
 
     private var initialItem: TodoItemDomainEntity? = null
 
-    val isItemChanged get() = (_todoItem.value != initialItem)
-
+    val isItemChanged
+        get() = !(_todoItem.value?.equalsByContent(initialItem) ?: (initialItem == null))
     val todoItemResult: LiveData<DataResult<TodoItemDomainEntity>> =
         todoItemIdLiveData.switchMap { id ->
             getItemUseCase(id).asLiveData(viewModelScope.coroutineContext)
@@ -47,7 +47,7 @@ class TodoItemDetailsViewModel @Inject constructor(
         _todoItem.addSource(todoItemResult) { result ->
             if (result is DataResult.Success) {
                 initialItem = initialItem ?: result.data.copy()
-                _todoItem.value = result.data
+                _todoItem.value = result.data.copy()
             }
         }
     }
@@ -79,7 +79,7 @@ class TodoItemDetailsViewModel @Inject constructor(
     }
 
     fun deleteTodoItem() {
-        todoId?.let {
+        _todoItem.value?.let {
             viewModelScope.launch(Dispatchers.IO) {
                 deleteTodoItemUseCase(it)
             }

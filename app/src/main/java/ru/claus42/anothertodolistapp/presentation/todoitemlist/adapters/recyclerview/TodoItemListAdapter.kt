@@ -27,7 +27,7 @@ class TodoItemListAdapter(
     private val itemClickListener: (UUID) -> Unit,
     private val doneCheckBoxListener: (UUID, Boolean) -> Unit,
     private val moveItemListener: (fromId: UUID, toId: UUID) -> Unit,
-    private val deleteItemListener: (UUID) -> Unit,
+    private val deleteItemListener: (TodoItemDomainEntity) -> Unit,
     private val undoItemDeletionListener: (() -> Unit) -> Unit
 ) : RecyclerView.Adapter<TodoItemListAdapter.TodoItemViewHolder>(),
     TodoItemListTouchHelperCallback.TodoItemListAdapter {
@@ -136,9 +136,8 @@ class TodoItemListAdapter(
         notifyItemRemoved(position)
         updateEdgeElementsBackgroundAfterDeletion(position)
 
-        val deletingId = items[position].id
         val deletingItem = items.removeAt(position)
-        deleteItemListener(deletingId)
+        deleteItemListener(deletingItem)
 
         showUndoDeletionSnackBar(position, deletingItem)
     }

@@ -1,9 +1,8 @@
 package ru.claus42.anothertodolistapp.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
+import ru.claus42.anothertodolistapp.data.local.TodoItemDao
 import ru.claus42.anothertodolistapp.data.local.models.entities.TodoItemLocalDataEntity
 import ru.claus42.anothertodolistapp.data.local.models.mappers.toDomainModel
 import ru.claus42.anothertodolistapp.data.local.models.mappers.toLocalDataModel
@@ -11,104 +10,68 @@ import ru.claus42.anothertodolistapp.di.scopes.AppScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
-import ru.claus42.anothertodolistapp.stub_stuff.stubTodoItemEntityList
 import java.util.UUID
 import javax.inject.Inject
 
+
 @AppScope
-class TodoItemRepositoryImpl @Inject constructor() : TodoItemRepository {
-    //todo: change it to real data sources
-    private val localDataList = stubTodoItemEntityList.toMutableList()
-    private val _todoItemsFlow =
-        MutableStateFlow<DataResult<List<TodoItemDomainEntity>>>(DataResult.Loading)
-    private val todoItemsFlow: StateFlow<DataResult<List<TodoItemDomainEntity>>> = _todoItemsFlow
+class TodoItemRepositoryImpl @Inject constructor(
+    private val todoItemDao: TodoItemDao
+) : TodoItemRepository {
 
     private var lastDeleted: TodoItemLocalDataEntity? = null
     private var lastDeletedPosition: Int? = null
 
-    private fun updateTodoItemsFlowFromLocalDataList() {
-        _todoItemsFlow.value = DataResult.Success(localDataList.map { it.toDomainModel() })
-    }
-
-    init {
-        updateTodoItemsFlowFromLocalDataList()
-    }
-
-    override fun getTodoItemList(): Flow<DataResult<List<TodoItemDomainEntity>>> = todoItemsFlow
-
-    override fun getTodoItem(id: UUID): Flow<DataResult<TodoItemDomainEntity>> {
-        return flowOf(DataResult.on {
-            var localDataItem: TodoItemLocalDataEntity? = null
-            for (item in localDataList) {
-                if (item.id == id)
-                    localDataItem = item
-            }
-
-            if (localDataItem == null) {
-                throw NoSuchElementException("No such item with uuid=$id")
-            }
-
-            localDataItem.toDomainModel()
-        }
-        )
-    }
-
-    override fun updateTodoItem(newItem: TodoItemDomainEntity) {
-        localDataList.forEachIndexed { i, item ->
-            if (newItem.id == item.id) {
-                localDataList[i] = newItem.toLocalDataModel()
-            }
-        }
-        updateTodoItemsFlowFromLocalDataList()
-    }
-
-    override fun updateDoneStatus(id: UUID, isDone: Boolean) {
-        localDataList.forEachIndexed { i, item ->
-            if (id == item.id) localDataList[i] = localDataList[i].copy(done = isDone)
-        }
-        updateTodoItemsFlowFromLocalDataList()
-    }
-
-    override fun deleteItem(id: UUID) {
-        localDataList.forEachIndexed { i, item ->
-            if (item.id == id) {
-                lastDeleted = item
-                lastDeletedPosition = i
+    override fun getTodoItems(): Flow<DataResult<List<TodoItemDomainEntity>>> =
+        flow {
+            emit(DataResult.loading())
+            try {
+                todoItemDao.getTodoItems().collect { cachedTodoItems ->
+                    emit(DataResult.Success(cachedTodoItems.map { it.toDomainModel() }))
+                }
+            } catch (e: Exception) {
+                emit(DataResult.Error(e))
             }
         }
 
-        localDataList.remove(localDataList.find { it.id == id })
+    override fun getTodoItem(id: UUID): Flow<DataResult<TodoItemDomainEntity>> = flow {
+        emit(DataResult.loading())
 
-        updateTodoItemsFlowFromLocalDataList()
+        try {
+            todoItemDao.getTodoItem(id).collect { item ->
+                emit(DataResult.Success(item.toDomainModel()))
+            }
+        } catch (e: Exception) {
+            emit(DataResult.Error(e))
+        }
     }
 
-    override fun moveItem(fromId: UUID, toId: UUID) {
-        if (fromId == toId) return
-
-        val fromIndex = localDataList.indexOfFirst { it.id == fromId }
-        val movingItem = localDataList.removeAt(fromIndex)
-
-        val toIndex = localDataList.indexOfFirst { it.id == toId }
-        val targetIndex = if (fromIndex <= toIndex) toIndex + 1 else toIndex
-
-        localDataList.add(targetIndex, movingItem)
-
-        updateTodoItemsFlowFromLocalDataList()
+    override suspend fun updateTodoItem(newItem: TodoItemDomainEntity) {
+        todoItemDao.updateTodoItem(newItem.toLocalDataModel())
     }
 
-    private fun addItem(position: Int, item: TodoItemDomainEntity) {
-        localDataList.add(position, item.toLocalDataModel())
-        updateTodoItemsFlowFromLocalDataList()
+    override suspend fun updateDoneStatus(id: UUID, isDone: Boolean) {
+        todoItemDao.updateDoneStatus(id, isDone)
     }
 
-    override fun addItem(item: TodoItemDomainEntity) {
-        addItem(0, item)
+    override suspend fun deleteItem(item: TodoItemDomainEntity) {
+        lastDeleted = item.toLocalDataModel()
+        lastDeletedPosition = todoItemDao.deleteTodoItem(item.toLocalDataModel())
     }
 
-    override fun undoDeletion() {
+    override suspend fun moveItem(fromId: UUID, toId: UUID) {
+        todoItemDao.moveItem(fromId, toId)
+    }
+
+
+    override suspend fun addItem(item: TodoItemDomainEntity) {
+        todoItemDao.addTodoItem(0, item.toLocalDataModel())
+    }
+
+    override suspend fun undoDeletion() {
         lastDeleted?.let { item ->
             lastDeletedPosition?.let { pos ->
-                addItem(pos, item.toDomainModel())
+                todoItemDao.addTodoItem(pos, item)
             }
         }
     }

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class MoveItemInListUseCase @Inject constructor(
     private val repository: TodoItemRepository
 ) {
-    operator fun invoke(fromId: UUID, toId: UUID) {
+    suspend operator fun invoke(fromId: UUID, toId: UUID) {
         repository.moveItem(fromId, toId)
     }
 }

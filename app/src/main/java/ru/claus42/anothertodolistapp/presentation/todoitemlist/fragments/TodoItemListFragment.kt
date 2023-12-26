@@ -33,6 +33,7 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.abs
 
+
 @FragmentScope
 class TodoItemListFragment : Fragment(),
     AppBarLayout.OnOffsetChangedListener {
@@ -193,8 +194,8 @@ class TodoItemListFragment : Fragment(),
         val moveItemListener: (fromId: UUID, toId: UUID) -> Unit = { fromId, toId ->
             viewModel.moveTodoItemsInList(fromId, toId)
         }
-        val deleteItemListener: (UUID) -> Unit = { id ->
-            viewModel.deleteTodoItem(id)
+        val deleteItemListener: (TodoItemDomainEntity) -> Unit = { item ->
+            viewModel.deleteTodoItem(item)
         }
         val showUndoDeletionSnackbar: (() -> Unit) -> Unit = { updateUI ->
             val snackbar = Snackbar.make(
