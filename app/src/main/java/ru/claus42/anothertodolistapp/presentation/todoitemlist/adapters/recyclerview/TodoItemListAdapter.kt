@@ -132,7 +132,7 @@ class TodoItemListAdapter(
     }
 
     override fun onDeleteItem(viewHolder: ViewHolder) {
-        val position = viewHolder.adapterPosition
+        val position = viewHolder.bindingAdapterPosition
         notifyItemRemoved(position)
         updateEdgeElementsBackgroundAfterDeletion(position)
 
@@ -153,8 +153,8 @@ class TodoItemListAdapter(
     }
 
     override fun onMoveItemUIUpdate(fromViewHolder: ViewHolder, toViewHolder: ViewHolder) {
-        val fromPosition = fromViewHolder.adapterPosition
-        val toPosition = toViewHolder.adapterPosition
+        val fromPosition = fromViewHolder.bindingAdapterPosition
+        val toPosition = toViewHolder.bindingAdapterPosition
 
         Collections.swap(items, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
@@ -164,7 +164,7 @@ class TodoItemListAdapter(
     }
 
     override fun onChangeItemDoneStatus(viewHolder: ViewHolder) {
-        val position = viewHolder.adapterPosition
+        val position = viewHolder.bindingAdapterPosition
         val id = items[position].id
         val newDoneStatus = !items[position].done
 
@@ -182,7 +182,7 @@ class TodoItemListAdapter(
     }
 
     override fun onChangeItemDoneStatusUIUpdate(viewHolder: ViewHolder) {
-        val position = viewHolder.adapterPosition
+        val position = viewHolder.bindingAdapterPosition
         notifyItemChanged(position)
     }
 
