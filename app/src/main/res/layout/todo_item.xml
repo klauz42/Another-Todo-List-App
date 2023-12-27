@@ -9,7 +9,7 @@
             type="ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity" />
         <variable
             name="doneCheckBoxListener"
-            type="ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.recyclerview.DoneCheckBoxListener" />
+            type="ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.recyclerview.TodoItemListAdapter.DoneCheckBoxListener" />
     </data>
 
     <LinearLayout

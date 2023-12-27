@@ -5,34 +5,41 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
+import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.itemtouchhelper.TodoItemListTouchHelperCallback
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Collections
 import java.util.UUID
+import javax.inject.Inject
 
 
-interface DoneCheckBoxListener {
-    fun onChecked(checkBoxView: CompoundButton, id: UUID, isDone: Boolean)
-}
+@FragmentScope
+class TodoItemListAdapter @Inject constructor() :
+    RecyclerView.Adapter<TodoItemListAdapter.TodoItemViewHolder>(),
+    TodoItemListTouchHelperCallback.AdapterListener {
+    interface DoneCheckBoxListener {
+        fun onChecked(checkBoxView: CompoundButton, id: UUID, isDone: Boolean)
+    }
 
-class TodoItemListAdapter(
-    private val itemClickListener: (UUID) -> Unit,
-    private val doneCheckBoxListener: (UUID, Boolean) -> Unit,
-    private val moveItemListener: (fromId: UUID, toId: UUID) -> Unit,
-    private val deleteItemListener: (TodoItemDomainEntity) -> Unit,
-    private val undoItemDeletionListener: (() -> Unit) -> Unit
-) : RecyclerView.Adapter<TodoItemListAdapter.TodoItemViewHolder>(),
-    TodoItemListTouchHelperCallback.TodoItemListAdapter {
+    interface Listener {
+        fun itemClickListener(id: UUID)
+        fun doneCheckBoxListener(id: UUID, isDone: Boolean)
+        fun moveItemListener(fromId: UUID, toId: UUID)
+        fun deleteItemListener(item: TodoItemDomainEntity)
+        fun undoItemDeletionListener(onDeletionCallback: () -> Unit)
+    }
 
-    val itemTouchHelper = ItemTouchHelper(TodoItemListTouchHelperCallback(this))
+    private var listener: Listener? = null
+    fun setAdapterListener(listener: Listener?) {
+        this.listener = listener
+    }
 
     private val items = mutableListOf<TodoItemDomainEntity>()
 
@@ -90,7 +97,10 @@ class TodoItemListAdapter(
 
     override fun onBindViewHolder(holder: TodoItemViewHolder, position: Int) {
         val item = items[position]
-        holder.bind(item, itemClickListener, doneCheckBoxListener)
+
+        listener?.let {
+            holder.bind(item, it::itemClickListener, it::doneCheckBoxListener)
+        }
 
         updateItemBackground(holder, position)
     }
@@ -124,7 +134,7 @@ class TodoItemListAdapter(
     }
 
     private fun showUndoDeletionSnackBar(position: Int, item: TodoItemDomainEntity) {
-        undoItemDeletionListener {
+        listener?.undoItemDeletionListener {
             items.add(position, item)
             notifyItemInserted(position)
             updateEdgeElementsBackgroundAfterRestoration(position)
@@ -137,7 +147,7 @@ class TodoItemListAdapter(
         updateEdgeElementsBackgroundAfterDeletion(position)
 
         val deletingItem = items.removeAt(position)
-        deleteItemListener(deletingItem)
+        listener?.deleteItemListener(deletingItem)
 
         showUndoDeletionSnackBar(position, deletingItem)
     }
@@ -149,7 +159,7 @@ class TodoItemListAdapter(
         val moveToId = items[newPosition + shift].id
 
         if (moveFromId != moveToId)
-            moveItemListener(moveFromId, moveToId)
+            listener?.moveItemListener(moveFromId, moveToId)
     }
 
     override fun onMoveItemUIUpdate(fromViewHolder: ViewHolder, toViewHolder: ViewHolder) {
@@ -178,7 +188,7 @@ class TodoItemListAdapter(
         items.clear()
         items.addAll(newItems)
 
-        doneCheckBoxListener(id, newDoneStatus)
+        listener?.doneCheckBoxListener(id, newDoneStatus)
     }
 
     override fun onChangeItemDoneStatusUIUpdate(viewHolder: ViewHolder) {

@@ -17,21 +17,30 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.claus42.anothertodolistapp.R
+import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
+import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.max
 
 
-class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) :
+@FragmentScope
+class TodoItemListTouchHelperCallback @Inject constructor() :
     ItemTouchHelper.SimpleCallback(
         ItemTouchHelper.UP or ItemTouchHelper.DOWN,
         ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
-    ) {
-    interface TodoItemListAdapter {
+    )
+{
+    interface AdapterListener {
         fun onDeleteItem(viewHolder: ViewHolder)
         fun onMoveItem(oldPosition: Int, newPosition: Int)
         fun onMoveItemUIUpdate(fromViewHolder: ViewHolder, toViewHolder: ViewHolder)
         fun onChangeItemDoneStatus(viewHolder: ViewHolder)
         fun onChangeItemDoneStatusUIUpdate(viewHolder: ViewHolder)
+    }
+
+    private var adapterListener: AdapterListener? = null
+    fun setAdapterListener(listener: AdapterListener?) {
+        adapterListener = listener
     }
 
     private var oldMovingPosition = -1
@@ -76,8 +85,8 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
         viewHolder: ViewHolder,
         target: ViewHolder
     ): Boolean {
-        newMovingPosition = target.adapterPosition
-        adapter.onMoveItemUIUpdate(viewHolder, target)
+        newMovingPosition = target.bindingAdapterPosition
+        adapterListener?.onMoveItemUIUpdate(viewHolder, target)
 
         return true
     }
@@ -87,8 +96,10 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
 
     override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
         when (direction) {
-            getDeleteDirection(viewHolder) -> adapter.onDeleteItem(viewHolder)
-            getChangeDoneStatusDirection(viewHolder) -> adapter.onChangeItemDoneStatus(viewHolder)
+            getDeleteDirection(viewHolder) -> adapterListener?.onDeleteItem(viewHolder)
+            getChangeDoneStatusDirection(viewHolder) -> adapterListener?.onChangeItemDoneStatus(
+                viewHolder
+            )
         }
     }
 
@@ -96,14 +107,14 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
         super.onSelectedChanged(viewHolder, actionState)
         when (actionState) {
             ItemTouchHelper.ACTION_STATE_DRAG -> {
-                viewHolder?.adapterPosition?.let { oldMovingPosition = it }
+                viewHolder?.bindingAdapterPosition?.let { oldMovingPosition = it }
             }
 
             ItemTouchHelper.ACTION_STATE_IDLE -> {
                 if (oldMovingPosition != -1 && newMovingPosition != -1
                     && oldMovingPosition != newMovingPosition
                 ) {
-                    adapter.onMoveItem(oldMovingPosition, newMovingPosition)
+                    adapterListener?.onMoveItem(oldMovingPosition, newMovingPosition)
 
                     oldMovingPosition = -1
                     newMovingPosition = -1
@@ -257,7 +268,7 @@ class TodoItemListTouchHelperCallback(private val adapter: TodoItemListAdapter) 
             } else {
                 actualDx = dX
                 if (needToSwipeBack && isDoneThresholdCrossed) {
-                    viewHolderToSwipeBack?.let { adapter.onChangeItemDoneStatusUIUpdate(it) }
+                    viewHolderToSwipeBack?.let { adapterListener?.onChangeItemDoneStatusUIUpdate(it) }
                     viewHolderToSwipeBack = null
                     isDoneThresholdCrossed = false
                 }
