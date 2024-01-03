@@ -7,6 +7,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
@@ -216,7 +217,15 @@ class TodoItemDetailsViewController @Inject constructor(
     }
 
     private fun displayError(exception: Throwable) {
-        //todo: error displaying
+        val snackbar = Snackbar.make(
+            binding.detailsNestedScrollView,
+            fragment.requireContext().getString(
+                R.string.error_occurred_format,
+                exception.toString()
+            ),
+            Snackbar.LENGTH_SHORT,
+        )
+        snackbar.show()
     }
 
     private fun displayLoading() {

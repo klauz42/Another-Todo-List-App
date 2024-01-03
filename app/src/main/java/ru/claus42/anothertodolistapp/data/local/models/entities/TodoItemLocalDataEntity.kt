@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 
-enum class DataItemPriority {
+enum class LocalDataItemPriority {
     LOW, BASIC, IMPORTANT
 }
 
@@ -15,11 +15,11 @@ enum class DataItemPriority {
 data class TodoItemLocalDataEntity(
     @PrimaryKey val id: UUID,
     val description: String,
-    val priority: DataItemPriority,
+    val priority: LocalDataItemPriority,
     val deadline: LocalDateTime,
     @ColumnInfo(name = "is_deadline_enabled") val isDeadlineEnabled: Boolean,
     val done: Boolean,
     @ColumnInfo(name = "created_at") val createdAt: LocalDateTime,
     @ColumnInfo(name = "changed_at") val changedAt: LocalDateTime,
-    @ColumnInfo(name = "order_index") val orderIndex: Int?,
+    @ColumnInfo(name = "order_index") val orderIndex: Long,
 )

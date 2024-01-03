@@ -83,6 +83,8 @@ class TodoItemListViewController @Inject constructor(
 
         (binding.recyclerView.adapter as TodoItemListAdapter).submitList(itemList)
 
+        binding.loadingIndicator.visibility = View.GONE
+
         if (itemList.isEmpty()) {
             binding.apply {
                 noItemsMessage.visibility = View.VISIBLE
@@ -187,19 +189,27 @@ class TodoItemListViewController @Inject constructor(
     }
 
     private fun displayError(exception: Throwable) {
-        //todo: error displaying
+        val snackbar = Snackbar.make(
+            binding.itemListCoordinatorLayout,
+            fragment.requireContext().getString(
+                R.string.error_occurred_format,
+                exception.toString()
+            ),
+            Snackbar.LENGTH_SHORT,
+        )
+        snackbar.show()
     }
 
     private fun displayLoading() {
-        //todo: display loading animation
+        binding.loadingIndicator.visibility = View.VISIBLE
     }
 
     override fun itemClickListener(id: UUID) {
         navigateToDetails(id, false)
     }
 
-    override fun doneCheckBoxListener(id: UUID, isDone: Boolean) {
-        viewModel.updateTodoItemDoneStatus(id, isDone)
+    override fun doneCheckBoxListener(item: TodoItemDomainEntity, isDone: Boolean) {
+        viewModel.updateTodoItemDoneStatus(item, isDone)
     }
 
     override fun moveItemListener(fromId: UUID, toId: UUID) {

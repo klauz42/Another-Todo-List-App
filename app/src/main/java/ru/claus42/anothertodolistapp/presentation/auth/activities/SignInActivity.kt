@@ -42,7 +42,7 @@ class SignInActivity : AppCompatActivity() {
             onSignInResult(it)
         }
 
-        if (!sessionManager.isLoggedIn()) {
+        if (!sessionManager.isUserLoggedIn()) {
             authenticator.startSignInActivity()
         } else {
             goToMainActivity()

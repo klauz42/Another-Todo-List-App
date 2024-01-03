@@ -1,5 +1,7 @@
 package ru.claus42.anothertodolistapp.domain.authentication
 
 interface SessionManager {
-    fun isLoggedIn(): Boolean
+    fun isUserLoggedIn(): Boolean
+    fun getUserid(): String?
+
 }

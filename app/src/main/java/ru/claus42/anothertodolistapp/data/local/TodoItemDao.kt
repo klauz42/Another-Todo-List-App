@@ -33,9 +33,6 @@ interface TodoItemDao {
         _setOrderIndexById(item.id, position)
     }
 
-    @Query("UPDATE todo_items SET done=(:isDone) WHERE id=(:id)")
-    suspend fun updateDoneStatus(id: UUID, isDone: Boolean)
-
     @Transaction
     suspend fun addTodoItem(orderIndex: Int, item: TodoItemLocalDataEntity) {
         _incrementOrderIndicesAfterInclByOrderIndex(orderIndex)

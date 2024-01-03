@@ -74,7 +74,11 @@ class TodoItemDetailsViewModel @Inject constructor(
 
     private fun updateTodoItem(item: TodoItemDomainEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            updateTodoItemUseCase(item)
+            updateTodoItemUseCase(
+                item.copy(
+                    changedAt = LocalDateTime.now()
+                )
+            )
         }
     }
 

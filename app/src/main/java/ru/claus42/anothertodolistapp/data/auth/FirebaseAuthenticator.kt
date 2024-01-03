@@ -51,8 +51,6 @@ class FirebaseAuthenticator @Inject constructor(
         signInResultLauncher?.launch(signInIntent)
     }
 
-    override fun isCallbackNull() = onSignInCallback == null
-
     private fun onResult(result: FirebaseAuthUIAuthenticationResult) {
         val authResult = when (result.resultCode) {
             RESULT_OK -> AuthResult.Success

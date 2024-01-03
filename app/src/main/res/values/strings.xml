@@ -22,4 +22,5 @@
     <string name="no_todos_message">There are no entries.\nClick \"+\" button to create new one.</string>
     <string name="undo_deletion_snackbar">Do you want to cancel deletion?</string>
     <string name="restore_todo">Restore To-Do</string>
+    <string name="error_occurred_format">An error has occurred: %1$s</string>
 </resources>

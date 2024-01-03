@@ -1,7 +1,6 @@
 package ru.claus42.anothertodolistapp.presentation.todoitemlist.stateholders
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
@@ -14,8 +13,10 @@ import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.domain.usecases.AddTodoItemUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.DeleteTodoItemUseCase
+import ru.claus42.anothertodolistapp.domain.usecases.GetDoneTodosShownUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.GetTodoItemListUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.MoveItemInListUseCase
+import ru.claus42.anothertodolistapp.domain.usecases.SetDoneTodosShownUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.UndoTodoItemDeletingUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.UpdateTodoItemDoneStatusUseCase
 import java.util.UUID
@@ -30,12 +31,18 @@ class TodoItemListViewModel @Inject constructor(
     private val deleteTodoItemUseCase: DeleteTodoItemUseCase,
     private val undoTodoItemDeletingUseCase: UndoTodoItemDeletingUseCase,
     private val addTodoItemUseCase: AddTodoItemUseCase,
+    getDoneTodosShownUseCase: GetDoneTodosShownUseCase,
+    private val setDoneTodosShownUseCase: SetDoneTodosShownUseCase,
 ) : ViewModel() {
-    private val _showDone = MutableLiveData<Boolean>(true)
-    val showDone: MutableLiveData<Boolean> = _showDone
+    private val _showDone: LiveData<Boolean> =
+        getDoneTodosShownUseCase().asLiveData(viewModelScope.coroutineContext)
+    val showDone: LiveData<Boolean> = _showDone
 
     fun toggleShowDone() {
-        _showDone.value = _showDone.value != true
+        val newValue = _showDone.value != true
+        viewModelScope.launch(Dispatchers.IO) {
+            setDoneTodosShownUseCase(newValue)
+        }
     }
 
     private val _todoItems: LiveData<DataResult<List<TodoItemDomainEntity>>> =
@@ -69,9 +76,9 @@ class TodoItemListViewModel @Inject constructor(
             }
         }
 
-    fun updateTodoItemDoneStatus(id: UUID, isDone: Boolean) {
+    fun updateTodoItemDoneStatus(item: TodoItemDomainEntity, isDone: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            updateTodoItemDoneStatusUseCase(id, isDone)
+            updateTodoItemDoneStatusUseCase(item, isDone)
         }
     }
 

@@ -1,16 +1,16 @@
 package ru.claus42.anothertodolistapp.data.local.models.mappers
 
-import ru.claus42.anothertodolistapp.data.local.models.entities.DataItemPriority
+import ru.claus42.anothertodolistapp.data.local.models.entities.LocalDataItemPriority
 import ru.claus42.anothertodolistapp.data.local.models.entities.TodoItemLocalDataEntity
 import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 
 
-fun DataItemPriority.toPriority(): ItemPriority {
+private fun LocalDataItemPriority.toPriority(): ItemPriority {
     return when (this) {
-        DataItemPriority.LOW -> ItemPriority.LOW
-        DataItemPriority.BASIC -> ItemPriority.BASIC
-        DataItemPriority.IMPORTANT -> ItemPriority.IMPORTANT
+        LocalDataItemPriority.LOW -> ItemPriority.LOW
+        LocalDataItemPriority.BASIC -> ItemPriority.BASIC
+        LocalDataItemPriority.IMPORTANT -> ItemPriority.IMPORTANT
     }
 }
 
@@ -28,24 +28,27 @@ fun TodoItemLocalDataEntity.toDomainModel(): TodoItemDomainEntity {
 }
 
 
-fun ItemPriority.toDataPriority(): DataItemPriority {
+private fun ItemPriority.toLocalDataPriority(): LocalDataItemPriority {
     return when (this) {
-        ItemPriority.LOW -> DataItemPriority.LOW
-        ItemPriority.BASIC -> DataItemPriority.BASIC
-        ItemPriority.IMPORTANT -> DataItemPriority.IMPORTANT
+        ItemPriority.LOW -> LocalDataItemPriority.LOW
+        ItemPriority.BASIC -> LocalDataItemPriority.BASIC
+        ItemPriority.IMPORTANT -> LocalDataItemPriority.IMPORTANT
     }
 }
+
+
+const val ORDER_NO_SET = -1L
 
 fun TodoItemDomainEntity.toLocalDataModel(): TodoItemLocalDataEntity {
     return TodoItemLocalDataEntity(
         id = this.id,
         description = this.description,
-        priority = this.itemPriority.toDataPriority(),
+        priority = this.itemPriority.toLocalDataPriority(),
         deadline = this.deadline,
         isDeadlineEnabled = this.isDeadlineEnabled,
         done = this.done,
         createdAt = this.createdAt,
         changedAt = this.changedAt,
-        orderIndex = null,
+        orderIndex = ORDER_NO_SET,
     )
 }

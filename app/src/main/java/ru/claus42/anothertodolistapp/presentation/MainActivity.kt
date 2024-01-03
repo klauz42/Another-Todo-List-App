@@ -2,15 +2,20 @@ package ru.claus42.anothertodolistapp.presentation
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.ActivityMainBinding
 import ru.claus42.anothertodolistapp.di.components.ActivityComponent
 import ru.claus42.anothertodolistapp.di.components.DaggerActivityComponent
 import ru.claus42.anothertodolistapp.domain.authentication.SessionManager
+import ru.claus42.anothertodolistapp.domain.models.UserPreferencesRepository
 import ru.claus42.anothertodolistapp.presentation.auth.activities.SignInActivity
 import javax.inject.Inject
 
@@ -22,6 +27,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var sessionManager: SessionManager
+
+    @Inject
+    lateinit var userPreferences: UserPreferencesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         activityComponent = DaggerActivityComponent.builder()
@@ -39,10 +47,26 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
     }
 
+
     override fun onStart() {
         super.onStart()
-        if (!sessionManager.isLoggedIn()) {
+        if (!sessionManager.isUserLoggedIn()) {
             signIn()
+        } else {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val currentUserId = userPreferences.getUserId()
+
+                if (currentUserId.isEmpty()) {
+                    sessionManager.getUserid()?.let { userPreferences.setUserId(it) } ?: {
+                        with(sessionManager) {
+                            Log.e(
+                                TAG, "sessionManager.userId = ${getUserid()}, " +
+                                        "when sessionManager.isUserLoggedIn() = ${isUserLoggedIn()}"
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 

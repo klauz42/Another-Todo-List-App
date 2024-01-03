@@ -73,6 +73,14 @@
             android:text="@string/no_todos_message"
             android:visibility="gone" />
 
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/loading_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
         <!--todo: accessibility-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_item_fab"
