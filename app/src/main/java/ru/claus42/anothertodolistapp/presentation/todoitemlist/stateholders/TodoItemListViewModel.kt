@@ -76,9 +76,9 @@ class TodoItemListViewModel @Inject constructor(
             }
         }
 
-    fun updateTodoItemDoneStatus(item: TodoItemDomainEntity, isDone: Boolean) {
+    fun updateTodoItemDoneStatus(id: UUID, isDone: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            updateTodoItemDoneStatusUseCase(item, isDone)
+            updateTodoItemDoneStatusUseCase(id, isDone)
         }
     }
 

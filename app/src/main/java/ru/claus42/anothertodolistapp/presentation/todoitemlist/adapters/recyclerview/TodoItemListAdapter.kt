@@ -13,7 +13,6 @@ import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
 import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.itemtouchhelper.TodoItemListTouchHelperCallback
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Collections
@@ -26,12 +25,12 @@ class TodoItemListAdapter @Inject constructor() :
     RecyclerView.Adapter<TodoItemListAdapter.TodoItemViewHolder>(),
     TodoItemListTouchHelperCallback.AdapterListener {
     interface DoneCheckBoxListener {
-        fun onChecked(checkBoxView: CompoundButton, item: TodoItemDomainEntity, isDone: Boolean)
+        fun onChecked(checkBoxView: CompoundButton, id: UUID, isDone: Boolean)
     }
 
     interface Listener {
         fun itemClickListener(id: UUID)
-        fun doneCheckBoxListener(item: TodoItemDomainEntity, isDone: Boolean)
+        fun doneCheckBoxListener(id: UUID, isDone: Boolean)
         fun moveItemListener(fromId: UUID, toId: UUID)
         fun deleteItemListener(item: TodoItemDomainEntity)
         fun undoItemDeletionListener(onDeletionCallback: () -> Unit)
@@ -183,7 +182,6 @@ class TodoItemListAdapter @Inject constructor() :
             if (it.id == id) {
                 it.copy(
                     done = newDoneStatus,
-                    changedAt = LocalDateTime.now(),
                 )
             } else {
                 it.copy()
@@ -192,7 +190,7 @@ class TodoItemListAdapter @Inject constructor() :
         items.clear()
         items.addAll(newItems)
 
-        listener?.doneCheckBoxListener(items[position], newDoneStatus)
+        listener?.doneCheckBoxListener(id, newDoneStatus)
     }
 
     override fun onChangeItemDoneStatusUIUpdate(viewHolder: ViewHolder) {
@@ -206,17 +204,17 @@ class TodoItemListAdapter @Inject constructor() :
         fun bind(
             item: TodoItemDomainEntity,
             itemClickListener: (UUID) -> Unit,
-            doneCheckBoxListener: (TodoItemDomainEntity, Boolean) -> Unit,
+            doneCheckBoxListener: (UUID, Boolean) -> Unit,
         ) {
             binding.todoItem = item
             binding.doneCheckBoxListener = object : DoneCheckBoxListener {
                 override fun onChecked(
                     checkBoxView: CompoundButton,
-                    item: TodoItemDomainEntity,
+                    id: UUID,
                     isDone: Boolean
                 ) {
                     if (checkBoxView.isPressed)
-                        doneCheckBoxListener(item, isDone)
+                        doneCheckBoxListener(item.id, isDone)
                 }
             }
 
@@ -250,7 +248,7 @@ class TodoItemListAdapter @Inject constructor() :
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val newItem = newItems[newItemPosition]
                 val oldItem = items[oldItemPosition]
-                return newItem == oldItem
+                return newItem.equalsByContent(oldItem)
             }
         }
         )

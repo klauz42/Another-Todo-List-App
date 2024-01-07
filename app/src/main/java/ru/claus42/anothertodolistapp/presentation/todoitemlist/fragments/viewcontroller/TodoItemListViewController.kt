@@ -208,8 +208,8 @@ class TodoItemListViewController @Inject constructor(
         navigateToDetails(id, false)
     }
 
-    override fun doneCheckBoxListener(item: TodoItemDomainEntity, isDone: Boolean) {
-        viewModel.updateTodoItemDoneStatus(item, isDone)
+    override fun doneCheckBoxListener(id: UUID, isDone: Boolean) {
+        viewModel.updateTodoItemDoneStatus(id, isDone)
     }
 
     override fun moveItemListener(fromId: UUID, toId: UUID) {

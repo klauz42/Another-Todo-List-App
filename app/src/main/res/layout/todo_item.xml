@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:buttonTint="@color/green"
-            android:onCheckedChanged="@{(checkBoxView, isDone) -> doneCheckBoxListener.onChecked(checkBoxView, todoItem, isDone)}"
+            android:onCheckedChanged="@{(checkBoxView, isDone) -> doneCheckBoxListener.onChecked(checkBoxView, todoItem.id, isDone)}"
             app:importanceCheckboxTint="@{todoItem.itemPriority}"
             tools:checked="true" />
 

@@ -29,15 +29,13 @@ interface TodoItemDao {
     @Transaction
     suspend fun updateTodoItem(item: TodoItemLocalDataEntity) {
         val position = _getOrderIndexById(item.id)
-        _update(item)
-        _setOrderIndexById(item.id, position)
+        _update(item.copy(orderIndex = position))
     }
 
     @Transaction
-    suspend fun addTodoItem(orderIndex: Int, item: TodoItemLocalDataEntity) {
+    suspend fun addTodoItem(orderIndex: Long, item: TodoItemLocalDataEntity) {
         _incrementOrderIndicesAfterInclByOrderIndex(orderIndex)
-        _add(item)
-        _setOrderIndexById(item.id, orderIndex)
+        _add(item.copy(orderIndex = orderIndex))
     }
 
     @Transaction
@@ -57,7 +55,7 @@ interface TodoItemDao {
     }
 
     @Transaction
-    suspend fun deleteTodoItem(item: TodoItemLocalDataEntity): Int {
+    suspend fun deleteTodoItem(item: TodoItemLocalDataEntity): Long {
         val orderIndex = _getOrderIndexById(item.id)
         _decrementOrderIndicesAfterExclById(item.id)
         _delete(item)
@@ -79,7 +77,7 @@ interface TodoItemDao {
     suspend fun _update(item: TodoItemLocalDataEntity)
 
     @Query("UPDATE todo_items SET order_index = order_index + 1 WHERE order_index >= (:orderIndex)")
-    suspend fun _incrementOrderIndicesAfterInclByOrderIndex(orderIndex: Int)
+    suspend fun _incrementOrderIndicesAfterInclByOrderIndex(orderIndex: Long)
 
     @Query(
         "UPDATE todo_items SET order_index = order_index - 1 " +
@@ -91,17 +89,17 @@ interface TodoItemDao {
         "UPDATE todo_items SET order_index = order_index + 1 " +
                 " WHERE order_index < (:fromOrderIndex) AND order_index >= (:toOrderIndex) "
     )
-    suspend fun _incrementOrderIndicesRangeMovingItemUp(fromOrderIndex: Int, toOrderIndex: Int)
+    suspend fun _incrementOrderIndicesRangeMovingItemUp(fromOrderIndex: Long, toOrderIndex: Long)
 
     @Query(
         "UPDATE todo_items SET order_index = order_index - 1 " +
                 " WHERE order_index <= (:toOrderIndex) AND order_index > (:fromOrderIndex) "
     )
-    suspend fun _decrementOrderIndicesRangeMovingItemDown(fromOrderIndex: Int, toOrderIndex: Int)
+    suspend fun _decrementOrderIndicesRangeMovingItemDown(fromOrderIndex: Long, toOrderIndex: Long)
 
     @Query("SELECT order_index FROM todo_items WHERE id = (:id)")
-    suspend fun _getOrderIndexById(id: UUID): Int
+    suspend fun _getOrderIndexById(id: UUID): Long
 
     @Query("UPDATE todo_items SET order_index = (:newOrderIndex) WHERE id = (:id)")
-    suspend fun _setOrderIndexById(id: UUID, newOrderIndex: Int)
+    suspend fun _setOrderIndexById(id: UUID, newOrderIndex: Long)
 }

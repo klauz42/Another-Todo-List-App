@@ -29,7 +29,6 @@ data class TodoItemDomainEntity(
                         && deadline == other.deadline
                         && isDeadlineEnabled == other.isDeadlineEnabled
                         && done == other.done
-                        && createdAt == other.createdAt
                 )
     }
 }

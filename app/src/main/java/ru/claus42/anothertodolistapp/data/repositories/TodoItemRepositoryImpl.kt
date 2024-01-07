@@ -27,7 +27,7 @@ class TodoItemRepositoryImpl @Inject constructor(
 ) : TodoItemRepository {
 
     private var lastDeleted: TodoItemLocalDataEntity? = null
-    private var lastDeletedPosition: Int? = null
+    private var lastDeletedPosition: Long? = null
 
     override fun getTodoItems(): Flow<DataResult<List<TodoItemDomainEntity>>> = flow {
         emit(DataResult.loading())
@@ -56,15 +56,23 @@ class TodoItemRepositoryImpl @Inject constructor(
     override suspend fun updateTodoItem(newItem: TodoItemDomainEntity) {
         val item = newItem.copy(changedAt = LocalDateTime.now())
         todoItemDao.updateTodoItem(item.toLocalDataModel())
-        networkServiceApi.updateTodoItem(item.toRemoteDataModel())
-    }
-
-    override suspend fun updateDoneStatus(item: TodoItemDomainEntity, isDone: Boolean) {
-        todoItemDao.updateTodoItem(item.copy(done = isDone).toLocalDataModel())
 
         try {
-            val updatedItem = todoItemDao.getTodoItem(item.id).first()
-            networkServiceApi.updateTodoItem(updatedItem.toTodoItemRemoteEntity())
+            networkServiceApi.updateTodoItem(item.toRemoteDataModel())
+        } catch (e: Exception) {
+            //TODO: throw exception
+        }
+    }
+
+    override suspend fun updateDoneStatus(id: UUID, isDone: Boolean) {
+        val item = todoItemDao.getTodoItem(id).first().copy(
+            done = isDone,
+            changedAt = LocalDateTime.now(),
+        )
+        todoItemDao.updateTodoItem(item)
+
+        try {
+            networkServiceApi.updateTodoItem(item.toTodoItemRemoteEntity())
         } catch (e: Exception) {
             //TODO: throw exception
         }
@@ -97,6 +105,7 @@ class TodoItemRepositoryImpl @Inject constructor(
             lastDeletedPosition?.let { pos ->
                 todoItemDao.addTodoItem(pos, item)
                 networkServiceApi.addTodoItem(item.toTodoItemRemoteEntity())
+
                 updateRemoteSource()
             }
         }
@@ -108,7 +117,12 @@ class TodoItemRepositoryImpl @Inject constructor(
 
     private suspend fun updateRemoteSource() = DataResult.onWithoutData {
         val items = todoItemDao.getTodoItems().first()
-        networkServiceApi.updateAllOutdated(items.map { it.toTodoItemRemoteEntity() })
+
+        try {
+            networkServiceApi.updateAllOutdated(items.map { it.toTodoItemRemoteEntity() })
+        } catch (e: Exception) {
+            TODO("Not yet implemented")
+        }
     }
 }
 
