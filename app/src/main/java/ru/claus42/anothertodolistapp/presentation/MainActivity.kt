@@ -2,11 +2,16 @@ package ru.claus42.anothertodolistapp.presentation
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.claus42.anothertodolistapp.R
@@ -24,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var activityComponent: ActivityComponent
     private lateinit var navController: NavController
+    private lateinit var bottomNav: BottomNavigationView
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -45,6 +51,28 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
+
+        bottomNav = findViewById(R.id.bottom_navigation)
+        bottomNav.selectedItemId = R.id.destination_todo_item_details
+        bottomNav.setOnItemReselectedListener { }
+        bottomNav.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val delayTime = resources.getInteger(R.integer.transition_duration).toLong() / 2
+            val handler = Handler(Looper.getMainLooper())
+
+            if (destination.id == R.id.destination_todo_item_details) {
+                handler.postDelayed({
+                    bottomNav.visibility = View.GONE
+                }, delayTime)
+            } else {
+                if (bottomNav.visibility == View.GONE) {
+                    handler.postDelayed({
+                        bottomNav.visibility = View.VISIBLE
+                    }, delayTime)
+                }
+            }
+        }
     }
 
 
@@ -68,6 +96,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        Handler(Looper.getMainLooper()).removeCallbacksAndMessages(null)
+
+        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {

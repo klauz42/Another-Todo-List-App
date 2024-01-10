@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/destination_search_todos"
+        android:icon="@drawable/search"
+        app:iconTint="@color/label_secondary"
+        app:showAsAction="ifRoom"
+        android:title="@string/search_to_do" />
+    <item
+        android:id="@+id/destination_todo_item_list"
+        android:icon="@drawable/list"
+        app:iconTint="@color/label_secondary"
+        app:showAsAction="ifRoom"
+        android:title="@string/list_to_dos" />
+    <item
+        android:id="@+id/destination_account_info"
+        android:icon="@drawable/account_circle"
+        app:iconTint="@color/label_secondary"
+        app:showAsAction="ifRoom"
+        android:title="@string/account" />
+
+</menu>

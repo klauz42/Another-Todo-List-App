@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/todoItemListFragment">
+    app:startDestination="@id/destination_todo_item_list">
 
     <fragment
-        android:id="@+id/todoItemListFragment"
+        android:id="@+id/destination_todo_item_list"
         android:name="ru.claus42.anothertodolistapp.presentation.todoitemlist.fragments.TodoItemListFragment"
         android:label="@string/my_to_do_list"
         tools:layout="@layout/fragment_todo_item_list">
         <action
             android:id="@+id/action_list_to_details"
-            app:destination="@id/todoItemDetailsFragment"
+            app:destination="@id/destination_todo_item_details"
             app:exitAnim="@anim/anim_wait"
             app:enterAnim="@anim/anim_slide_in_left"
             app:popExitAnim="@anim/anim_slide_out_right"
@@ -20,7 +20,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/todoItemDetailsFragment"
+        android:id="@+id/destination_todo_item_details"
         android:name="ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments.TodoItemDetailsFragment"
         android:label="Todo Item Details"
         tools:layout="@layout/fragment_todo_item_details">
@@ -33,5 +33,17 @@
             app:argType="boolean"
             app:nullable="false" />
     </fragment>
+
+    <fragment
+        android:id="@+id/destination_search_todos"
+        android:name="ru.claus42.anothertodolistapp.presentation.searchtodos.fragments.SearchTodosFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search_todos" />
+
+    <fragment
+        android:id="@+id/destination_account_info"
+        android:name="ru.claus42.anothertodolistapp.presentation.accountinfo.fragments.AccountInfoFragment"
+        android:label="Account Info"
+        tools:layout="@layout/fragment_account_info" />
 
 </navigation>

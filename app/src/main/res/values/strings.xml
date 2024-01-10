@@ -23,4 +23,7 @@
     <string name="undo_deletion_snackbar">Do you want to cancel deletion?</string>
     <string name="restore_todo">Restore To-Do</string>
     <string name="error_occurred_format">An error has occurred: %1$s</string>
+    <string name="search_to_do">Search</string>
+    <string name="list_to_dos">To-Dos</string>
+    <string name="account">Account</string>
 </resources>
