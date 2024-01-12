@@ -15,4 +15,5 @@ interface TodoItemRepository {
     suspend fun moveItem(fromId: UUID, toId: UUID)
     suspend fun undoDeletion()
     suspend fun clearRepository()
+    suspend fun syncLocalWithRemote()
 }

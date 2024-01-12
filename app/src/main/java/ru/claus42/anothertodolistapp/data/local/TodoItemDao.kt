@@ -28,7 +28,7 @@ interface TodoItemDao {
 
     @Transaction
     suspend fun updateTodoItem(item: TodoItemLocalDataEntity) {
-        val position = _getOrderIndexById(item.id)
+        val position = _getOrderIndexById(item.id)!!
         _update(item.copy(orderIndex = position))
     }
 
@@ -40,8 +40,8 @@ interface TodoItemDao {
 
     @Transaction
     suspend fun moveItem(fromId: UUID, toId: UUID) {
-        val fromOrderIndex = _getOrderIndexById(fromId)
-        val toOrderIndex = _getOrderIndexById(toId)
+        val fromOrderIndex = _getOrderIndexById(fromId)!!
+        val toOrderIndex = _getOrderIndexById(toId)!!
 
         if (fromOrderIndex < toOrderIndex) {
             //moving down
@@ -56,12 +56,15 @@ interface TodoItemDao {
 
     @Transaction
     suspend fun deleteTodoItem(item: TodoItemLocalDataEntity): Long {
-        val orderIndex = _getOrderIndexById(item.id)
+        val orderIndex = _getOrderIndexById(item.id)!!
         _decrementOrderIndicesAfterExclById(item.id)
         _delete(item)
 
         return orderIndex
     }
+
+    @Query("SELECT MAX(order_index) FROM todo_items")
+    suspend fun getMaximumOrderIndex(): Long?
 
     @Query("DELETE FROM todo_items")
     suspend fun clearTable()
@@ -97,9 +100,10 @@ interface TodoItemDao {
     )
     suspend fun _decrementOrderIndicesRangeMovingItemDown(fromOrderIndex: Long, toOrderIndex: Long)
 
-    @Query("SELECT order_index FROM todo_items WHERE id = (:id)")
-    suspend fun _getOrderIndexById(id: UUID): Long
-
     @Query("UPDATE todo_items SET order_index = (:newOrderIndex) WHERE id = (:id)")
     suspend fun _setOrderIndexById(id: UUID, newOrderIndex: Long)
+
+    @Query("SELECT order_index FROM todo_items WHERE id = (:id)")
+    suspend fun _getOrderIndexById(id: UUID): Long?
+
 }

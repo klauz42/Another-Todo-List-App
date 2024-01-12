@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Component
 import ru.claus42.anothertodolistapp.di.modules.ViewModelModule
 import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
+import ru.claus42.anothertodolistapp.presentation.accountinfo.fragments.AccountInfoFragment
 import ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments.TodoItemDetailsFragment
 import ru.claus42.anothertodolistapp.presentation.todoitemlist.fragments.TodoItemListFragment
 
@@ -16,6 +17,7 @@ import ru.claus42.anothertodolistapp.presentation.todoitemlist.fragments.TodoIte
 interface FragmentComponent {
     fun inject(fragment: TodoItemListFragment)
     fun inject(fragment: TodoItemDetailsFragment)
+    fun inject(fragment: AccountInfoFragment)
 
     @Component.Builder
     interface Builder {

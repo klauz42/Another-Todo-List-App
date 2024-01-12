@@ -22,7 +22,7 @@ class FirebaseFirestoreServiceApi @Inject constructor(
     private val sessionManager: SessionManager
 ) : NetworkServiceApi {
 
-    private val userId get() = sessionManager.getUserid() ?: ""
+    private val userId get() = sessionManager.getUserId() ?: ""
     private val db get() = Firebase.firestore
 
     private val tasksCollection
@@ -42,10 +42,7 @@ class FirebaseFirestoreServiceApi @Inject constructor(
             if (tasks != null) {
                 val remoteEntities = tasks.documents.map { task ->
                     val remoteEntity = task.toObject(TodoItemRemoteDataEntity::class.java)
-                    remoteEntity!!.copy(
-                        taskId = task.id,
-                        lastUpdatedBy = userId
-                    )
+                    remoteEntity!!
                 }
                 trySend(DataResult.Success(remoteEntities))
             }
@@ -67,12 +64,8 @@ class FirebaseFirestoreServiceApi @Inject constructor(
                 return@addSnapshotListener
             }
             if (task != null) {
-                val remoteEntityTemp = task.toObject(TodoItemRemoteDataEntity::class.java)
-                val remoteEntity = remoteEntityTemp!!.copy(
-                    taskId = task.id,
-                    lastUpdatedBy = userId
-                )
-                trySend(DataResult.Success(remoteEntity))
+                val remoteEntity = task.toObject(TodoItemRemoteDataEntity::class.java)
+                trySend(DataResult.Success(remoteEntity!!))
             }
         }
 
@@ -131,8 +124,9 @@ class FirebaseFirestoreServiceApi @Inject constructor(
                     val remoteOrderIndex = snapshot.get(ORDER_INDEX_KEY) as Long
 
                     val localUpdateAt = item.updatedAt
+                    val localOrderIndex = item.orderIndex
 
-                    if (localUpdateAt > remoteUpdatedAt || remoteOrderIndex == -1L) {
+                    if (localUpdateAt > remoteUpdatedAt || remoteOrderIndex != localOrderIndex) {
                         transaction.update(docRef, task)
                     }
                 }

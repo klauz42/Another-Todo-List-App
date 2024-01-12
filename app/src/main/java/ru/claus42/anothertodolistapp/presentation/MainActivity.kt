@@ -20,8 +20,10 @@ import ru.claus42.anothertodolistapp.databinding.ActivityMainBinding
 import ru.claus42.anothertodolistapp.di.components.ActivityComponent
 import ru.claus42.anothertodolistapp.di.components.DaggerActivityComponent
 import ru.claus42.anothertodolistapp.domain.authentication.SessionManager
+import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.UserPreferencesRepository
 import ru.claus42.anothertodolistapp.presentation.auth.activities.SignInActivity
+import java.net.InetAddress
 import javax.inject.Inject
 
 
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var userPreferences: UserPreferencesRepository
+
+    @Inject
+    lateinit var repository: TodoItemRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         activityComponent = DaggerActivityComponent.builder()
@@ -78,20 +83,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
         if (!sessionManager.isUserLoggedIn()) {
             signIn()
         } else {
             lifecycleScope.launch(Dispatchers.IO) {
-                val currentUserId = userPreferences.getUserId()
-
-                if (currentUserId.isEmpty()) {
-                    sessionManager.getUserid()?.let { userPreferences.setUserId(it) } ?: {
+                if (userPreferences.getUserId().isEmpty()) {
+                    sessionManager.getUserId()?.let { userPreferences.setUserId(it) } ?: {
                         with(sessionManager) {
                             Log.e(
-                                TAG, "sessionManager.userId = ${getUserid()}, " +
+                                TAG, "sessionManager.userId = ${getUserId()}, " +
                                         "when sessionManager.isUserLoggedIn() = ${isUserLoggedIn()}"
                             )
                         }
+                    }
+                }
+
+                if (userPreferences.getUserId().isEmpty()) {
+                    signIn()
+                } else {
+                    if (isInternetAvailable()) {
+                        Log.i(TAG, "Internet is available, starting sync")
+                        repository.syncLocalWithRemote()
                     }
                 }
             }
@@ -108,11 +121,35 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
+    private fun isInternetAvailable(): Boolean {
+        try {
+            val address = InetAddress.getByName("firebase.google.com")
+            return !address.equals("")
+        } catch (e: Exception) {
+            Log.w(TAG, "Internet is not available: ${e.message}")
+        }
+
+        return false
+    }
+
     private fun signIn() {
         val signInIntent = Intent(this, SignInActivity::class.java)
         startActivity(signInIntent)
         finish()
         return
+    }
+
+    fun signOut() {
+        sessionManager.signOut()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            repository.clearRepository()
+            userPreferences.setUserId("")
+        }
+
+        val signInIntent = Intent(this, SignInActivity::class.java)
+        startActivity(signInIntent)
+        finish()
     }
 
     companion object {

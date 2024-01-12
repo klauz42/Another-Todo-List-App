@@ -9,8 +9,10 @@ import javax.inject.Inject
 
 @AppScope
 class FirebaseSessionManager @Inject constructor() : SessionManager {
-    private val auth = Firebase.auth
+    private val auth get() = Firebase.auth
 
     override fun isUserLoggedIn() = auth.currentUser != null
-    override fun getUserid() = Firebase.auth.uid
+    override fun getUserId() = auth.uid
+    override fun getUserEmail() = auth.currentUser?.email
+    override fun signOut() = auth.signOut()
 }

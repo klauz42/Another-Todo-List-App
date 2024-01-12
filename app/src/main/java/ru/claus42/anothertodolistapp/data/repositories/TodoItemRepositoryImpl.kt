@@ -1,5 +1,6 @@
 package ru.claus42.anothertodolistapp.data.repositories
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -9,12 +10,14 @@ import ru.claus42.anothertodolistapp.data.local.models.mappers.toDomainModel
 import ru.claus42.anothertodolistapp.data.local.models.mappers.toLocalDataModel
 import ru.claus42.anothertodolistapp.data.remote.NetworkServiceApi
 import ru.claus42.anothertodolistapp.data.remote.mappers.toRemoteDataModel
+import ru.claus42.anothertodolistapp.data.toTodoItemLocalDataEntity
 import ru.claus42.anothertodolistapp.data.toTodoItemRemoteEntity
 import ru.claus42.anothertodolistapp.di.scopes.AppScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import javax.inject.Inject
 
@@ -83,13 +86,13 @@ class TodoItemRepositoryImpl @Inject constructor(
         lastDeletedPosition = todoItemDao.deleteTodoItem(item.toLocalDataModel())
 
         networkServiceApi.deleteTodoItem(item.toRemoteDataModel())
-        updateRemoteSource()
+        updateRemoteFromLocal()
     }
 
     override suspend fun moveItem(fromId: UUID, toId: UUID) {
         todoItemDao.moveItem(fromId, toId)
 
-        updateRemoteSource()
+        updateRemoteFromLocal()
     }
 
 
@@ -97,7 +100,7 @@ class TodoItemRepositoryImpl @Inject constructor(
         todoItemDao.addTodoItem(0, item.toLocalDataModel())
         networkServiceApi.addTodoItem(item.toRemoteDataModel())
 
-        updateRemoteSource()
+        updateRemoteFromLocal()
     }
 
     override suspend fun undoDeletion() {
@@ -106,7 +109,7 @@ class TodoItemRepositoryImpl @Inject constructor(
                 todoItemDao.addTodoItem(pos, item)
                 networkServiceApi.addTodoItem(item.toTodoItemRemoteEntity())
 
-                updateRemoteSource()
+                updateRemoteFromLocal()
             }
         }
     }
@@ -115,14 +118,89 @@ class TodoItemRepositoryImpl @Inject constructor(
         todoItemDao.clearTable()
     }
 
-    private suspend fun updateRemoteSource() = DataResult.onWithoutData {
+    private val MAX_TRIES = 5
+    private var syncTries = 0
+
+    override suspend fun syncLocalWithRemote() {
+        try {
+            val result = networkServiceApi.getTodoItems().first()
+
+            when (result) {
+                is DataResult.Success -> {
+                    Log.d(TAG, "Got to-dos from network api")
+
+                    val remoteItems = result.data//.sortedBy { it.orderIndex }
+
+                    remoteItems.forEach { remoteItem ->
+                        val id = UUID.fromString(remoteItem.taskId)
+                        Log.d(TAG, "remote item id: $id")
+
+                        val localItem: TodoItemLocalDataEntity
+
+                        try {
+                            localItem = todoItemDao.getTodoItem(id).first()
+                            if (localItem == null)
+                                throw NoSuchElementException("$id is not in local db")
+
+                            val remoteChangedTime =
+                                LocalDateTime.ofEpochSecond(
+                                    remoteItem.updatedAt, 0, ZoneOffset.UTC
+                                )
+
+                            if (localItem.changedAt >= remoteChangedTime) {
+                                Log.d(TAG, "$id is newer in local db, updating remote")
+                                networkServiceApi.updateTodoItem(localItem.toTodoItemRemoteEntity())
+                            } else {
+                                Log.d(TAG, "$id is newer in remote db, updating local")
+                                todoItemDao.updateTodoItem(remoteItem.toTodoItemLocalDataEntity())
+                            }
+                        } catch (e: NoSuchElementException) {
+                            Log.d(TAG, "${e.message}")
+                            todoItemDao.addTodoItem(0, remoteItem.toTodoItemLocalDataEntity())
+                        }
+                    }
+                }
+
+                is DataResult.Error -> {
+                    Log.d(TAG, "Got error during getting to-dos from network api")
+                    //TODO: throw exception
+                }
+
+                DataResult.Loading -> {
+                    Log.d(
+                        TAG,
+                        "Got loading state during getting to-dos from network api ($syncTries)"
+                    )
+                    if (syncTries < MAX_TRIES) {
+                        syncTries++
+                        syncLocalWithRemote()
+                    }
+                }
+
+                DataResult.OK -> {}
+            }
+
+            updateRemoteFromLocal()
+        } catch (e: Exception) {
+            Log.d(TAG, "syncLocalWithRemote exception: ${e.message}")
+            //TODO: throw exception
+        } finally {
+            syncTries = 0
+        }
+    }
+
+    private suspend fun updateRemoteFromLocal() = DataResult.onWithoutData {
         val items = todoItemDao.getTodoItems().first()
 
         try {
             networkServiceApi.updateAllOutdated(items.map { it.toTodoItemRemoteEntity() })
         } catch (e: Exception) {
-            TODO("Not yet implemented")
+            //TODO: throw exception
         }
+    }
+
+    private companion object {
+        const val TAG = "TodoItemRepositoryImpl"
     }
 }
 
