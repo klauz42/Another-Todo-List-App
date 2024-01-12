@@ -16,7 +16,8 @@ import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.domain.usecases.DeleteTodoItemUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.GetTodoItemByIdUseCase
 import ru.claus42.anothertodolistapp.domain.usecases.UpdateTodoItemUseCase
-import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.UUID
 import javax.inject.Inject
 
@@ -90,7 +91,7 @@ class TodoItemDetailsViewModel @Inject constructor(
         if (_todoItem.value?.itemPriority != newPriority) {
             _todoItem.value = _todoItem.value?.copy(
                 itemPriority = newPriority,
-                changedAt = LocalDateTime.now()
+                changedAt = ZonedDateTime.now()
             )
         }
     }
@@ -99,7 +100,7 @@ class TodoItemDetailsViewModel @Inject constructor(
         if (_todoItem.value?.description != newDescription) {
             _todoItem.value = _todoItem.value?.copy(
                 description = newDescription,
-                changedAt = LocalDateTime.now()
+                changedAt = ZonedDateTime.now()
             )
         }
     }
@@ -111,20 +112,22 @@ class TodoItemDetailsViewModel @Inject constructor(
     fun updateDeadlineIsEnabled(isEnabled: Boolean) {
         _todoItem.value = _todoItem.value?.copy(
             isDeadlineEnabled = isEnabled,
-            changedAt = LocalDateTime.now()
+            changedAt = ZonedDateTime.now()
         )
     }
 
-    fun getDeadline(): LocalDateTime? {
+    fun getDeadline(): ZonedDateTime? {
         return _todoItem.value?.deadline
     }
 
     fun updateDeadline(year: Int, month: Int, dayOfMonth: Int, hourOfDay: Int, minute: Int) {
         _todoItem.value?.let {
-            val newDeadline = LocalDateTime.of(year, month, dayOfMonth, hourOfDay, minute)
+            val newDeadline = ZonedDateTime.of(
+                year, month, dayOfMonth, hourOfDay, minute, 0, 0, ZoneId.systemDefault()
+            )
             _todoItem.value = _todoItem.value?.copy(
                 deadline = newDeadline,
-                changedAt = LocalDateTime.now()
+                changedAt = ZonedDateTime.now()
             )
         }
     }
@@ -134,10 +137,12 @@ class TodoItemDetailsViewModel @Inject constructor(
             val hourOfDay = it.deadline.hour
             val minute = it.deadline.minute
 
-            val newDeadline = LocalDateTime.of(year, month, dayOfMonth, hourOfDay, minute)
+            val newDeadline = ZonedDateTime.of(
+                year, month, dayOfMonth, hourOfDay, minute, 0, 0, ZoneId.systemDefault()
+            )
             _todoItem.value = _todoItem.value?.copy(
                 deadline = newDeadline,
-                changedAt = LocalDateTime.now()
+                changedAt = ZonedDateTime.now()
             )
         }
     }
@@ -145,13 +150,15 @@ class TodoItemDetailsViewModel @Inject constructor(
     fun updateDeadlineTime(hourOfDay: Int, minute: Int) {
         _todoItem.value?.let {
             val year = it.deadline.year
-            val month = it.deadline.month
+            val month = it.deadline.monthValue
             val dayOfMonth = it.deadline.dayOfMonth
 
-            val newDeadline = LocalDateTime.of(year, month, dayOfMonth, hourOfDay, minute)
+            val newDeadline = ZonedDateTime.of(
+                year, month, dayOfMonth, hourOfDay, minute, 0, 0, ZoneId.systemDefault()
+            )
             _todoItem.value = _todoItem.value?.copy(
                 deadline = newDeadline,
-                changedAt = LocalDateTime.now()
+                changedAt = ZonedDateTime.now()
             )
         }
     }

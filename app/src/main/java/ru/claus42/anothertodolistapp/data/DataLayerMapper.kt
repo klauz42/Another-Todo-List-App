@@ -3,8 +3,9 @@ package ru.claus42.anothertodolistapp.data
 import ru.claus42.anothertodolistapp.data.local.models.entities.LocalDataItemPriority
 import ru.claus42.anothertodolistapp.data.local.models.entities.TodoItemLocalDataEntity
 import ru.claus42.anothertodolistapp.data.remote.models.TodoItemRemoteDataEntity
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.UUID
 
 
@@ -25,21 +26,21 @@ private fun LocalDataItemPriority.toLong(): Long {
     }
 }
 
-private fun Long.toLocalDateTime(): LocalDateTime =
-    LocalDateTime.ofEpochSecond(this, 0, ZoneOffset.UTC)
+private fun Long.toZonedDateTime(): ZonedDateTime =
+    Instant.ofEpochSecond(this).atZone(ZoneId.systemDefault())
 
-private fun LocalDateTime.toLong(): Long = this.toEpochSecond(ZoneOffset.UTC)
+private fun ZonedDateTime.toLong(): Long = this.toEpochSecond()
 
 fun TodoItemRemoteDataEntity.toTodoItemLocalDataEntity(): TodoItemLocalDataEntity {
     return TodoItemLocalDataEntity(
         id = UUID.fromString(taskId),
         description = description,
         priority = priority.toLocalDataItePriority(),
-        deadline = deadline.toLocalDateTime(),
+        deadline = deadline.toZonedDateTime(),
         isDeadlineEnabled = isDeadlineEnabled,
         done = done,
-        createdAt = createdAt.toLocalDateTime(),
-        changedAt = updatedAt.toLocalDateTime(),
+        createdAt = createdAt.toZonedDateTime(),
+        changedAt = updatedAt.toZonedDateTime(),
         orderIndex = orderIndex
     )
 }

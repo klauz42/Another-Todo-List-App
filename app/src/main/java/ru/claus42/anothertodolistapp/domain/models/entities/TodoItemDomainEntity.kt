@@ -1,6 +1,6 @@
 package ru.claus42.anothertodolistapp.domain.models.entities
 
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.UUID
 
 
@@ -13,11 +13,11 @@ data class TodoItemDomainEntity(
     val id: UUID = UUID.randomUUID(),
     val description: String = "",
     val itemPriority: ItemPriority = ItemPriority.BASIC,
-    val deadline: LocalDateTime = LocalDateTime.now(),
+    val deadline: ZonedDateTime = ZonedDateTime.now(),
     val isDeadlineEnabled: Boolean = false,
     val done: Boolean = false,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    val changedAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: ZonedDateTime = ZonedDateTime.now(),
+    val changedAt: ZonedDateTime = ZonedDateTime.now(),
 ) {
     fun equalsByContent(other: TodoItemDomainEntity?): Boolean {
         return if (other == null) {

@@ -6,10 +6,11 @@ import dagger.Module
 import dagger.Provides
 import ru.claus42.anothertodolistapp.data.local.TodoItemDao
 import ru.claus42.anothertodolistapp.data.local.TodoItemDatabase
+import ru.claus42.anothertodolistapp.data.local.MIGRATION_1_2
 import ru.claus42.anothertodolistapp.di.scopes.AppScope
 
 
-private const val DATABASE_NAME = "todo-item-database"
+const val DATABASE_NAME = "todo-item-database"
 
 @Module
 object DatabaseModule {
@@ -20,7 +21,9 @@ object DatabaseModule {
             context,
             TodoItemDatabase::class.java,
             DATABASE_NAME
-        ).build()
+        )
+        .addMigrations(MIGRATION_1_2)
+        .build()
     }
 
     @Provides

@@ -16,8 +16,9 @@ import ru.claus42.anothertodolistapp.di.scopes.AppScope
 import ru.claus42.anothertodolistapp.domain.models.DataResult
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.UUID
 import javax.inject.Inject
 
@@ -57,7 +58,7 @@ class TodoItemRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateTodoItem(newItem: TodoItemDomainEntity) {
-        val item = newItem.copy(changedAt = LocalDateTime.now())
+        val item = newItem.copy(changedAt = ZonedDateTime.now())
         todoItemDao.updateTodoItem(item.toLocalDataModel())
 
         try {
@@ -70,7 +71,7 @@ class TodoItemRepositoryImpl @Inject constructor(
     override suspend fun updateDoneStatus(id: UUID, isDone: Boolean) {
         val item = todoItemDao.getTodoItem(id).first().copy(
             done = isDone,
-            changedAt = LocalDateTime.now(),
+            changedAt = ZonedDateTime.now(),
         )
         todoItemDao.updateTodoItem(item)
 
@@ -142,10 +143,9 @@ class TodoItemRepositoryImpl @Inject constructor(
                             if (localItem == null)
                                 throw NoSuchElementException("$id is not in local db")
 
-                            val remoteChangedTime =
-                                LocalDateTime.ofEpochSecond(
-                                    remoteItem.updatedAt, 0, ZoneOffset.UTC
-                                )
+                            val remoteChangedTime = Instant
+                                .ofEpochSecond(remoteItem.updatedAt)
+                                .atZone(ZoneId.systemDefault())
 
                             if (localItem.changedAt >= remoteChangedTime) {
                                 Log.d(TAG, "$id is newer in local db, updating remote")

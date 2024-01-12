@@ -4,7 +4,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import ru.claus42.anothertodolistapp.data.remote.models.TodoItemRemoteDataEntity
 import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
-import java.time.ZoneOffset
 
 
 const val LAST_UPDATED_BY_KEY = "lastUpdatedBy"
@@ -83,7 +82,6 @@ private fun ItemPriority.toLong(): Long {
     }
 }
 
-//todo: handle zone offset problem, use ZonedDateTime instead of LocalDateTime
 fun TodoItemDomainEntity.toRemoteDataModel(
     orderIndex: Long = 0,
     lastUpdatedBy: String = "",
@@ -92,11 +90,11 @@ fun TodoItemDomainEntity.toRemoteDataModel(
         taskId = id.toString(),
         description = description,
         priority = itemPriority.toLong(),
-        deadline = deadline.toEpochSecond(ZoneOffset.UTC),
+        deadline = deadline.toEpochSecond(),
         isDeadlineEnabled = isDeadlineEnabled,
         done = done,
-        createdAt = createdAt.toEpochSecond(ZoneOffset.UTC),
-        updatedAt = changedAt.toEpochSecond(ZoneOffset.UTC),
+        createdAt = createdAt.toEpochSecond(),
+        updatedAt = changedAt.toEpochSecond(),
         orderIndex = orderIndex,
         lastUpdatedBy = lastUpdatedBy,
     )

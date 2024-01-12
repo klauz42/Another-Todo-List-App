@@ -5,6 +5,7 @@ import ru.claus42.anothertodolistapp.data.local.models.entities.LocalDataItemPri
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.UUID
 
 
@@ -53,5 +54,18 @@ object TodoItemTypeConverters {
     @JvmStatic
     fun fromLocalDateTime(date: LocalDateTime): Long {
         return date.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toZonedDateTime(timestamp: Long): ZonedDateTime {
+        return Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault())
+
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromZonedDateTime(date: ZonedDateTime): Long {
+        return date.toEpochSecond()
     }
 }

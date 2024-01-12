@@ -16,7 +16,7 @@ import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
 import ru.claus42.anothertodolistapp.presentation.MainActivity
 import ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments.DeleteConfirmationDialogFragment
 import ru.claus42.anothertodolistapp.presentation.todoitemdetails.fragments.TodoItemDetailsFragment
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.inject.Inject
@@ -36,7 +36,7 @@ class TodoItemDetailsViewController @Inject constructor(
     private val parentFragmentManager get() = fragment.parentFragmentManager
 
     private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-    private fun LocalDateTime.getFormatted(): String {
+    private fun ZonedDateTime.getFormatted(): String {
         return this.format(formatter)
     }
 

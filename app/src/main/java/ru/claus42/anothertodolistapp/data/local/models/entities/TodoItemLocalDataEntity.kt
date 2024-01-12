@@ -3,7 +3,7 @@ package ru.claus42.anothertodolistapp.data.local.models.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.UUID
 
 
@@ -16,10 +16,10 @@ data class TodoItemLocalDataEntity(
     @PrimaryKey val id: UUID,
     val description: String,
     val priority: LocalDataItemPriority,
-    val deadline: LocalDateTime,
+    val deadline: ZonedDateTime,
     @ColumnInfo(name = "is_deadline_enabled") val isDeadlineEnabled: Boolean,
     val done: Boolean,
-    @ColumnInfo(name = "created_at") val createdAt: LocalDateTime,
-    @ColumnInfo(name = "changed_at") val changedAt: LocalDateTime,
+    @ColumnInfo(name = "created_at") val createdAt: ZonedDateTime,
+    @ColumnInfo(name = "changed_at") val changedAt: ZonedDateTime,
     @ColumnInfo(name = "order_index") val orderIndex: Long,
 )

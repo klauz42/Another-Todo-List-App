@@ -158,7 +158,7 @@ class TodoItemDetailsFragment :
     override fun onDeleteCancel() {}
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        //month + 1 because DatePicker numbers month from 0 and LocalDate from 1
+        //month + 1 because DatePicker numbers month from 0 and ZonedDate from 1
         viewModel.updateDeadlineDate(year, month + 1, dayOfMonth)
         showTimePickerDialog()
     }
