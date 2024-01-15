@@ -1,10 +1,13 @@
 package ru.claus42.anothertodolistapp.data.remote.firebase
 
+import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import ru.claus42.anothertodolistapp.data.remote.NetworkServiceApi
 import ru.claus42.anothertodolistapp.data.remote.mappers.ORDER_INDEX_KEY
 import ru.claus42.anothertodolistapp.data.remote.mappers.UPDATED_AT_KEY
@@ -36,6 +39,7 @@ class FirebaseFirestoreServiceApi @Inject constructor(
     override fun getTodoItems(): Flow<DataResult<List<TodoItemRemoteDataEntity>>> = callbackFlow {
         val listenerRegistration = tasksCollection?.addSnapshotListener { tasks, error ->
             if (error != null) {
+                Log.e(TAG, "getTodoItems: ${error.message}")
                 trySend(DataResult.Error(error))
                 return@addSnapshotListener
             }
@@ -60,6 +64,7 @@ class FirebaseFirestoreServiceApi @Inject constructor(
 
         val listenerRegistration = taskDocument?.addSnapshotListener { task, error ->
             if (error != null) {
+                Log.e(TAG, "getTodoItem: ${error.message}")
                 trySend(DataResult.Error(error))
                 return@addSnapshotListener
             }
@@ -74,77 +79,103 @@ class FirebaseFirestoreServiceApi @Inject constructor(
         }
     }
 
-    override fun insertAll(items: List<TodoItemRemoteDataEntity>) {
+    override suspend fun insertAll(items: List<TodoItemRemoteDataEntity>) {
         for (item in items) {
             val id = item.taskId
             val task = item.toMap(userId)
+
+            tryCatchFirestoreException {
+                tasksCollection?.let {
+                    it.document(id).set(task)
+                        .addOnFailureListener { e ->
+                            Log.e(TAG, "insertAll: ${e.message}")
+                        }
+                }?.await()
+            }
+        }
+    }
+
+    override suspend fun updateTodoItem(item: TodoItemRemoteDataEntity) {
+        val id = item.taskId
+        val task = item.toMap(userId)
+
+        tryCatchFirestoreException {
+            tasksCollection?.let {
+                it.document(id).update(task)
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "updateTodoItem: ${e.message}")
+                    }
+            }?.await()
+        }
+    }
+
+    override suspend fun addTodoItem(item: TodoItemRemoteDataEntity) {
+        val id = item.taskId
+        val task = item.toMap(userId)
+
+        tryCatchFirestoreException {
             tasksCollection?.let {
                 it.document(id).set(task)
                     .addOnFailureListener { e ->
-                        //todo: add error handling, returning exception
+                        Log.e(TAG, "addTodoItem: ${e.message}")
                     }
-            }
+            }?.await()
         }
     }
 
-    override fun updateTodoItem(item: TodoItemRemoteDataEntity) {
-        val id = item.taskId
-        val task = item.toMap(userId)
-
-        tasksCollection?.let {
-            it.document(id).update(task)
-                .addOnFailureListener {
-                    //todo: add error handling, returning exception
-                }
-        }
-    }
-
-    override fun addTodoItem(item: TodoItemRemoteDataEntity) {
-        val id = item.taskId
-        val task = item.toMap(userId)
-
-        tasksCollection?.let {
-            it.document(id).set(task)
-                .addOnFailureListener {
-                    //todo: add error handling, returning exception
-                }
-        }
-    }
-
-    override fun updateAllOutdated(items: List<TodoItemRemoteDataEntity>) {
+    override suspend fun updateAllOutdated(
+        items: List<TodoItemRemoteDataEntity>
+    ) {
         for (item in items) {
             val id = item.taskId
             val task = item.toMap(userId)
 
-            db.runTransaction { transaction ->
-                tasksCollection?.let {
-                    val docRef = it.document(id)
-                    val snapshot = transaction.get(docRef)
-                    val remoteUpdatedAt = snapshot.get(UPDATED_AT_KEY) as Long
-                    val remoteOrderIndex = snapshot.get(ORDER_INDEX_KEY) as Long
+            tryCatchFirestoreException {
+                db.runTransaction { transaction ->
+                    tasksCollection?.let {
+                        val docRef = it.document(id)
+                        val snapshot = transaction.get(docRef)
 
-                    val localUpdateAt = item.updatedAt
-                    val localOrderIndex = item.orderIndex
+                        if (snapshot.data == null) {
+                            return@runTransaction
+                        }
 
-                    if (localUpdateAt > remoteUpdatedAt || remoteOrderIndex != localOrderIndex) {
-                        transaction.update(docRef, task)
+                        val remoteUpdatedAt = snapshot.get(UPDATED_AT_KEY) as Long
+                        val remoteOrderIndex = snapshot.get(ORDER_INDEX_KEY) as Long
+
+                        val localUpdateAt = item.updatedAt
+                        val localOrderIndex = item.orderIndex
+
+                        if (localUpdateAt > remoteUpdatedAt || remoteOrderIndex != localOrderIndex) {
+                            transaction.update(docRef, task)
+                        }
                     }
-                }
 
-            }.addOnFailureListener { e ->
-                //todo: add error handling, returning exception
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "updateAllOutdated: ${e.message}")
+                }.await()
             }
         }
     }
 
-    override fun deleteTodoItem(item: TodoItemRemoteDataEntity) {
+    override suspend fun deleteTodoItem(item: TodoItemRemoteDataEntity) {
         val id = item.taskId
 
-        tasksCollection?.let {
-            it.document(id).delete()
-                .addOnFailureListener {
-                    //todo: add error handling, returning exception
-                }
+        tryCatchFirestoreException {
+            tasksCollection?.let {
+                it.document(id).delete()
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "deleteTodoItem: ${e.message}")
+                    }
+            }?.await()
+        }
+    }
+
+    private suspend fun tryCatchFirestoreException(f: suspend () -> Unit) {
+        try {
+            f()
+        } catch (e: FirebaseFirestoreException) {
+            throw e
         }
     }
 
@@ -152,5 +183,7 @@ class FirebaseFirestoreServiceApi @Inject constructor(
     private companion object {
         private const val USERS_COLLECTION = "users"
         private const val TASKS_COLLECTION = "tasks"
+
+        private const val TAG = "FirebaseFirestoreServiceApi"
     }
 }

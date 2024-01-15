@@ -1,8 +1,12 @@
 package ru.claus42.anothertodolistapp.presentation.todoitemlist.stateholders
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
@@ -34,6 +38,7 @@ class TodoItemListViewModel @Inject constructor(
     getDoneTodosShownUseCase: GetDoneTodosShownUseCase,
     private val setDoneTodosShownUseCase: SetDoneTodosShownUseCase,
 ) : ViewModel() {
+
     private val _showDone: LiveData<Boolean> =
         getDoneTodosShownUseCase().asLiveData(viewModelScope.coroutineContext)
     val showDone: LiveData<Boolean> = _showDone
@@ -45,64 +50,91 @@ class TodoItemListViewModel @Inject constructor(
         }
     }
 
-    private val _todoItems: LiveData<DataResult<List<TodoItemDomainEntity>>> =
-        getTodoItemListUseCase().asLiveData(viewModelScope.coroutineContext)
+    private val repoException = MutableLiveData<Exception>()
+    fun clearError() {
+        _todoItemsResult.postValue(DataResult.OK)
+    }
 
-    val todoItems: LiveData<DataResult<List<TodoItemDomainEntity>>> =
+    private val _todoItemsResult: MutableLiveData<DataResult<List<TodoItemDomainEntity>>> =
+        MediatorLiveData<DataResult<List<TodoItemDomainEntity>>>().apply {
+            addSource(getTodoItemListUseCase().asLiveData(viewModelScope.coroutineContext)) {
+                value = it
+            }
+            addSource(repoException.distinctUntilChanged()) { exception ->
+                value = DataResult.Error(exception)
+            }
+        }
+    val todoItemsResult: LiveData<DataResult<List<TodoItemDomainEntity>>> get() = _todoItemsResult
+
+
+    private val _todoItems = MediatorLiveData<List<TodoItemDomainEntity>>().apply {
+        addSource(_todoItemsResult) { result ->
+            if (result is DataResult.Success) {
+                value = result.data.map { it.copy() }
+            }
+        }
+    }
+
+    val todoItems: LiveData<List<TodoItemDomainEntity>> =
         _showDone.switchMap { showDone ->
-            _todoItems.map { result ->
-                when (result) {
-                    is DataResult.Success -> {
-                        if (!showDone) {
-                            DataResult.Success(result.data.filter { !it.done })
-                        } else {
-                            result
-                        }
-                    }
-
-                    else -> result
+            _todoItems.map { items ->
+                if (!showDone) {
+                    items.filter { !it.done }
+                } else {
+                    items
                 }
             }
         }
+
 
     val countDoneLiveData: LiveData<Int?> =
         _todoItems.map {
-            if (it is DataResult.Success) {
-                it.data.count { entity ->
-                    !entity.done
-                }
-            } else {
-                null
+            it.count { entity ->
+                !entity.done
             }
         }
 
+
     fun updateTodoItemDoneStatus(id: UUID, isDone: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            updateTodoItemDoneStatusUseCase(id, isDone)
+            interactWithRepo { updateTodoItemDoneStatusUseCase(id, isDone) }
         }
     }
 
     fun moveTodoItemsInList(fromId: UUID, toId: UUID) {
         viewModelScope.launch(Dispatchers.IO) {
-            moveItemInListUseCase(fromId, toId)
+            interactWithRepo { moveItemInListUseCase(fromId, toId) }
         }
     }
 
     fun deleteTodoItem(item: TodoItemDomainEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            deleteTodoItemUseCase(item)
+            interactWithRepo { deleteTodoItemUseCase(item) }
         }
     }
 
     fun undoTodoItemDeletion() {
         viewModelScope.launch(Dispatchers.IO) {
-            undoTodoItemDeletingUseCase()
+            interactWithRepo { undoTodoItemDeletingUseCase() }
         }
     }
 
     fun addTodoItem(item: TodoItemDomainEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            addTodoItemUseCase(item)
+            interactWithRepo { addTodoItemUseCase(item) }
         }
+    }
+
+    private suspend fun interactWithRepo(f: suspend () -> Unit) {
+        try {
+            f()
+        } catch (e: Exception) {
+            Log.e(TAG, "interactWithRepo: ${e.message}")
+            repoException.postValue(e)
+        }
+    }
+
+    private companion object {
+        const val TAG = "TodoItemListViewModel"
     }
 }

@@ -23,7 +23,6 @@ import java.util.UUID
 import javax.inject.Inject
 
 
-//TODO: add throwing exception (add returning type to every method)
 @AppScope
 class TodoItemRepositoryImpl @Inject constructor(
     private val todoItemDao: TodoItemDao,
@@ -64,7 +63,8 @@ class TodoItemRepositoryImpl @Inject constructor(
         try {
             networkServiceApi.updateTodoItem(item.toRemoteDataModel())
         } catch (e: Exception) {
-            //TODO: throw exception
+            Log.e(TAG, "updateTodoItem: ${e.message}")
+            throw e
         }
     }
 
@@ -78,7 +78,8 @@ class TodoItemRepositoryImpl @Inject constructor(
         try {
             networkServiceApi.updateTodoItem(item.toTodoItemRemoteEntity())
         } catch (e: Exception) {
-            //TODO: throw exception
+            Log.e(TAG, "updateDoneStatus: ${e.message}")
+            throw e
         }
     }
 
@@ -86,31 +87,51 @@ class TodoItemRepositoryImpl @Inject constructor(
         lastDeleted = item.toLocalDataModel()
         lastDeletedPosition = todoItemDao.deleteTodoItem(item.toLocalDataModel())
 
-        networkServiceApi.deleteTodoItem(item.toRemoteDataModel())
-        updateRemoteFromLocal()
+        try {
+            networkServiceApi.deleteTodoItem(item.toRemoteDataModel())
+            updateRemoteFromLocal()
+        } catch (e: Exception) {
+            Log.e(TAG, "deleteItem: ${e.message}")
+            throw e
+        }
+
     }
 
     override suspend fun moveItem(fromId: UUID, toId: UUID) {
         todoItemDao.moveItem(fromId, toId)
 
-        updateRemoteFromLocal()
+        try {
+            updateRemoteFromLocal()
+        } catch (e: Exception) {
+            Log.e(TAG, "moveItem: ${e.message}")
+            throw e
+        }
     }
 
 
     override suspend fun addItem(item: TodoItemDomainEntity) {
         todoItemDao.addTodoItem(0, item.toLocalDataModel())
-        networkServiceApi.addTodoItem(item.toRemoteDataModel())
-
-        updateRemoteFromLocal()
+        try {
+            networkServiceApi.addTodoItem(item.toRemoteDataModel())
+            updateRemoteFromLocal()
+        } catch (e: Exception) {
+            Log.e(TAG, "addItem: ${e.message}")
+            throw e
+        }
     }
 
     override suspend fun undoDeletion() {
         lastDeleted?.let { item ->
             lastDeletedPosition?.let { pos ->
                 todoItemDao.addTodoItem(pos, item)
-                networkServiceApi.addTodoItem(item.toTodoItemRemoteEntity())
 
-                updateRemoteFromLocal()
+                try {
+                    networkServiceApi.addTodoItem(item.toTodoItemRemoteEntity())
+                    updateRemoteFromLocal()
+                } catch (e: Exception) {
+                    Log.e(TAG, "undoDeletion: ${e.message}")
+                    throw e
+                }
             }
         }
     }
@@ -124,13 +145,11 @@ class TodoItemRepositoryImpl @Inject constructor(
 
     override suspend fun syncLocalWithRemote() {
         try {
-            val result = networkServiceApi.getTodoItems().first()
-
-            when (result) {
+            when (val result = networkServiceApi.getTodoItems().first()) {
                 is DataResult.Success -> {
                     Log.d(TAG, "Got to-dos from network api")
 
-                    val remoteItems = result.data//.sortedBy { it.orderIndex }
+                    val remoteItems = result.data
 
                     remoteItems.forEach { remoteItem ->
                         val id = UUID.fromString(remoteItem.taskId)
@@ -162,8 +181,8 @@ class TodoItemRepositoryImpl @Inject constructor(
                 }
 
                 is DataResult.Error -> {
-                    Log.d(TAG, "Got error during getting to-dos from network api")
-                    //TODO: throw exception
+                    Log.e(TAG, "syncLocalWithRemote: ${result.error.message}")
+                    throw result.error
                 }
 
                 DataResult.Loading -> {
@@ -182,21 +201,16 @@ class TodoItemRepositoryImpl @Inject constructor(
 
             updateRemoteFromLocal()
         } catch (e: Exception) {
-            Log.d(TAG, "syncLocalWithRemote exception: ${e.message}")
-            //TODO: throw exception
+            Log.e(TAG, "syncLocalWithRemote: ${e.message}")
+            throw e
         } finally {
             syncTries = 0
         }
     }
 
-    private suspend fun updateRemoteFromLocal() = DataResult.onWithoutData {
+    private suspend fun updateRemoteFromLocal() {
         val items = todoItemDao.getTodoItems().first()
-
-        try {
-            networkServiceApi.updateAllOutdated(items.map { it.toTodoItemRemoteEntity() })
-        } catch (e: Exception) {
-            //TODO: throw exception
-        }
+        networkServiceApi.updateAllOutdated(items.map { it.toTodoItemRemoteEntity() })
     }
 
     private companion object {

@@ -32,4 +32,6 @@
     <string name="sign_out_message">Would you really like to sign out?</string>
     <string name="sign_out_yes">Yes</string>
     <string name="sign_out_cancel">Cancel</string>
+    <string name="synchronization_error">Synchronization error: %1$s</string>
+    <string name="internet_is_not_available_msg">Internet is not available, synchronization is not possible</string>
 </resources>

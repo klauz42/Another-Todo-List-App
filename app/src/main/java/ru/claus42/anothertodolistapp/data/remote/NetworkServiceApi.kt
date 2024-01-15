@@ -8,9 +8,9 @@ import java.util.UUID
 interface NetworkServiceApi {
     fun getTodoItems(): Flow<DataResult<List<TodoItemRemoteDataEntity>>>
     fun getTodoItem(id: UUID): Flow<DataResult<TodoItemRemoteDataEntity>>
-    fun insertAll(items: List<TodoItemRemoteDataEntity>)
-    fun updateTodoItem(item: TodoItemRemoteDataEntity)
-    fun addTodoItem(item: TodoItemRemoteDataEntity)
-    fun updateAllOutdated(items: List<TodoItemRemoteDataEntity>)
-    fun deleteTodoItem(item: TodoItemRemoteDataEntity)
+    suspend fun insertAll(items: List<TodoItemRemoteDataEntity>)
+    suspend fun updateTodoItem(item: TodoItemRemoteDataEntity)
+    suspend fun addTodoItem(item: TodoItemRemoteDataEntity)
+    suspend fun updateAllOutdated(items: List<TodoItemRemoteDataEntity>)
+    suspend fun deleteTodoItem(item: TodoItemRemoteDataEntity)
 }

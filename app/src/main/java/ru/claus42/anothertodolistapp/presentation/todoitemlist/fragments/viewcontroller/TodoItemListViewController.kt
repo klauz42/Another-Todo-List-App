@@ -175,16 +175,20 @@ class TodoItemListViewController @Inject constructor(
     }
 
     private fun setupItemsObserver() {
-        viewModel.todoItems.observe(fragment.viewLifecycleOwner) { result ->
+        viewModel.todoItemsResult.observe(fragment.viewLifecycleOwner) { result ->
             when (result) {
-                is DataResult.Success -> {
-                    submitRecyclerViewAdapterList(result.data)
+                is DataResult.Error -> {
+                    displayError(result.error)
+                    viewModel.clearError()
                 }
 
-                is DataResult.Error -> displayError(result.error)
                 is DataResult.Loading -> displayLoading()
                 else -> {}
             }
+        }
+
+        viewModel.todoItems.observe(fragment.viewLifecycleOwner) { items ->
+            submitRecyclerViewAdapterList(items)
         }
     }
 
@@ -193,7 +197,7 @@ class TodoItemListViewController @Inject constructor(
             binding.itemListCoordinatorLayout,
             fragment.requireContext().getString(
                 R.string.error_occurred_format,
-                exception.toString()
+                exception.message.toString()
             ),
             Snackbar.LENGTH_SHORT,
         )
@@ -231,5 +235,9 @@ class TodoItemListViewController @Inject constructor(
             onDeletionCallback()
         }
         snackbar.show()
+    }
+
+    private companion object {
+        const val TAG = "TodoItemListViewController"
     }
 }

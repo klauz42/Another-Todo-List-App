@@ -32,17 +32,29 @@ class TodoItemDetailsViewModel @Inject constructor(
     private val todoItemIdLiveData = MutableLiveData<UUID>()
     val todoId get() = todoItemIdLiveData.value
 
+    private val repoException = MutableLiveData<Exception>()
+
     private var initialItem: TodoItemDomainEntity? = null
 
     val isItemChanged
         get() = !(_todoItem.value?.equalsByContent(initialItem) ?: (initialItem == null))
+
     val todoItemResult: LiveData<DataResult<TodoItemDomainEntity>> =
-        todoItemIdLiveData.switchMap { id ->
-            getItemUseCase(id).asLiveData(viewModelScope.coroutineContext)
+        MediatorLiveData<DataResult<TodoItemDomainEntity>>().apply {
+            addSource(todoItemIdLiveData.switchMap { id ->
+                getItemUseCase(id).asLiveData(viewModelScope.coroutineContext)
+            }) {
+                value = it
+            }
+            addSource(repoException) { exception ->
+                value = DataResult.Error(exception)
+            }
         }
+
 
     private val _todoItem = MediatorLiveData<TodoItemDomainEntity?>()
     val todoItem: LiveData<TodoItemDomainEntity?> = _todoItem
+
 
     init {
         _todoItem.addSource(todoItemResult) { result ->
@@ -75,14 +87,22 @@ class TodoItemDetailsViewModel @Inject constructor(
 
     private fun updateTodoItem(item: TodoItemDomainEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            updateTodoItemUseCase(item)
+            try {
+                updateTodoItemUseCase(item)
+            } catch (e: Exception) {
+                repoException.postValue(e)
+            }
         }
     }
 
     fun deleteTodoItem() {
         _todoItem.value?.let {
             viewModelScope.launch(Dispatchers.IO) {
-                deleteTodoItemUseCase(it)
+                try {
+                    deleteTodoItemUseCase(it)
+                } catch (e: Exception) {
+                    repoException.postValue(e)
+                }
             }
         }
     }
@@ -162,6 +182,7 @@ class TodoItemDetailsViewModel @Inject constructor(
             )
         }
     }
+
 
     var isTextEditScrolledDown = false
     var isNewItem = false

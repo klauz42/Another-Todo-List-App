@@ -1,12 +1,17 @@
 package ru.claus42.anothertodolistapp.presentation
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -14,6 +19,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.claus42.anothertodolistapp.MainApp.Companion.NO_INTERNET_NOTIFICATION_CHANNEL_ID
+import ru.claus42.anothertodolistapp.MainApp.Companion.NO_INTERNET_NOTIFICATION_CHANNEL_RES_ID
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.ActivityMainBinding
@@ -28,6 +35,9 @@ import javax.inject.Inject
 
 
 class MainActivity : AppCompatActivity() {
+
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
 
     lateinit var activityComponent: ActivityComponent
     private lateinit var navController: NavController
@@ -50,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navHostFragment = supportFragmentManager
@@ -80,7 +90,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onStart() {
         super.onStart()
 
@@ -103,8 +112,20 @@ class MainActivity : AppCompatActivity() {
                     signIn()
                 } else {
                     if (isInternetAvailable()) {
+                        cancelNoInternetNotification()
                         Log.i(TAG, "Internet is available, starting sync")
-                        repository.syncLocalWithRemote()
+                        try {
+                            repository.syncLocalWithRemote()
+                        } catch (e: Exception) {
+                            showNoInternetNotification(
+                                getString(
+                                    R.string.synchronization_error,
+                                    e.message
+                                )
+                            )
+                        }
+                    } else {
+                        showNoInternetNotification(getString(R.string.internet_is_not_available_msg))
                     }
                 }
             }
@@ -113,6 +134,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         Handler(Looper.getMainLooper()).removeCallbacksAndMessages(null)
+        _binding = null
 
         super.onDestroy()
     }
@@ -123,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun isInternetAvailable(): Boolean {
         try {
-            val address = InetAddress.getByName("firebase.google.com")
+            val address = InetAddress.getByName("google.com")
             return !address.equals("")
         } catch (e: Exception) {
             Log.w(TAG, "Internet is not available: ${e.message}")
@@ -150,6 +172,34 @@ class MainActivity : AppCompatActivity() {
         val signInIntent = Intent(this, SignInActivity::class.java)
         startActivity(signInIntent)
         finish()
+    }
+
+    private fun showNoInternetNotification(text: String) {
+        val builder = NotificationCompat.Builder(
+            this,
+            NO_INTERNET_NOTIFICATION_CHANNEL_ID
+        )
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Установите иконку уведомления
+            .setContentTitle(getString(applicationInfo.labelRes)) // Заголовок уведомления
+            .setContentText(text) // Текст уведомления
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        with(NotificationManagerCompat.from(this)) {
+            if (ActivityCompat.checkSelfPermission(
+                    this@MainActivity,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            notify(NO_INTERNET_NOTIFICATION_CHANNEL_RES_ID, builder.build())
+        }
+    }
+
+    private fun cancelNoInternetNotification() {
+        with(NotificationManagerCompat.from(this)) {
+            cancel(NO_INTERNET_NOTIFICATION_CHANNEL_RES_ID)
+        }
     }
 
     companion object {
