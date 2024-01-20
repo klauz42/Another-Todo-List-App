@@ -29,8 +29,7 @@ class TodoItemDetailsFragment :
     SaveConfirmationDialogFragment.SaveConfirmationListener,
     DeleteConfirmationDialogFragment.DeleteConfirmationListener,
     DatePickerDialog.OnDateSetListener,
-    TimePickerDialog.OnTimeSetListener
-{
+    TimePickerDialog.OnTimeSetListener {
     private lateinit var detailsFragmentComponent: FragmentComponent
     private val activity: MainActivity by lazy { requireActivity() as MainActivity }
 

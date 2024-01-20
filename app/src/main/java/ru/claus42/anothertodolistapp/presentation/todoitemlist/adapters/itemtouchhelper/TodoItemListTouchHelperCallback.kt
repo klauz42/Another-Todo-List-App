@@ -28,8 +28,7 @@ class TodoItemListTouchHelperCallback @Inject constructor() :
     ItemTouchHelper.SimpleCallback(
         ItemTouchHelper.UP or ItemTouchHelper.DOWN,
         ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
-    )
-{
+    ) {
     interface AdapterListener {
         fun onDeleteItem(viewHolder: ViewHolder)
         fun onMoveItem(oldPosition: Int, newPosition: Int)

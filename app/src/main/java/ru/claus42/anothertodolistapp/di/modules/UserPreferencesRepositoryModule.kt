@@ -11,6 +11,6 @@ interface UserPreferencesRepositoryModule {
     @Suppress("FunctionName")
     @Binds
     fun bindUserPreferencesImpl_to_UserPreferences(
-        firebaseSessionManager: UserPreferencesRepositoryImpl
+        userPreferencesRepository: UserPreferencesRepositoryImpl
     ): UserPreferencesRepository
 }

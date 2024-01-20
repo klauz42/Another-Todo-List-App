@@ -8,7 +8,19 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
-                  <entry key="account_info_fragment">
+                  <entry key="destination_account_info">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="11" />
+                            <option name="y" value="668" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="destination_search_filter_options">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
@@ -20,7 +32,7 @@
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="search_todos_fragment">
+                  <entry key="destination_search_sort_options">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
@@ -32,7 +44,38 @@
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="todo_item_details_fragment">
+                  <entry key="destination_search_todos">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
+                          </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_filter_options">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_list_to_details">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_sort_options">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="destination_todo_item_details">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
@@ -44,7 +87,7 @@
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="todo_item_list_fragment">
+                  <entry key="destination_todo_item_list">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
