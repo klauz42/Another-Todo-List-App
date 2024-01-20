@@ -6,6 +6,7 @@ import dagger.Component
 import ru.claus42.anothertodolistapp.di.modules.AuthenticationUiModule
 import ru.claus42.anothertodolistapp.di.scopes.ActivityScope
 import ru.claus42.anothertodolistapp.domain.authentication.SessionManager
+import ru.claus42.anothertodolistapp.domain.models.SearchOptionsPreferencesRepository
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.UserPreferencesRepository
 import ru.claus42.anothertodolistapp.presentation.MainActivity
@@ -34,5 +35,6 @@ interface ActivityComponent {
 
     fun getTodoItemRepository(): TodoItemRepository
     fun getUserPreferencesRepository(): UserPreferencesRepository
+    fun getSortOptionsPreferencesRepository(): SearchOptionsPreferencesRepository
     fun getSessionManager(): SessionManager
 }

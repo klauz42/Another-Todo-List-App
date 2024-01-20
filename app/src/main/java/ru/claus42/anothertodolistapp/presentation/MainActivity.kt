@@ -1,6 +1,7 @@
 package ru.claus42.anothertodolistapp.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var repository: TodoItemRepository
 
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         activityComponent = DaggerActivityComponent.builder()
             .appComponent(appComponent)
@@ -69,8 +72,20 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav = findViewById(R.id.bottom_navigation)
         bottomNav.selectedItemId = R.id.destination_todo_item_details
-        bottomNav.setOnItemReselectedListener { }
+
         bottomNav.setupWithNavController(navController)
+
+        bottomNav.setOnItemSelectedListener { menuItem ->
+            when (navController.currentDestination?.id) {
+                R.id.destination_todo_item_details,
+                R.id.destination_search_sort_options,
+                R.id.destination_search_filter_options -> {
+                    navController.popBackStack()
+                }
+            }
+
+            NavigationUI.onNavDestinationSelected(menuItem, navController)
+        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val delayTime = resources.getInteger(R.integer.transition_duration).toLong() / 2

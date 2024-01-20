@@ -7,6 +7,9 @@ import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
 import ru.claus42.anothertodolistapp.presentation.ViewModelFactory
+import ru.claus42.anothertodolistapp.presentation.searchtodos.stateholders.FilterOptionsViewModel
+import ru.claus42.anothertodolistapp.presentation.searchtodos.stateholders.SearchTodosViewModel
+import ru.claus42.anothertodolistapp.presentation.searchtodos.stateholders.SortOptionsViewModel
 import ru.claus42.anothertodolistapp.presentation.todoitemdetails.stateholders.TodoItemDetailsViewModel
 import ru.claus42.anothertodolistapp.presentation.todoitemlist.stateholders.TodoItemListViewModel
 import kotlin.reflect.KClass
@@ -25,6 +28,21 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(TodoItemDetailsViewModel::class)
     fun bindTodoItemDetailsViewModel(viewModel: TodoItemDetailsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SearchTodosViewModel::class)
+    fun bindSearchTodosViewModel(viewModel: SearchTodosViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SortOptionsViewModel::class)
+    fun bindSortOptionsViewModel(viewModel: SortOptionsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FilterOptionsViewModel::class)
+    fun bindFilterOptionsViewModel(viewModel: FilterOptionsViewModel): ViewModel
 }
 
 @MustBeDocumented

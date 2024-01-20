@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="item_search_layout_grid_span">2</integer>
+    <integer name="item_search_layout_grid_max_lines">8</integer>
+    <integer name="item_search_layout_linear_max_lines">3</integer>
+</resources>

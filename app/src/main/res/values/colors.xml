@@ -45,4 +45,8 @@
 
     <color name="deadline_on_color">@color/blue</color>
     <color name="deadline_off_color">@color/label_tertiary</color>
+
+    <color name="low_priority_search_result_border">@color/label_tertiary</color>
+    <color name="basic_priority_search_result_border">@color/green</color>
+    <color name="important_priority_search_result_border">@color/red</color>
 </resources>

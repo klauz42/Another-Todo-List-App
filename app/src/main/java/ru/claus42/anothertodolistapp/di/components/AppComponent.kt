@@ -7,11 +7,13 @@ import ru.claus42.anothertodolistapp.di.modules.AppModule
 import ru.claus42.anothertodolistapp.di.modules.DataStoreModule
 import ru.claus42.anothertodolistapp.di.modules.DatabaseModule
 import ru.claus42.anothertodolistapp.di.modules.NetworkServiceApiModule
+import ru.claus42.anothertodolistapp.di.modules.SearchOptionsPreferencesRepositoryModule
 import ru.claus42.anothertodolistapp.di.modules.SessionManagerModule
 import ru.claus42.anothertodolistapp.di.modules.TodoItemRepositoryBindModule
 import ru.claus42.anothertodolistapp.di.modules.UserPreferencesRepositoryModule
 import ru.claus42.anothertodolistapp.di.scopes.AppScope
 import ru.claus42.anothertodolistapp.domain.authentication.SessionManager
+import ru.claus42.anothertodolistapp.domain.models.SearchOptionsPreferencesRepository
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.UserPreferencesRepository
 
@@ -25,6 +27,7 @@ import ru.claus42.anothertodolistapp.domain.models.UserPreferencesRepository
         SessionManagerModule::class,
         DataStoreModule::class,
         UserPreferencesRepositoryModule::class,
+        SearchOptionsPreferencesRepositoryModule::class,
         NetworkServiceApiModule::class
     ]
 )
@@ -39,5 +42,6 @@ interface AppComponent {
     fun getTodoItemRepository(): TodoItemRepository
     fun getSessionManager(): SessionManager
     fun getUserPreferencesRepository(): UserPreferencesRepository
+    fun getSortOptionsPreferencesRepository(): SearchOptionsPreferencesRepository
     fun getNetworkServiceApi(): NetworkServiceApi
 }

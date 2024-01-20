@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="todoItem"
+            type="ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity" />
+    </data>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/item_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:background="@drawable/item_search_result_low_priority_background"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:padding="10dp"
+        android:textAppearance="@style/SubheadTextStyle"
+        app:doneItem="@{todoItem.done}"
+        tools:text="@string/lorem_ipsum_example">
+    </com.google.android.material.textview.MaterialTextView>
+
+</layout>

@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -12,6 +11,7 @@ import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.databinding.TodoItemBinding
 import ru.claus42.anothertodolistapp.di.scopes.FragmentScope
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
+import ru.claus42.anothertodolistapp.presentation.calculateDiff
 import ru.claus42.anothertodolistapp.presentation.todoitemlist.adapters.itemtouchhelper.TodoItemListTouchHelperCallback
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -67,7 +67,7 @@ class TodoItemListAdapter @Inject constructor() :
     }
 
     fun submitList(newItems: List<TodoItemDomainEntity>) {
-        val result = calculateDiff(newItems)
+        val result = calculateDiff(items, newItems)
 
         if (itemCount > 0 && newItems.isNotEmpty()) {
             val oldLast = itemCount - 1
@@ -235,21 +235,4 @@ class TodoItemListAdapter @Inject constructor() :
             }
         }
     }
-
-    private fun calculateDiff(newItems: List<TodoItemDomainEntity>) =
-        DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-            override fun getOldListSize() = items.size
-            override fun getNewListSize() = newItems.size
-
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return items[oldItemPosition].id == newItems[newItemPosition].id
-            }
-
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                val newItem = newItems[newItemPosition]
-                val oldItem = items[oldItemPosition]
-                return newItem.equalsByContent(oldItem)
-            }
-        }
-        )
 }

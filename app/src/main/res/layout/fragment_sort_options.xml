@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.searchtodos.fragments.SortOptionsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/back_primary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:background="@color/transparent"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:contentInsetStart="0dp"
+                app:contentInsetStartWithNavigation="0dp">
+                <include
+                    android:id="@+id/header_view"
+                    layout="@layout/toolbar_search_sort_options"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </androidx.appcompat.widget.Toolbar>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/date_sorting"
+                        android:textAppearance="@style/TitleTextStyle" />
+                    <RadioGroup
+                        android:id="@+id/type_date_to_sort"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:checkedButton="@id/creation_date"
+                        android:orientation="vertical">
+                        <RadioButton
+                            android:id="@+id/creation_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/by_creation_date"
+                            android:textAppearance="@style/BodyTextStyle" />
+
+                        <RadioButton
+                            android:id="@+id/change_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/by_date_of_change"
+                            android:textAppearance="@style/BodyTextStyle" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:text=""
+                        android:textAppearance="@style/TitleTextStyle" />
+                    <RadioGroup
+                        android:id="@+id/sort_by_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:checkedButton="@id/new_first"
+                        android:orientation="vertical">
+                        <RadioButton
+                            android:id="@+id/new_first"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/new_ones_first"
+                            android:textAppearance="@style/BodyTextStyle" />
+                        <RadioButton
+                            android:id="@+id/old_first"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/old_ones_first"
+                            android:textAppearance="@style/BodyTextStyle" />
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/sort_by_deadline"
+                    android:textAppearance="@style/TitleTextStyle" />
+                <RadioGroup
+                    android:id="@+id/sort_by_deadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:checkedButton="@id/no_sort_by_deadline"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/earlier_deadline_first"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/earlier_deadline_first"
+                        android:textAppearance="@style/BodyTextStyle" />
+                    <RadioButton
+                        android:id="@+id/later_deadline_first"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/later_deadline_first"
+                        android:textAppearance="@style/BodyTextStyle" />
+                    <RadioButton
+                        android:id="@+id/no_sort_by_deadline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/don_t_sort_by_deadline"
+                        android:textAppearance="@style/BodyTextStyle" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/sort_by_importance"
+                    android:textAppearance="@style/TitleTextStyle" />
+                <RadioGroup
+                    android:id="@+id/sort_by_importance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:checkedButton="@id/no_sort_by_importance"
+                    android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/most_important_first"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/most_important_first"
+                        android:textAppearance="@style/BodyTextStyle" />
+                    <RadioButton
+                        android:id="@+id/less_important_first"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/less_important_first"
+                        android:textAppearance="@style/BodyTextStyle" />
+                    <RadioButton
+                        android:id="@+id/no_sort_by_importance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/don_t_sort_by_importance"
+                        android:textAppearance="@style/BodyTextStyle" />
+                </RadioGroup>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</layout>

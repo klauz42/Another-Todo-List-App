@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:id="@+id/list_header_collapsed">
+
+    <TextView
+        android:id="@+id/header_title"
+        android:text="@string/label_filter_options"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/CollapsedHeaderStyle"
+        android:textSize="@dimen/item_list_header_collapsed_title_text_size" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
