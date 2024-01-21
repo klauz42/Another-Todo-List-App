@@ -142,110 +142,110 @@ class SearchTodosViewModel @Inject constructor(
         )
     }
 
+    companion object {
+        private fun TodoItemDomainEntity.combinedFilterPredicate(
+            lowIncluded: Boolean,
+            basicIncluded: Boolean,
+            importantIncluded: Boolean,
+            onlyWithDeadlineIncluded: Boolean,
+            doneIncluded: Boolean,
+        ): Boolean {
+            return with(this) {
+                val priorityPredicate = when (itemPriority) {
+                    ItemPriority.LOW -> lowIncluded
+                    ItemPriority.BASIC -> basicIncluded
+                    ItemPriority.IMPORTANT -> importantIncluded
+                }
+                val deadlineOnlyPredicate = if (onlyWithDeadlineIncluded) {
+                    isDeadlineEnabled
+                } else true
+                val donePredicate = if (!doneIncluded) !done else true
 
-    private fun TodoItemDomainEntity.combinedFilterPredicate(
-        lowIncluded: Boolean,
-        basicIncluded: Boolean,
-        importantIncluded: Boolean,
-        onlyWithDeadlineIncluded: Boolean,
-        doneIncluded: Boolean,
-    ): Boolean {
-        return with(this) {
-            val priorityPredicate = when (itemPriority) {
-                ItemPriority.LOW -> lowIncluded
-                ItemPriority.BASIC -> basicIncluded
-                ItemPriority.IMPORTANT -> importantIncluded
-            }
-            val deadlineOnlyPredicate = if (onlyWithDeadlineIncluded) {
-                isDeadlineEnabled
-            } else true
-            val donePredicate = if (!doneIncluded) !done else true
-
-            priorityPredicate && deadlineOnlyPredicate && donePredicate
-        }
-    }
-
-    private fun getDateComparator(
-        dateSortType: DateSortType,
-        dateSortValue: DateSortValue,
-    ): Comparator<TodoItemDomainEntity> = Comparator { task1, task2 ->
-        when (dateSortType) {
-            DateSortType.CREATION -> when (dateSortValue) {
-                DateSortValue.NEW_ONES_FIRST -> task2.createdAt.compareTo(task1.createdAt)
-                DateSortValue.OLD_ONES_FIRST -> task1.createdAt.compareTo(task2.createdAt)
-            }
-
-            DateSortType.CHANGED -> when (dateSortValue) {
-                DateSortValue.NEW_ONES_FIRST -> task2.changedAt.compareTo(task1.changedAt)
-                DateSortValue.OLD_ONES_FIRST -> task1.changedAt.compareTo(task2.changedAt)
+                priorityPredicate && deadlineOnlyPredicate && donePredicate
             }
         }
-    }
 
-    private fun getDeadlineComparator(deadlineSortValue: DeadlineSortValue)
-            : Comparator<TodoItemDomainEntity> = Comparator { task1, task2 ->
-        when (deadlineSortValue) {
-            DeadlineSortValue.EARLIER_FIRST -> when {
-                task1.isDeadlineEnabled && task2.isDeadlineEnabled ->
-                    task1.deadline.compareTo(task2.deadline)
+        private fun getDateComparator(
+            dateSortType: DateSortType,
+            dateSortValue: DateSortValue,
+        ): Comparator<TodoItemDomainEntity> = Comparator { task1, task2 ->
+            when (dateSortType) {
+                DateSortType.CREATION -> when (dateSortValue) {
+                    DateSortValue.NEW_ONES_FIRST -> task2.createdAt.compareTo(task1.createdAt)
+                    DateSortValue.OLD_ONES_FIRST -> task1.createdAt.compareTo(task2.createdAt)
+                }
 
-                task1.isDeadlineEnabled -> -1
-                task2.isDeadlineEnabled -> 1
-                else -> 0
+                DateSortType.CHANGED -> when (dateSortValue) {
+                    DateSortValue.NEW_ONES_FIRST -> task2.changedAt.compareTo(task1.changedAt)
+                    DateSortValue.OLD_ONES_FIRST -> task1.changedAt.compareTo(task2.changedAt)
+                }
             }
+        }
 
-            DeadlineSortValue.LATER_FIRST -> when {
-                task1.isDeadlineEnabled && task2.isDeadlineEnabled ->
-                    task2.deadline.compareTo(task1.deadline)
+        private fun getDeadlineComparator(deadlineSortValue: DeadlineSortValue)
+                : Comparator<TodoItemDomainEntity> = Comparator { task1, task2 ->
+            when (deadlineSortValue) {
+                DeadlineSortValue.EARLIER_FIRST -> when {
+                    task1.isDeadlineEnabled && task2.isDeadlineEnabled ->
+                        task1.deadline.compareTo(task2.deadline)
 
-                task1.isDeadlineEnabled -> -1
-                task2.isDeadlineEnabled -> 1
-                else -> 0
+                    task1.isDeadlineEnabled -> -1
+                    task2.isDeadlineEnabled -> 1
+                    else -> 0
+                }
+
+                DeadlineSortValue.LATER_FIRST -> when {
+                    task1.isDeadlineEnabled && task2.isDeadlineEnabled ->
+                        task2.deadline.compareTo(task1.deadline)
+
+                    task1.isDeadlineEnabled -> -1
+                    task2.isDeadlineEnabled -> 1
+                    else -> 0
+                }
+
+                DeadlineSortValue.NO_DEADLINE_SORT -> 0
             }
-
-            DeadlineSortValue.NO_DEADLINE_SORT -> 0
         }
-    }
 
 
-    private fun getImportanceComparator(importanceSortValue: ImportanceSortValue)
-            : Comparator<TodoItemDomainEntity> = Comparator { task1, task2 ->
-        when (importanceSortValue) {
-            ImportanceSortValue.MOST_IMPORTANT_FIRST ->
-                task2.itemPriority.compareTo(task1.itemPriority)
+        private fun getImportanceComparator(importanceSortValue: ImportanceSortValue)
+                : Comparator<TodoItemDomainEntity> = Comparator { task1, task2 ->
+            when (importanceSortValue) {
+                ImportanceSortValue.MOST_IMPORTANT_FIRST ->
+                    task2.itemPriority.compareTo(task1.itemPriority)
 
-            ImportanceSortValue.LESS_IMPORTANT_FIRST ->
-                task1.itemPriority.compareTo(task2.itemPriority)
+                ImportanceSortValue.LESS_IMPORTANT_FIRST ->
+                    task1.itemPriority.compareTo(task2.itemPriority)
 
-            ImportanceSortValue.NO_IMPORTANCE_SORT -> 0
+                ImportanceSortValue.NO_IMPORTANCE_SORT -> 0
+            }
         }
-    }
 
-    private fun applyFiltersAndSort(
-        list: List<TodoItemDomainEntity>,
-        lowIncluded: Boolean,
-        basicIncluded: Boolean,
-        importantIncluded: Boolean,
-        onlyWithDeadlineIncluded: Boolean,
-        areDoneIncluded: Boolean,
-        dateSortType: DateSortType,
-        dateSortValue: DateSortValue,
-        deadlineSortValue: DeadlineSortValue,
-        importanceSortValue: ImportanceSortValue,
-    ): List<TodoItemDomainEntity> {
-        return list.filter {
-            it.combinedFilterPredicate(
-                lowIncluded,
-                basicIncluded,
-                importantIncluded,
-                onlyWithDeadlineIncluded,
-                areDoneIncluded,
+        private fun applyFiltersAndSort(
+            list: List<TodoItemDomainEntity>,
+            lowIncluded: Boolean,
+            basicIncluded: Boolean,
+            importantIncluded: Boolean,
+            onlyWithDeadlineIncluded: Boolean,
+            areDoneIncluded: Boolean,
+            dateSortType: DateSortType,
+            dateSortValue: DateSortValue,
+            deadlineSortValue: DeadlineSortValue,
+            importanceSortValue: ImportanceSortValue,
+        ): List<TodoItemDomainEntity> {
+            return list.filter {
+                it.combinedFilterPredicate(
+                    lowIncluded,
+                    basicIncluded,
+                    importantIncluded,
+                    onlyWithDeadlineIncluded,
+                    areDoneIncluded,
+                )
+            }.sortedWith(
+                getImportanceComparator(importanceSortValue)
+                    .thenComparing(getDeadlineComparator(deadlineSortValue))
+                    .thenComparing(getDateComparator(dateSortType, dateSortValue))
             )
-        }.sortedWith(
-            getImportanceComparator(importanceSortValue)
-                .thenComparing(getDeadlineComparator(deadlineSortValue))
-                .thenComparing(getDateComparator(dateSortType, dateSortValue))
-        )
+        }
     }
-
 }

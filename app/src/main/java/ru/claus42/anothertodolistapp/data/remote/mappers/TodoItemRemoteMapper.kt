@@ -1,6 +1,5 @@
 package ru.claus42.anothertodolistapp.data.remote.mappers
 
-import com.google.firebase.firestore.DocumentSnapshot
 import ru.claus42.anothertodolistapp.data.remote.models.TodoItemRemoteDataEntity
 import ru.claus42.anothertodolistapp.domain.models.entities.ItemPriority
 import ru.claus42.anothertodolistapp.domain.models.entities.TodoItemDomainEntity
@@ -30,48 +29,6 @@ fun TodoItemRemoteDataEntity.toMap(userId: String): Map<String, Any> {
         UPDATED_AT_KEY to updatedAt,
         ORDER_INDEX_KEY to orderIndex,
     )
-}
-
-fun Map<String, Any>.toRemoteDataModel(): TodoItemRemoteDataEntity {
-    return TodoItemRemoteDataEntity(
-        taskId = get(TASK_ID_KEY) as String,
-        description = get(DESCRIPTION_KEY) as String,
-        priority = get(PRIORITY_KEY) as Long,
-        deadline = get(DEADLINE_KEY) as Long,
-        isDeadlineEnabled = get(IS_DEADLINE_ENABLED_KEY) as Boolean,
-        done = get(DONE_KEY) as Boolean,
-        createdAt = get(CREATED_AT_KEY) as Long,
-        updatedAt = get(UPDATED_AT_KEY) as Long,
-        orderIndex = get(ORDER_INDEX_KEY) as Long,
-        lastUpdatedBy = get(LAST_UPDATED_BY_KEY) as String
-    )
-}
-
-fun DocumentSnapshot.toRemoteDataModel(
-    taskId: String,
-    userId: String,
-): TodoItemRemoteDataEntity {
-    return TodoItemRemoteDataEntity(
-        taskId = taskId,
-        description = getString(DESCRIPTION_KEY)!!,
-        priority = getLong(PRIORITY_KEY)!!.toLong(),
-        deadline = getLong(DEADLINE_KEY)!!,
-        isDeadlineEnabled = getBoolean(IS_DEADLINE_ENABLED_KEY)!!,
-        done = getBoolean(DONE_KEY)!!,
-        createdAt = getLong(CREATED_AT_KEY)!!,
-        updatedAt = getLong(UPDATED_AT_KEY)!!,
-        lastUpdatedBy = userId,
-        orderIndex = getLong(ORDER_INDEX_KEY)!!.toLong(),
-    )
-}
-
-private fun Int.toPriority(): ItemPriority {
-    return when (this) {
-        0 -> ItemPriority.LOW
-        1 -> ItemPriority.BASIC
-        2 -> ItemPriority.IMPORTANT
-        else -> throw IllegalArgumentException("priority cannot be equal to $this")
-    }
 }
 
 private fun ItemPriority.toLong(): Long {
