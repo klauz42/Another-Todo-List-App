@@ -12,6 +12,10 @@ object Versions {
     const val junitAndroid      = "1.1.5"
     const val espresso          = "3.5.1"
     const val fragmentTesting   = "1.6.2"
+    const val kotlinx           = "1.7.3"
+    const val mockito           = "5.9.0"
+    const val mockitoKotlin     = "3.2.0"
+    const val robolectric       = "4.11.1"
 }
 
 object Dependencies {
@@ -65,9 +69,15 @@ object Dependencies {
         const val junit = "junit:junit:${Versions.junit}"
         const val junitAndroid = "androidx.test.ext:junit:${Versions.junitAndroid}"
         const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espresso}"
-        const val espressoContrib =
-            "com.android.support.test.espresso:espresso-contrib:${Versions.espresso}"
+        const val espressoContrib = "androidx.test.espresso:espresso-contrib:${Versions.espresso}"
+        const val idlingResource = "androidx.test.espresso:espresso-idling-resource:${Versions.espresso}"
         const val fragment = "androidx.fragment:fragment-testing:${Versions.fragmentTesting}"
+        const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinx}"
+        object Mockito {
+            const val core = "org.mockito:mockito-core:${Versions.mockito}"
+            const val kotlin = "org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}"
+        }
+        const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
     }
 }
 

@@ -71,8 +71,13 @@ dependencies {
     androidTestImplementation(Dependencies.Testing.junitAndroid)
     androidTestImplementation(Dependencies.Testing.espressoCore)
     androidTestImplementation(Dependencies.Testing.espressoContrib)
+    androidTestImplementation(Dependencies.Testing.idlingResource)
     androidTestImplementation(Dependencies.Navigation.testitng)
     debugImplementation(Dependencies.Testing.fragment)
+    testImplementation(Dependencies.Testing.coroutinesTest)
+    testImplementation(Dependencies.Testing.Mockito.core)
+    testImplementation(Dependencies.Testing.Mockito.kotlin)
+    testImplementation(Dependencies.Testing.robolectric)
 
     implementation(Dependencies.Lifecycle.runtime)
     implementation(Dependencies.Lifecycle.livedata)
