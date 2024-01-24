@@ -25,6 +25,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        testOptions {
+            unitTests {
+                isIncludeAndroidResources = true
+            }
+        }
+
     }
 
     buildTypes {
