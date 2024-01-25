@@ -79,7 +79,8 @@ dependencies {
     implementation(Dependencies.Android.core)
 
     testImplementation(Dependencies.Testing.junit)
-    androidTestImplementation(Dependencies.Testing.junitAndroid)
+    androidTestImplementation(Dependencies.Testing.AndroidXTest.junit)
+    androidTestImplementation(Dependencies.Testing.AndroidXTest.junitKtx)
     androidTestImplementation(Dependencies.Testing.espressoCore)
     androidTestImplementation(Dependencies.Testing.espressoContrib)
     androidTestImplementation(Dependencies.Testing.idlingResource)
@@ -109,6 +110,8 @@ dependencies {
 
     implementation(Dependencies.Dagger.dagger)
     kapt(Dependencies.Dagger.compiler)
+    androidTestImplementation(Dependencies.Dagger.dagger)
+    kaptAndroidTest(Dependencies.Dagger.compiler)
 
     implementation(Dependencies.Room.room)
     testImplementation(Dependencies.Room.testing)

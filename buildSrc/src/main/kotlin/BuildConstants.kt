@@ -9,7 +9,7 @@ object Versions {
     const val constraintLayout  = "2.1.4"
     const val lifecycle         = "2.6.2"
     const val junit             = "4.13.2"
-    const val junitAndroid      = "1.1.5"
+    const val androidXTest      = "1.1.5"
     const val espresso          = "3.5.1"
     const val fragmentTesting   = "1.6.2"
     const val kotlinx           = "1.7.3"
@@ -67,7 +67,10 @@ object Dependencies {
 
     object Testing {
         const val junit = "junit:junit:${Versions.junit}"
-        const val junitAndroid = "androidx.test.ext:junit:${Versions.junitAndroid}"
+        object AndroidXTest {
+            const val junit = "androidx.test.ext:junit:${Versions.androidXTest}"
+            const val junitKtx = "androidx.test.ext:junit-ktx:${Versions.androidXTest}"
+        }
         const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espresso}"
         const val espressoContrib = "androidx.test.espresso:espresso-contrib:${Versions.espresso}"
         const val idlingResource = "androidx.test.espresso:espresso-idling-resource:${Versions.espresso}"
