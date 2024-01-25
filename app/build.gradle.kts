@@ -82,6 +82,7 @@ dependencies {
     testImplementation(Dependencies.Testing.junit)
     androidTestImplementation(Dependencies.Testing.AndroidXTest.junit)
     androidTestImplementation(Dependencies.Testing.AndroidXTest.junitKtx)
+    androidTestImplementation(Dependencies.Testing.AndroidXTest.rules)
     androidTestImplementation(Dependencies.Testing.espressoCore)
     androidTestImplementation(Dependencies.Testing.espressoContrib)
     androidTestImplementation(Dependencies.Testing.idlingResource)
@@ -92,6 +93,7 @@ dependencies {
     testImplementation(Dependencies.Testing.Mockito.kotlin)
     androidTestImplementation(Dependencies.Testing.Mockito.core)
     androidTestImplementation(Dependencies.Testing.Mockito.kotlin)
+    androidTestImplementation(Dependencies.Testing.Mockito.android)
     testImplementation(Dependencies.Testing.robolectric)
 
     implementation(Dependencies.Lifecycle.runtime)

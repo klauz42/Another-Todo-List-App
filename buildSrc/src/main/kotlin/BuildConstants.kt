@@ -70,6 +70,7 @@ object Dependencies {
         object AndroidXTest {
             const val junit = "androidx.test.ext:junit:${Versions.androidXTest}"
             const val junitKtx = "androidx.test.ext:junit-ktx:${Versions.androidXTest}"
+            const val rules = "androidx.test:rules:1.5.0"
         }
         const val espressoCore = "androidx.test.espresso:espresso-core:${Versions.espresso}"
         const val espressoContrib = "androidx.test.espresso:espresso-contrib:${Versions.espresso}"
@@ -78,6 +79,7 @@ object Dependencies {
         const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinx}"
         object Mockito {
             const val core = "org.mockito:mockito-core:${Versions.mockito}"
+            const val android = "org.mockito:mockito-android:${Versions.mockito}"
             const val kotlin = "org.mockito.kotlin:mockito-kotlin:${Versions.mockitoKotlin}"
         }
         const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
