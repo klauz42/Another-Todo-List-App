@@ -18,9 +18,9 @@ val Context.appComponent: AppComponent
         else -> this.applicationContext.appComponent
     }
 
-class MainApp : Application() {
+open class MainApp : Application() {
     lateinit var appComponent: AppComponent
-        private set
+        protected set
 
     override fun onCreate() {
         super.onCreate()
