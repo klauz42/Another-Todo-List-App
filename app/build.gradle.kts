@@ -60,6 +60,11 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
+    sourceSets {
+        getByName("androidTest") {
+            manifest.srcFile("src/androidTest/AndroidManifest.xml")
+        }
+    }
 }
 
 dependencies {
@@ -83,6 +88,8 @@ dependencies {
     testImplementation(Dependencies.Testing.coroutinesTest)
     testImplementation(Dependencies.Testing.Mockito.core)
     testImplementation(Dependencies.Testing.Mockito.kotlin)
+    androidTestImplementation(Dependencies.Testing.Mockito.core)
+    androidTestImplementation(Dependencies.Testing.Mockito.kotlin)
     testImplementation(Dependencies.Testing.robolectric)
 
     implementation(Dependencies.Lifecycle.runtime)
