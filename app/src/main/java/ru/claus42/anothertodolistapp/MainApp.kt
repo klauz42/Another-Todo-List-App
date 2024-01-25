@@ -8,6 +8,9 @@ import android.os.Build
 import ru.claus42.anothertodolistapp.di.components.AppComponent
 import ru.claus42.anothertodolistapp.di.components.DaggerAppComponent
 import ru.claus42.anothertodolistapp.di.modules.AppModule
+import ru.claus42.anothertodolistapp.utils.Constants.Notifications.NO_INTERNET_NOTIFICATION_CHANNEL_DESCRIPTION
+import ru.claus42.anothertodolistapp.utils.Constants.Notifications.NO_INTERNET_NOTIFICATION_CHANNEL_ID
+import ru.claus42.anothertodolistapp.utils.Constants.Notifications.NO_INTERNET_NOTIFICATION_CHANNEL_NAME
 
 val Context.appComponent: AppComponent
     get() = when (this) {
@@ -48,11 +51,5 @@ class MainApp : Application() {
 
     companion object {
         private const val TAG = "MainApp"
-
-        const val NO_INTERNET_NOTIFICATION_CHANNEL_NAME = "Internet unavailability"
-        const val NO_INTERNET_NOTIFICATION_CHANNEL_DESCRIPTION =
-            "Notification about Internet unavailability"
-        const val NO_INTERNET_NOTIFICATION_CHANNEL_ID = "AnotherTodoListAppNoInternet"
-        const val NO_INTERNET_NOTIFICATION_CHANNEL_RES_ID = 1
     }
 }

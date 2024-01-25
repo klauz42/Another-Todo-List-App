@@ -21,8 +21,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.claus42.anothertodolistapp.MainApp.Companion.NO_INTERNET_NOTIFICATION_CHANNEL_ID
-import ru.claus42.anothertodolistapp.MainApp.Companion.NO_INTERNET_NOTIFICATION_CHANNEL_RES_ID
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.ActivityMainBinding
@@ -32,6 +30,8 @@ import ru.claus42.anothertodolistapp.domain.authentication.SessionManager
 import ru.claus42.anothertodolistapp.domain.models.TodoItemRepository
 import ru.claus42.anothertodolistapp.domain.models.UserPreferencesRepository
 import ru.claus42.anothertodolistapp.presentation.auth.activities.SignInActivity
+import ru.claus42.anothertodolistapp.utils.Constants.Notifications.NO_INTERNET_NOTIFICATION_CHANNEL_ID
+import ru.claus42.anothertodolistapp.utils.Constants.Notifications.NO_INTERNET_NOTIFICATION_CHANNEL_RES_ID
 import java.net.InetAddress
 import javax.inject.Inject
 
@@ -108,43 +108,8 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        if (!sessionManager.isUserLoggedIn()) {
-            signIn()
-        } else {
-            lifecycleScope.launch(Dispatchers.IO) {
-                if (userPreferences.getUserId().isEmpty()) {
-                    sessionManager.getUserId()?.let { userPreferences.setUserId(it) } ?: {
-                        with(sessionManager) {
-                            Log.e(
-                                TAG, "sessionManager.userId = ${getUserId()}, " +
-                                        "when sessionManager.isUserLoggedIn() = ${isUserLoggedIn()}"
-                            )
-                        }
-                    }
-                }
-
-                if (userPreferences.getUserId().isEmpty()) {
-                    signIn()
-                } else {
-                    if (isInternetAvailable()) {
-                        cancelNoInternetNotification()
-                        Log.i(TAG, "Internet is available, starting sync")
-                        try {
-                            repository.syncLocalWithRemote()
-                        } catch (e: Exception) {
-                            showNoInternetNotification(
-                                getString(
-                                    R.string.synchronization_error,
-                                    e.message
-                                )
-                            )
-                        }
-                    } else {
-                        showNoInternetNotification(getString(R.string.internet_is_not_available_msg))
-                    }
-                }
-            }
-        }
+        authenticate()
+        sync()
     }
 
     override fun onDestroy() {
@@ -156,6 +121,48 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    private fun authenticate() {
+        if (!sessionManager.isUserLoggedIn()) {
+            signIn()
+        }
+    }
+
+    private fun sync() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (userPreferences.getUserId().isEmpty()) {
+                sessionManager.getUserId()?.let { userPreferences.setUserId(it) } ?: {
+                    with(sessionManager) {
+                        Log.e(
+                            TAG, "sessionManager.userId = ${getUserId()}, " +
+                                    "when sessionManager.isUserLoggedIn() = ${isUserLoggedIn()}"
+                        )
+                    }
+                }
+            }
+
+            if (userPreferences.getUserId().isEmpty()) {
+                signIn()
+            } else {
+                if (isInternetAvailable()) {
+                    cancelNoInternetNotification()
+                    Log.i(TAG, "Internet is available, starting sync")
+                    try {
+                        repository.syncLocalWithRemote()
+                    } catch (e: Exception) {
+                        showNoInternetNotification(
+                            getString(
+                                R.string.synchronization_error,
+                                e.message
+                            )
+                        )
+                    }
+                } else {
+                    showNoInternetNotification(getString(R.string.internet_is_not_available_msg))
+                }
+            }
+        }
     }
 
     private fun isInternetAvailable(): Boolean {
@@ -194,9 +201,9 @@ class MainActivity : AppCompatActivity() {
             this,
             NO_INTERNET_NOTIFICATION_CHANNEL_ID
         )
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Установите иконку уведомления
-            .setContentTitle(getString(applicationInfo.labelRes)) // Заголовок уведомления
-            .setContentText(text) // Текст уведомления
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(getString(applicationInfo.labelRes))
+            .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         with(NotificationManagerCompat.from(this)) {
