@@ -21,7 +21,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+//        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "ru.claus42.anothertodolistapp.NoAuthTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
