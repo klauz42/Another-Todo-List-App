@@ -108,8 +108,9 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        authenticate()
-        sync()
+        authenticate() {
+            sync()
+        }
     }
 
     override fun onDestroy() {
@@ -123,9 +124,11 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    private fun authenticate() {
+    private fun authenticate(sync: () -> Unit) {
         if (!sessionManager.isUserLoggedIn()) {
             signIn()
+        } else {
+            sync()
         }
     }
 
