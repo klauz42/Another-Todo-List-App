@@ -1,7 +1,5 @@
 package ru.claus42.anothertodolistapp.data.remote.models
 
-import java.io.Serializable
-
 data class TodoItemRemoteDataEntity(
     val taskId: String = "",
     val description: String = "",
@@ -13,4 +11,4 @@ data class TodoItemRemoteDataEntity(
     val updatedAt: Long = 0,
     val lastUpdatedBy: String = "",
     val orderIndex: Long = -1,
-) : Serializable
+)
