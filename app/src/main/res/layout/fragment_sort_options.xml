@@ -32,19 +32,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginTop="16dp"
                 android:weightSum="2">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_marginBottom="8dp"
@@ -52,7 +51,7 @@
                         android:textAppearance="@style/TitleTextStyle" />
                     <RadioGroup
                         android:id="@+id/type_date_to_sort"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:checkedButton="@id/creation_date"
                         android:orientation="vertical">
@@ -77,8 +76,6 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="8dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -90,7 +87,7 @@
                         android:textAppearance="@style/TitleTextStyle" />
                     <RadioGroup
                         android:id="@+id/sort_by_date"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:checkedButton="@id/new_first"
                         android:orientation="vertical">
@@ -119,7 +116,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginBottom="8dp"
@@ -127,7 +124,7 @@
                     android:textAppearance="@style/TitleTextStyle" />
                 <RadioGroup
                     android:id="@+id/sort_by_deadline"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:checkedButton="@id/no_sort_by_deadline"
                     android:orientation="vertical">
@@ -161,7 +158,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginBottom="8dp"
@@ -169,7 +166,7 @@
                     android:textAppearance="@style/TitleTextStyle" />
                 <RadioGroup
                     android:id="@+id/sort_by_importance"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:checkedButton="@id/no_sort_by_importance"
                     android:orientation="vertical">

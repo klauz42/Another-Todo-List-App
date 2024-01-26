@@ -35,6 +35,7 @@
             android:drawableStart="@drawable/search"
             android:drawableTint="@color/label_secondary"
             android:drawablePadding="8dp"
+            android:textAlignment="viewStart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/layout_search_options"/>
