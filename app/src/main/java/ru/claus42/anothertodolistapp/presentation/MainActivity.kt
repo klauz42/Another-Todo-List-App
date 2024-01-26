@@ -1,7 +1,6 @@
 package ru.claus42.anothertodolistapp.presentation
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -21,6 +20,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.claus42.anothertodolistapp.R
 import ru.claus42.anothertodolistapp.appComponent
 import ru.claus42.anothertodolistapp.databinding.ActivityMainBinding
@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var repository: TodoItemRepository
 
-    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         activityComponent = DaggerActivityComponent.builder()
             .appComponent(appComponent)
@@ -70,23 +69,31 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        bottomNav = findViewById(R.id.bottom_navigation)
-        bottomNav.selectedItemId = R.id.destination_todo_item_details
+        setupBottomNavigation()
+        setOnDestinationChangedListener()
+    }
 
-        bottomNav.setupWithNavController(navController)
+    private fun setupBottomNavigation() {
+        bottomNav = findViewById<BottomNavigationView?>(R.id.bottom_navigation).apply {
+            selectedItemId = R.id.destination_todo_item_details
 
-        bottomNav.setOnItemSelectedListener { menuItem ->
-            when (navController.currentDestination?.id) {
-                R.id.destination_todo_item_details,
-                R.id.destination_search_sort_options,
-                R.id.destination_search_filter_options -> {
-                    navController.popBackStack()
+            setupWithNavController(navController)
+
+            setOnItemSelectedListener { menuItem ->
+                when (navController.currentDestination?.id) {
+                    R.id.destination_todo_item_details,
+                    R.id.destination_search_sort_options,
+                    R.id.destination_search_filter_options -> {
+                        navController.popBackStack()
+                    }
                 }
+
+                NavigationUI.onNavDestinationSelected(menuItem, navController)
             }
-
-            NavigationUI.onNavDestinationSelected(menuItem, navController)
         }
+    }
 
+    private fun setOnDestinationChangedListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val delayTime = resources.getInteger(R.integer.transition_duration).toLong() / 2
             val handler = Handler(Looper.getMainLooper())
@@ -108,7 +115,9 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        authenticate() {
+        if (!sessionManager.isUserLoggedIn()) {
+            signIn()
+        } else {
             sync()
         }
     }
@@ -124,59 +133,34 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    private fun authenticate(sync: () -> Unit) {
-        if (!sessionManager.isUserLoggedIn()) {
-            signIn()
+    private fun sync() = lifecycleScope.launch(Dispatchers.IO) {
+        if (isInternetAvailable()) {
+            cancelNoInternetNotification()
+            Log.i(TAG, "Internet is available, starting sync")
+            try {
+                repository.syncLocalWithRemote()
+            } catch (e: Exception) {
+                showNoInternetNotification(
+                    getString(
+                        R.string.synchronization_error,
+                        e.message
+                    )
+                )
+            }
         } else {
-            sync()
+            showNoInternetNotification(getString(R.string.internet_is_not_available_msg))
         }
     }
 
-    private fun sync() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            if (userPreferences.getUserId().isEmpty()) {
-                sessionManager.getUserId()?.let { userPreferences.setUserId(it) } ?: {
-                    with(sessionManager) {
-                        Log.e(
-                            TAG, "sessionManager.userId = ${getUserId()}, " +
-                                    "when sessionManager.isUserLoggedIn() = ${isUserLoggedIn()}"
-                        )
-                    }
-                }
-            }
-
-            if (userPreferences.getUserId().isEmpty()) {
-                signIn()
-            } else {
-                if (isInternetAvailable()) {
-                    cancelNoInternetNotification()
-                    Log.i(TAG, "Internet is available, starting sync")
-                    try {
-                        repository.syncLocalWithRemote()
-                    } catch (e: Exception) {
-                        showNoInternetNotification(
-                            getString(
-                                R.string.synchronization_error,
-                                e.message
-                            )
-                        )
-                    }
-                } else {
-                    showNoInternetNotification(getString(R.string.internet_is_not_available_msg))
-                }
-            }
-        }
-    }
-
-    private fun isInternetAvailable(): Boolean {
+    private suspend fun isInternetAvailable(): Boolean = withContext(Dispatchers.IO) {
         try {
             val address = InetAddress.getByName("google.com")
-            return !address.equals("")
+            return@withContext !address.equals("")
         } catch (e: Exception) {
             Log.w(TAG, "Internet is not available: ${e.message}")
         }
 
-        return false
+        return@withContext false
     }
 
     private fun signIn() {
@@ -191,7 +175,6 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             repository.clearRepository()
-            userPreferences.setUserId("")
         }
 
         val signInIntent = Intent(this, SignInActivity::class.java)

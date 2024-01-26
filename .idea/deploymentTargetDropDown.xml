@@ -2,9 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="Tests in 'ru.claus42.anothertodolistapp'">
-        <State />
-      </entry>
       <entry key="TodoItemDatabaseTest">
         <State />
       </entry>
