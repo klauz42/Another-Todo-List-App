@@ -3,6 +3,7 @@ package ru.claus42.anothertodolistapp.tests.robots
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import ru.claus42.anothertodolistapp.R
 
+
 class TodoItemDetailsTestRobot : BaseTestRobot() {
 
     fun checkIfToDoIsOpen() {
@@ -11,6 +12,14 @@ class TodoItemDetailsTestRobot : BaseTestRobot() {
 
     fun checkIfToDoDescriptionIsCorrect(description: String) {
         matchText(R.id.task_description_edit_text, description)
+    }
+
+    fun clickDelete() {
+        clickButton(R.id.delete_item)
+    }
+
+    fun confirmDeletion() {
+        clickButton("Yes")
     }
 
     companion object {

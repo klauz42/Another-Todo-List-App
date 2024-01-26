@@ -2,22 +2,13 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="Tests in 'ru.claus42.anothertodolistapp'">
+        <State />
+      </entry>
       <entry key="TodoItemDatabaseTest">
         <State />
       </entry>
       <entry key="app">
-        <State />
-      </entry>
-      <entry key="shouldBeCorrectIndicesAfterDeletion()">
-        <State />
-      </entry>
-      <entry key="shouldBeCorrectListSizeAndIndicesAfterAddition()">
-        <State />
-      </entry>
-      <entry key="shouldCorrectedIndexesAfterDeletion()">
-        <State />
-      </entry>
-      <entry key="shouldMoveLastElementToFirstPosition()">
         <State />
       </entry>
     </value>

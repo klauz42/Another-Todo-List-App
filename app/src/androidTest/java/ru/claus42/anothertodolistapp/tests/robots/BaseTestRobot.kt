@@ -3,6 +3,7 @@ package ru.claus42.anothertodolistapp.tests.robots
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.PerformException
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
@@ -13,6 +14,8 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.hamcrest.Matcher
+import org.junit.Assert.fail
+
 
 open class BaseTestRobot {
 
@@ -21,6 +24,8 @@ open class BaseTestRobot {
     }
 
     fun clickButton(resId: Int): ViewInteraction = onView(withId(resId)).perform(click())
+
+    fun clickButton(text: String): ViewInteraction = onView(withText(text)).perform(click())
 
     fun textView(resId: Int): ViewInteraction = onView(withId(resId))
 
@@ -41,5 +46,19 @@ open class BaseTestRobot {
 
     fun isMatchingItemDisplayed(matcher: Matcher<View>): ViewInteraction {
         return onView(matcher).check(matches(ViewMatchers.isDisplayed()))
+    }
+
+    fun checkItemDoesNotExist(recyclerViewResId: Int, itemMatcher: Matcher<View>) {
+        try {
+            onView(withId(recyclerViewResId))
+                .perform(
+                    RecyclerViewActions.scrollTo<RecyclerView.ViewHolder>(
+                        itemMatcher
+                    )
+                )
+            fail("Element with matcher $itemMatcher should not exist.")
+        } catch (_: PerformException) {
+
+        }
     }
 }
