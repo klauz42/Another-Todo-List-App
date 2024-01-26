@@ -181,18 +181,34 @@ class TodoItemListTouchHelperCallback @Inject constructor() :
         val itemCornerRadius = context.resources
             .getDimensionPixelSize(R.dimen.item_corner_radius)
 
-        if (isLTR(itemView) && !isSwipeCorrespondingLayoutDirection) {
-            rightBound = itemView.right
-            leftBound = (itemView.right + dX.toInt() - itemCornerRadius)
-                .coerceAtLeast(itemView.left)
-            iconRightBound = itemView.right - iconSize
-            iconLeftBound = itemView.right - iconSize * 2
+        if (isLTR(itemView)) {
+            if (isSwipeCorrespondingLayoutDirection) {
+                rightBound = (itemView.left + dX.toInt() + itemCornerRadius)
+                    .coerceAtMost(itemView.right)
+                leftBound = itemView.left
+                iconRightBound = itemView.left + iconSize * 2
+                iconLeftBound = itemView.left + iconSize
+            } else {
+                rightBound = itemView.right
+                leftBound = (itemView.right + dX.toInt() - itemCornerRadius)
+                    .coerceAtLeast(itemView.left)
+                iconRightBound = itemView.right - iconSize
+                iconLeftBound = itemView.right - iconSize * 2
+            }
         } else {
-            rightBound = (itemView.left + dX.toInt() + itemCornerRadius)
-                .coerceAtMost(itemView.right)
-            leftBound = itemView.left
-            iconRightBound = itemView.left + iconSize * 2
-            iconLeftBound = itemView.left + iconSize
+            if (isSwipeCorrespondingLayoutDirection) {
+                rightBound = itemView.right
+                leftBound = (itemView.right + dX.toInt() - itemCornerRadius)
+                    .coerceAtLeast(itemView.left)
+                iconRightBound = itemView.right - iconSize
+                iconLeftBound = itemView.right - iconSize * 2
+            } else {
+                rightBound = (itemView.left + dX.toInt() + itemCornerRadius)
+                    .coerceAtMost(itemView.right)
+                leftBound = itemView.left
+                iconRightBound = itemView.left + iconSize * 2
+                iconLeftBound = itemView.left + iconSize
+            }
         }
 
         background.setBounds(leftBound, topBound, rightBound, bottomBound)
