@@ -153,8 +153,6 @@ class TodoItemRepositoryImpl @Inject constructor(
 
                     remoteItems.forEach { remoteItem ->
                         val id = UUID.fromString(remoteItem.taskId)
-                        Log.d(TAG, "remote item id: $id")
-
                         val localItem: TodoItemLocalDataEntity
 
                         try {
@@ -166,10 +164,10 @@ class TodoItemRepositoryImpl @Inject constructor(
                                 .ofEpochSecond(remoteItem.updatedAt)
                                 .atZone(ZoneId.systemDefault())
 
-                            if (localItem.changedAt >= remoteChangedTime) {
+                            if (localItem.changedAt > remoteChangedTime) {
                                 Log.d(TAG, "$id is newer in local db, updating remote")
                                 networkServiceApi.updateTodoItem(localItem.toTodoItemRemoteEntity())
-                            } else {
+                            } else if (localItem.changedAt < remoteChangedTime) {
                                 Log.d(TAG, "$id is newer in remote db, updating local")
                                 todoItemDao.updateTodoItem(remoteItem.toTodoItemLocalDataEntity())
                             }
